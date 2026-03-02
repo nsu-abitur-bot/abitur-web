@@ -30,7 +30,8 @@ const documents: Document[] = [
 </script>
 
 <template lang="pug">
-u-container(class="py-8 space-y-6")
-  document-uploader
-  document-list(:documents="documents")
+u-container(class="py-8")
+  div(class="flex flex-col gap-6 lg:flex-row items-start")
+    document-list(:documents="documents" class="flex-1")
+    document-uploader(class="flex-1")
 </template>
