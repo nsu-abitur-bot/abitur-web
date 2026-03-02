@@ -106,7 +106,6 @@ export default defineNuxtConfig({
   modules: [
     "@nuxt/icon",
     "@nuxt/ui",
-    "@nuxtjs/i18n",
     "nuxt-auth-utils",
   ],
 
