@@ -1,32 +1,32 @@
 <script setup lang="ts">
 import type { Document } from "~/components/document/list.vue"
 
-const documents: Document[] = [
+const documents = ref<Document[]>([
   {
     id: 1,
     name: "Документ 1",
-    date: "2024-06-01",
+    date: "2025-06-01",
     status: "pending",
   },
   {
     id: 2,
     name: "Документ 2",
-    date: "2024-06-02",
+    date: "2025-06-02",
     status: "processing",
   },
   {
     id: 3,
     name: "Документ 3",
-    date: "2024-06-03",
+    date: "2025-06-03",
     status: "success",
   },
   {
     id: 4,
     name: "Документ 4",
-    date: "2024-06-04",
+    date: "2025-06-04",
     status: "error",
   },
-]
+])
 </script>
 
 <template lang="pug">
