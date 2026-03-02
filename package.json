@@ -1,17 +1,39 @@
 {
-  "name": "abitur-web",
+  "name": "abitur",
   "type": "module",
   "private": true,
   "scripts": {
+    "prepare": "husky",
+    "check": "pnpm run lint && pnpm run types",
     "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
+    "lint": "eslint --fix . && stylelint --fix '**/*.{css,scss,vue}'",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "types": "nuxt typecheck"
   },
   "dependencies": {
     "nuxt": "^4.3.1",
     "vue": "^3.5.28",
     "vue-router": "^4.6.4"
+  },
+  "devDependencies": {
+    "@ilyasemenov/eslint-config": "1.5.0",
+    "@ilyasemenov/stylelint-config": "2.1.0",
+    "@types/node": "25.2.3",
+    "eslint": "9.39.2",
+    "eslint-plugin-format": "1.4.0",
+    "husky": "9.1.7",
+    "lint-staged": "16.2.7",
+    "stylelint": "16.26.1",
+    "typescript": "5.9.2",
+    "vue-tsc": "3.2.4"
+  },
+  "pnpm": {
+    "overrides": {
+      "@antfu/eslint-config": "7.4.3",
+      "eslint-plugin-perfectionist": "5.5.0"
+    }
   }
 }
