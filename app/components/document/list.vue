@@ -1,11 +1,13 @@
 <script setup lang="ts">
+export type Document = {
+  id: number | string
+  name: string
+  date: string
+  status: "pending" | "processing" | "success" | "error"
+}
+
 defineProps<{
-  documents: {
-    id: number | string
-    name: string
-    date: string
-    status: "pending" | "processing" | "success" | "error"
-  }[]
+  documents: Document[]
 }>()
 
 defineEmits<{
