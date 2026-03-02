@@ -1,6 +1,8 @@
 import {
+  ArcElement,
   CategoryScale,
   Chart,
+  DoughnutController,
   Legend,
   LinearScale,
   LineController,
@@ -12,6 +14,7 @@ import {
 
 export default defineNuxtPlugin(() => {
   Chart.register(
+    ArcElement,
     CategoryScale,
     LinearScale,
     PointElement,
@@ -20,5 +23,6 @@ export default defineNuxtPlugin(() => {
     Tooltip,
     Legend,
     LineController,
+    DoughnutController,
   )
 })
