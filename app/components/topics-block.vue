@@ -40,11 +40,14 @@ const periodTabItems = ref<TabsItem[]>([
 ])
 const period = ref<"1d" | "7d" | "30d" | "all">("1d")
 
+const { gridColor } = useChartColors()
+
 const chartData = computed<ChartData<"doughnut"> | null>(() => data.value
   ? {
       labels: data.value.map(item => item.label),
       datasets: [{
         data: data.value.map(item => item.value),
+        borderColor: gridColor.value,
         backgroundColor: data.value.map(item => item.color),
         hoverOffset: 4,
       }],
@@ -56,7 +59,8 @@ const chartOptions = computed<ChartOptions<"doughnut">>(() => ({
   maintainAspectRatio: false,
   plugins: {
     legend: {
-      position: "right",
+      position: "bottom",
+      align: "start",
     },
   },
 }))
