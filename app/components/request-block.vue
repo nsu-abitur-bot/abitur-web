@@ -58,6 +58,9 @@ const chartData = computed<ChartData<"line"> | null>(() => data.value && {
 const chartOptions = computed<ChartOptions<"line">>(() => ({
   responsive: true,
   maintainAspectRatio: false,
+  plugins: {
+    legend: { display: false },
+  },
   scales: {
     x: {
       // Цвет подписей.
