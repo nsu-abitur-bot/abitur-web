@@ -25,6 +25,10 @@ export default defineNuxtConfig({
     "#server": fileURLToPath(new URL("./server", import.meta.url)),
   },
 
+  app: {
+    baseURL: "/abitur-web/",
+  },
+
   typescript: {
     tsConfig: {
       vueCompilerOptions: {
