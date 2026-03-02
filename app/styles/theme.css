@@ -1,0 +1,13 @@
+@theme static {
+  --color-green-50: #edfae0;
+  --color-green-100: #dbf6c1;
+  --color-green-200: #baed87;
+  --color-green-300: #96e449;
+  --color-green-400: #72c81e;
+  --color-green-500: #60a919;
+  --color-green-600: #4c8514;
+  --color-green-700: #3a660f;
+  --color-green-800: #26430a;
+  --color-green-900: #142305;
+  --color-green-950: #0a1203;
+}
