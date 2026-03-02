@@ -10,22 +10,15 @@ const items = computed<NavigationMenuItem[]>(() => [
     active: route.path.startsWith("/"),
   },
   {
-    label: "Логи",
-    to: "/logs",
-    active: route.path.startsWith("/logs"),
-  },
-  {
-    label: "Настройки",
-    to: "/settings",
-    active: route.path.startsWith("/settings"),
+    label: "Статистика",
+    to: "/stats",
+    active: route.path.startsWith("/stats"),
   },
 ])
 </script>
 
 <template lang="pug">
 u-header
-  template(#title)
-    logo(class="h-6 w-auto")
   u-navigation-menu(:items="items")
 
   template(#right)
