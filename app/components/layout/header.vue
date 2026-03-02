@@ -7,7 +7,7 @@ const items = computed<NavigationMenuItem[]>(() => [
   {
     label: "База знаний",
     to: "/",
-    active: route.path.startsWith("/"),
+    active: route.path === "/",
   },
   {
     label: "Статистика",
