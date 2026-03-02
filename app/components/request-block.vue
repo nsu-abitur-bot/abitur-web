@@ -81,8 +81,7 @@ const chartOptions = computed<ChartOptions<"line">>(() => ({
 </script>
 
 <template lang="pug">
-//- div нужен, чтобы срабатывали внешние классы (например, установка высоты)
-div(class="w-full")
+ui-box(title="Количество запросов")
   div(class="h-64")
     chart-line(v-if="chartData" :data="chartData" :options="chartOptions")
 
