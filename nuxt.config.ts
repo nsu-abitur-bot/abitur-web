@@ -126,6 +126,7 @@ export default defineNuxtConfig({
   //
 
   runtimeConfig: {
+    baseUrl: "https://nsu-abitur-bot.github.io/abitur-web/",
     session: {
       name: "abitur-session",
       // NUXT_SESSION_PASSWORD
