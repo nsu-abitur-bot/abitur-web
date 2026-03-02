@@ -9,11 +9,17 @@ interface TabsItem {
   value: string
 }
 
+type PeriodType = "1d" | "7d" | "30d" | "all"
+
 // Mock data.
-const data = ref<QuestionData>({
-  text: "Как подать документы на общежитие, если я из другого города?",
-  count: 154,
-})
+const questionsMap: Record<PeriodType, QuestionData> = {
+  "1d": { text: "Как подать документы на общежитие, если я из другого города?", count: 154 },
+  "7d": { text: "Какие экзамены нужно сдавать на факультет информатики?", count: 342 },
+  "30d": { text: "Когда будет известен список зачисленных?", count: 1205 },
+  "all": { text: "Какой проходной балл был в прошлом году?", count: 5430 },
+}
+
+const data = ref<QuestionData>(questionsMap["1d"])
 
 const periodTabItems = ref<TabsItem[]>([
   {
@@ -33,7 +39,11 @@ const periodTabItems = ref<TabsItem[]>([
     value: "all",
   },
 ])
-const period = ref<"1d" | "7d" | "30d" | "all">("1d")
+const period = ref<PeriodType>("1d")
+
+watch(period, (newPeriod) => {
+  data.value = questionsMap[newPeriod]
+})
 </script>
 
 <template lang="pug">
