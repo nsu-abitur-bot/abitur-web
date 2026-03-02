@@ -20,7 +20,8 @@ const items = computed<NavigationMenuItem[]>(() => [
 <template lang="pug">
 u-header
   u-navigation-menu(:items="items")
-
+  template(#title)
+    span.font-bold.text-lg АБИТУРИЕНТ.РФ
   template(#right)
     u-color-mode-button
 </template>
