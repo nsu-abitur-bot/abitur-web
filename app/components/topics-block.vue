@@ -40,6 +40,13 @@ const periodTabItems = ref<TabsItem[]>([
 ])
 const period = ref<"1d" | "7d" | "30d" | "all">("1d")
 
+watch(period, () => {
+  data.value = data.value.map(item => ({
+    ...item,
+    value: Math.floor(Math.random() * 300) + 50,
+  }))
+})
+
 const { gridColor } = useChartColors()
 
 const chartData = computed<ChartData<"doughnut"> | null>(() => data.value

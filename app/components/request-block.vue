@@ -39,6 +39,13 @@ const periodTabItems = ref<TabsItem[]>([
 ])
 const period = ref<"1d" | "7d" | "30d" | "all">("1d")
 
+watch(period, () => {
+  data.value = data.value.map(item => ({
+    ...item,
+    requests: Math.floor(Math.random() * 100) + 50,
+  }))
+})
+
 const chartData = computed<ChartData<"line"> | null>(() => data.value && {
   labels: data.value.map(item => item.label),
   datasets: [{
