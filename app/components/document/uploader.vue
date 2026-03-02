@@ -14,9 +14,10 @@ const items = [
 
 const state = reactive({
   url: "",
+  file: null,
 })
 
-function onFileChange(event: Event) {
+function handleFileChange(event: Event) {
   const input = event.target as HTMLInputElement
   if (input.files?.length) {
     // TODO: Handle file upload
@@ -24,7 +25,7 @@ function onFileChange(event: Event) {
   }
 }
 
-function onUrlSubmit() {
+function handleUrlSubmit() {
   // TODO: Handle URL submission
   console.log("URL submitted:", state.url)
 }
@@ -33,17 +34,11 @@ function onUrlSubmit() {
 <template lang="pug">
 ui-box(title="Добавить новые знания")
   u-tabs(:items="items" class="w-full")
-    template(#file="{ item }")
-      .flex.flex-col.items-center.gap-4.rounded-md.border-2.border-dashed.border-gray-300.p-8.text-center.transition-colors.relative(class="hover:bg-gray-50")
-        u-icon(:name="item.icon" class="text-4xl text-gray-400 size-12")
-        p.text-sm.text-gray-500 Перетащите файл сюда или нажмите для выбора
-        input.absolute.inset-0.opacity-0.cursor-pointer.w-full.h-full(
-          type="file"
-          @change="onFileChange"
-        )
+    template(#file)
+      u-file-upload(v-model="state.file" @change="handleFileChange")
 
     template(#url)
-      u-form.flex.flex-col.gap-4.p-4(:state="state" @submit="onUrlSubmit")
+      u-form.flex.flex-col.gap-4.p-4(:state="state" @submit="handleUrlSubmit")
         u-form-field(label="URL документа" name="url")
           u-input.w-full(
             v-model="state.url"
