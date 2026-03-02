@@ -17,9 +17,7 @@ const data = ref([
   { label: "16:00", requests: 135 },
 ])
 
-const lineColor = ref("rgb(75, 192, 192)")
-const ticksColor = ref("#666")
-const gridColor = ref("#e5e5e5")
+const { lineColor, ticksColor, gridColor } = useChartColors()
 
 const periodTabItems = ref<TabsItem[]>([
   {
