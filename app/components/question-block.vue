@@ -47,16 +47,17 @@ watch(period, (newPeriod) => {
 </script>
 
 <template lang="pug">
-ui-box(title="Самый популярный вопрос")
+ui-box(title="Самый популярный вопрос" class="w-full")
   // Quote style block
   blockquote(class="border-l-4 border-primary-500 pl-4 py-2 my-4 bg-gray-50 dark:bg-gray-800 rounded-r-lg italic text-lg text-gray-700 dark:text-gray-300")
     p(class="mb-2") "{{ data.text }}"
     footer(class="text-sm font-bold text-gray-500 dark:text-gray-400 not-italic")
       | {{ data.count }} запросов
 
-  u-tabs(
-    v-model="period"
-    :items="periodTabItems"
-    class="mt-4"
-  )
+  div(class="mt-4 overflow-x-auto")
+    u-tabs(
+      v-model="period"
+      :items="periodTabItems"
+      class="min-w-max"
+    )
 </template>

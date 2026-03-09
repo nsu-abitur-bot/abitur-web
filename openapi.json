@@ -1,0 +1,432 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Abitur API",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/v1/faq": {
+      "get": {
+        "tags": [
+          "FAQ Management"
+        ],
+        "summary": "Получить все FAQ",
+        "description": "Возвращает список всех вопросов и ответов FAQ, которые использует бот.",
+        "operationId": "get_all_faqs_api_v1_faq_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FaqListResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "FAQ Management"
+        ],
+        "summary": "Создать FAQ",
+        "description": "Создает новый вопрос FAQ и автоматически применяет его для новых запросов к боту.",
+        "operationId": "create_faq_api_v1_faq_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FaqItem"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FaqItem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/faq/{index}": {
+      "put": {
+        "tags": [
+          "FAQ Management"
+        ],
+        "summary": "Обновить FAQ по индексу",
+        "description": "Обновляет существующий FAQ элемент по его позиции (индексу) в списке.",
+        "operationId": "update_faq_api_v1_faq__index__put",
+        "parameters": [
+          {
+            "name": "index",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Index"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FaqItem"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FaqItem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "FAQ Management"
+        ],
+        "summary": "Удалить FAQ по индексу",
+        "description": "Удаляет существующий FAQ элемент по его позиции (индексу) в списке.",
+        "operationId": "delete_faq_api_v1_faq__index__delete",
+        "parameters": [
+          {
+            "name": "index",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Index"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/count-stats": {
+      "get": {
+        "summary": "Get Users Count Stats",
+        "operationId": "get_users_count_stats_api_v1_users_count_stats_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserCountStatsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/messages": {
+      "get": {
+        "summary": "Get Messages",
+        "description": "Возвращает список сообщений и ответов бота.",
+        "operationId": "get_messages_api_v1_messages_get",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Фильтр по user_id",
+              "title": "User Id"
+            },
+            "description": "Фильтр по user_id"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 500,
+              "minimum": 1,
+              "description": "Количество записей",
+              "default": 50,
+              "title": "Limit"
+            },
+            "description": "Количество записей"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Смещение",
+              "default": 0,
+              "title": "Offset"
+            },
+            "description": "Смещение"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MessageResponse"
+                  },
+                  "title": "Response Get Messages Api V1 Messages Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "FaqItem": {
+        "properties": {
+          "question": {
+            "type": "string",
+            "title": "Question",
+            "description": "Основной вопрос"
+          },
+          "aliases": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Aliases",
+            "description": "Альтернативные формулировки (синонимы) вопроса"
+          },
+          "answer": {
+            "type": "string",
+            "title": "Answer",
+            "description": "Текст ответа"
+          }
+        },
+        "type": "object",
+        "required": [
+          "question",
+          "answer"
+        ],
+        "title": "FaqItem",
+        "description": "Схема для отдельного элемента FAQ."
+      },
+      "FaqListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/FaqItem"
+            },
+            "type": "array",
+            "title": "Items",
+            "description": "Список вопросов-ответов"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "title": "FaqListResponse",
+        "description": "Схема ответа для списка FAQ-вопросов."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "MessageResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "user_id": {
+            "type": "integer",
+            "title": "User Id"
+          },
+          "session_id": {
+            "type": "string",
+            "title": "Session Id"
+          },
+          "user_text": {
+            "type": "string",
+            "title": "User Text"
+          },
+          "bot_response": {
+            "type": "string",
+            "title": "Bot Response"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "user_id",
+          "session_id",
+          "user_text",
+          "bot_response",
+          "created_at"
+        ],
+        "title": "MessageResponse"
+      },
+      "UserCountStatsResponse": {
+        "properties": {
+          "day": {
+            "type": "integer",
+            "title": "Day"
+          },
+          "week": {
+            "type": "integer",
+            "title": "Week"
+          },
+          "month": {
+            "type": "integer",
+            "title": "Month"
+          },
+          "year": {
+            "type": "integer",
+            "title": "Year"
+          },
+          "all_time": {
+            "type": "integer",
+            "title": "All Time"
+          }
+        },
+        "type": "object",
+        "required": [
+          "day",
+          "week",
+          "month",
+          "year",
+          "all_time"
+        ],
+        "title": "UserCountStatsResponse"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

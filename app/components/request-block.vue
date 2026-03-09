@@ -89,13 +89,14 @@ const chartOptions = computed<ChartOptions<"line">>(() => ({
 </script>
 
 <template lang="pug">
-ui-box(title="Количество запросов")
-  div(class="h-64")
+ui-box(title="Количество запросов" class="w-full")
+  div(class="h-64 w-full")
     chart-line(v-if="chartData" :data="chartData" :options="chartOptions")
 
-  u-tabs(
-    v-model="period"
-    :items="periodTabItems"
-    class="mt-4"
-  )
+  div(class="mt-4 overflow-x-auto")
+    u-tabs(
+      v-model="period"
+      :items="periodTabItems"
+      class="min-w-max"
+    )
 </template>

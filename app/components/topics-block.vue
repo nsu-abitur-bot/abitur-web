@@ -74,13 +74,14 @@ const chartOptions = computed<ChartOptions<"doughnut">>(() => ({
 </script>
 
 <template lang="pug">
-ui-box(title="Популярные темы")
-  div(class="h-64")
+ui-box(title="Популярные темы" class="w-full")
+  div(class="h-64 w-full")
     chart-doughnut(v-if="chartData" :data="chartData" :options="chartOptions")
 
-  u-tabs(
-    v-model="period"
-    :items="periodTabItems"
-    class="mt-4"
-  )
+  div(class="mt-4 overflow-x-auto")
+    u-tabs(
+      v-model="period"
+      :items="periodTabItems"
+      class="min-w-max"
+    )
 </template>

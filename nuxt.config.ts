@@ -111,7 +111,17 @@ export default defineNuxtConfig({
     "@nuxt/icon",
     "@nuxt/ui",
     "nuxt-auth-utils",
+    "nuxt-open-fetch",
   ],
+
+  openFetch: {
+    clients: {
+      myApi: {
+        schema: "./openapi.json",
+        baseURL: "/api/v1",
+      },
+    },
+  },
 
   router: {
     options: {
