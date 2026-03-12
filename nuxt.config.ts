@@ -2,7 +2,6 @@ import * as fs from "node:fs/promises"
 import { fileURLToPath } from "node:url"
 
 import type { VueTSConfig } from "nuxt/schema"
-import vueCssModule from "vite-plugin-vue-css-module"
 
 function fixTsConfig(tsConfig: VueTSConfig) {
   // убрать лишние стандартные алиасы, чтобы остался ровно один ~, который и будем использовать
@@ -74,14 +73,6 @@ export default defineNuxtConfig({
         )
       },
     },
-  },
-
-  vite: {
-    plugins: [
-      // Почему-то тут ошибка типов без as Plugin, скорее всего из-за разных версий vite.
-      // TODO: Разобраться и пофиксить.
-      vueCssModule({ attrName: "mclass", pugClassLiterals: true }) as Plugin,
-    ],
   },
 
   css: [

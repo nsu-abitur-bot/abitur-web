@@ -39,7 +39,6 @@
     "pug": "^3.0.3",
     "stylelint": "16.26.1",
     "typescript": "5.9.2",
-    "vite-plugin-vue-css-module": "^2.1.0",
     "vue-tsc": "3.2.4"
   },
   "pnpm": {

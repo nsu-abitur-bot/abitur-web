@@ -1,0 +1,28 @@
+# VCS
+.git
+.gitignore
+
+# Dependencies and local caches
+node_modules
+.pnpm-store
+.nuxt
+.output
+.nitro
+.cache
+.data
+dist
+
+# IDE/editor files
+.vscode
+.idea
+.fleet
+.DS_Store
+
+# Logs
+logs
+*.log
+
+# Env files
+.env
+.env.*
+!.env.example
