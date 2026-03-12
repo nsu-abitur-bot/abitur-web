@@ -2,72 +2,70 @@
 import type { TableColumn } from "@nuxt/ui"
 import { h, resolveComponent } from "vue"
 
-export type Document = {
-  id: number | string
-  name: string
-  date: string
-  status: "pending" | "processing" | "success" | "error"
+import type { RagUploadFileResult } from "~/types/rag-upload"
+
+export interface RagUploadViewModel {
+  indexedCount: number
+  skippedCount: number
+  results: RagUploadFileResult[]
 }
 
 defineProps<{
-  documents: Document[]
+  uploadResult: RagUploadViewModel | null
 }>()
 
-const emit = defineEmits<{
-  delete: [id: number | string]
-}>()
-
-const columns: TableColumn<Document>[] = [
+const columns: TableColumn<RagUploadFileResult>[] = [
   {
-    accessorKey: "name",
-    header: "Название / URL",
-  },
-  {
-    accessorKey: "date",
-    header: "Дата",
+    accessorKey: "filename",
+    header: "Файл",
   },
   {
     accessorKey: "status",
     header: "Статус",
     cell: ({ row }) => {
-      const status = row.getValue("status") as Document["status"]
+      const status = row.getValue("status") as RagUploadFileResult["status"]
 
       const color = {
-        success: "success" as const,
-        processing: "warning" as const,
-        error: "error" as const,
-        pending: "neutral" as const,
+        indexed: "success" as const,
+        skipped: "warning" as const,
       }[status]
 
       const label = {
-        success: "Успешно",
-        processing: "В обработке",
-        error: "Ошибка",
-        pending: "Ожидает",
+        indexed: "Indexed",
+        skipped: "Skipped",
       }[status]
 
       return h(resolveComponent("UBadge"), { color, variant: "subtle" }, () => label)
     },
   },
   {
-    id: "actions",
-    cell: ({ row }) => {
-      return h(resolveComponent("UButton"), {
-        color: "error",
-        variant: "ghost",
-        icon: "lucide:trash",
-        size: "xs",
-        onClick: () => emit("delete", row.original.id),
-      })
-    },
+    accessorKey: "message",
+    header: "Message",
+  },
+  {
+    accessorKey: "chars",
+    header: "Chars",
   },
 ]
 </script>
 
 <template lang="pug">
-ui-box(title="Загруженные документы")
-  u-table(
-    :columns="columns"
-    :data="documents"
-  )
+ui-box(title="Результаты индексации документов")
+  div(v-if="!uploadResult" class="py-10 text-center text-gray-500")
+    p Пока нет результатов загрузки.
+
+  div(v-else class="space-y-4")
+    .grid.grid-cols-1.md.grid-cols-3.gap-3
+      .rounded-lg.border.border-gray-200.dark.border-gray-800.p-3
+      .rounded-lg.border.border-gray-200.dark.border-gray-800.p-3
+        p.text-xs.text-gray-500 Indexed
+        p.font-semibold.text-success {{ uploadResult.indexedCount }}
+      .rounded-lg.border.border-gray-200.dark.border-gray-800.p-3
+        p.text-xs.text-gray-500 Skipped
+        p.font-semibold.text-warning {{ uploadResult.skippedCount }}
+
+    u-table(
+      :columns="columns"
+      :data="uploadResult.results"
+    )
 </template>

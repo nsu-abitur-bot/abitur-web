@@ -154,6 +154,47 @@
         }
       }
     },
+    "/api/v1/rag/upload": {
+      "post": {
+        "tags": [
+          "RAG Management"
+        ],
+        "summary": "Загрузить документы в RAG",
+        "operationId": "upload_documents_to_rag_api_v1_rag_upload_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_documents_to_rag_api_v1_rag_upload_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RagUploadResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/users/count-stats": {
       "get": {
         "summary": "Get Users Count Stats",
@@ -255,6 +296,24 @@
   },
   "components": {
     "schemas": {
+      "Body_upload_documents_to_rag_api_v1_rag_upload_post": {
+        "properties": {
+          "files": {
+            "items": {
+              "type": "string",
+              "contentMediaType": "application/octet-stream"
+            },
+            "type": "array",
+            "title": "Files",
+            "description": "Файлы для индексации в RAG"
+          }
+        },
+        "type": "object",
+        "required": [
+          "files"
+        ],
+        "title": "Body_upload_documents_to_rag_api_v1_rag_upload_post"
+      },
       "FaqItem": {
         "properties": {
           "question": {
@@ -353,6 +412,76 @@
           "created_at"
         ],
         "title": "MessageResponse"
+      },
+      "RagUploadResponse": {
+        "properties": {
+          "accepted_formats": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Accepted Formats",
+            "description": "Поддерживаемые расширения файлов"
+          },
+          "indexed_count": {
+            "type": "integer",
+            "title": "Indexed Count",
+            "description": "Количество успешно проиндексированных файлов"
+          },
+          "skipped_count": {
+            "type": "integer",
+            "title": "Skipped Count",
+            "description": "Количество пропущенных файлов"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/UploadedDocumentResult"
+            },
+            "type": "array",
+            "title": "Results",
+            "description": "Результаты обработки по каждому загруженному файлу"
+          }
+        },
+        "type": "object",
+        "required": [
+          "accepted_formats",
+          "indexed_count",
+          "skipped_count",
+          "results"
+        ],
+        "title": "RagUploadResponse"
+      },
+      "UploadedDocumentResult": {
+        "properties": {
+          "filename": {
+            "type": "string",
+            "title": "Filename",
+            "description": "Имя загруженного файла"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Статус обработки: indexed или skipped"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "Подробности результата обработки"
+          },
+          "chars": {
+            "type": "integer",
+            "title": "Chars",
+            "description": "Количество символов, отправленных в RAG",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "filename",
+          "status",
+          "message"
+        ],
+        "title": "UploadedDocumentResult"
       },
       "UserCountStatsResponse": {
         "properties": {

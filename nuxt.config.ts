@@ -109,7 +109,7 @@ export default defineNuxtConfig({
     clients: {
       myApi: {
         schema: "./openapi.json",
-        baseURL: "/api/v1",
+        baseURL: "/",
       },
     },
   },
@@ -145,6 +145,8 @@ export default defineNuxtConfig({
     public: {
       // NUXT_PUBLIC_BASE_URL, без слеша на конце (пример: https://abitur.localhost)
       baseUrl: "",
+      // NUXT_PUBLIC_API_BASE_URL, без слеша на конце (пример: http://localhost:8000)
+      apiBaseUrl: "http://localhost:8000",
     },
   },
 
@@ -153,11 +155,23 @@ export default defineNuxtConfig({
       server: {
         // Для отладки колбеков через туннельные сервисы.
         allowedHosts: true,
+        proxy: {
+          "/abitur-web/api/v1": {
+            target: "http://localhost:8000",
+            changeOrigin: true,
+            rewrite: path => path.replace(/^\/abitur-web/, ""),
+          },
+          "/api/v1": {
+            target: "http://localhost:8000",
+            changeOrigin: true,
+          },
+        },
       },
     },
     runtimeConfig: {
       public: {
         baseUrl: "https://abitur.localhost",
+        apiBaseUrl: "http://localhost:8000",
       },
     },
   },

@@ -11,7 +11,8 @@
     "lint": "eslint --fix . && stylelint --fix '**/*.{css,scss,vue}'",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "types": "nuxt typecheck"
+    "types": "nuxt typecheck",
+    "test": "vitest run"
   },
   "dependencies": {
     "@nuxt/icon": "^2.2.1",
@@ -32,6 +33,7 @@
     "@vue/language-plugin-pug": "^3.2.5",
     "eslint": "9.39.2",
     "eslint-plugin-format": "1.4.0",
+    "happy-dom": "^20.0.7",
     "husky": "9.1.7",
     "lint-staged": "16.2.7",
     "nuxt-open-fetch": "^0.13.8",
@@ -39,6 +41,7 @@
     "pug": "^3.0.3",
     "stylelint": "16.26.1",
     "typescript": "5.9.2",
+    "vitest": "^3.2.4",
     "vue-tsc": "3.2.4"
   },
   "pnpm": {
