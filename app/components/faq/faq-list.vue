@@ -49,7 +49,7 @@ ui-box(title="Управление FAQ")
     )
 
   // Modal for Creation
-  u-slideover(v-model="isCreateModalOpen" title="Новый вопрос FAQ")
+  u-slideover(v-model:open="isCreateModalOpen" title="Новый вопрос FAQ")
     template(#body)
       faq-form(
         @submit="handleFaqCreated"
