@@ -3,7 +3,11 @@ import type { components } from "../../../types/openapi"
 
 type MessageResponse = components["schemas"]["MessageResponse"]
 
-const { data: messages, refresh, status } = await useMyApi("/api/v1/messages")
+const apiBaseUrl = useRuntimeConfig().public.apiBaseUrl
+
+const { data: messages, refresh, status } = await useMyApi("/api/v1/messages", {
+  baseURL: apiBaseUrl,
+})
 
 const items = computed(() => (messages.value ?? []) as MessageResponse[])
 

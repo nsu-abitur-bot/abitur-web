@@ -51,7 +51,10 @@ function normalizeRagUploadResponse(raw: RagUploadRawResponse): RagUploadRespons
 }
 
 async function defaultRagUploadRequest(formData: FormData): Promise<RagUploadResponse> {
+  const apiBaseUrl = useRuntimeConfig().public.apiBaseUrl
+
   const data = await $fetch<RagUploadRawResponse>("/api/v1/rag/upload", {
+    baseURL: apiBaseUrl,
     method: "POST",
     body: formData,
   })

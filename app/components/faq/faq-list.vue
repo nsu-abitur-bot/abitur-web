@@ -3,7 +3,11 @@ import type { components } from "../../../types/openapi"
 
 type FaqItem = components["schemas"]["FaqItem"]
 
-const { data: faqRes, refresh, status } = await useMyApi("/api/v1/faq")
+const apiBaseUrl = useRuntimeConfig().public.apiBaseUrl
+
+const { data: faqRes, refresh, status } = await useMyApi("/api/v1/faq", {
+  baseURL: apiBaseUrl,
+})
 
 const isCreateModalOpen = ref(false)
 
@@ -13,6 +17,7 @@ const handleDelete = async (index: number) => {
   // eslint-disable-next-line no-alert
   if (confirm("Вы уверены, что хотите удалить этот вопрос?")) {
     await useMyApi("/api/v1/faq/{index}", {
+      baseURL: apiBaseUrl,
       method: "DELETE",
       path: { index },
     })

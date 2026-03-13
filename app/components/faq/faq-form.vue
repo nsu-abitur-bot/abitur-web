@@ -13,6 +13,8 @@ const emit = defineEmits<{
   (e: "cancel"): void
 }>()
 
+const apiBaseUrl = useRuntimeConfig().public.apiBaseUrl
+
 const isEditMode = computed(() => props.initialData !== undefined && props.index !== undefined)
 
 // Component state for aliases
@@ -43,12 +45,14 @@ const onSubmit = async () => {
   try {
     if (isEditMode.value && props.index !== undefined) {
       await useMyApi("/api/v1/faq/{index}", {
+        baseURL: apiBaseUrl,
         method: "PUT",
         path: { index: props.index },
         body: state,
       })
     } else {
       await useMyApi("/api/v1/faq", {
+        baseURL: apiBaseUrl,
         method: "POST",
         body: state,
       })

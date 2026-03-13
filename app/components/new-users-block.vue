@@ -31,8 +31,12 @@ const periodTabItems = ref<TabsItem[]>([
 
 const period = ref<PeriodType>("day")
 
+const apiBaseUrl = useRuntimeConfig().public.apiBaseUrl
+
 // Fetch API data. Use generic data to prevent TS errors since we only mocked it for now
-const { data: usersMap } = await useMyApi("/api/v1/users/count-stats")
+const { data: usersMap } = await useMyApi("/api/v1/users/count-stats", {
+  baseURL: apiBaseUrl,
+})
 
 const data = ref<number>(usersMap.value?.[period.value] ?? 0)
 
