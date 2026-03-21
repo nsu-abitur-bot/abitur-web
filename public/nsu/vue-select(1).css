@@ -1,0 +1,88 @@
+.v-select {
+  height: 100%;
+}
+.v-select .vs__dropdown-toggle {
+  border-radius: 10px;
+  border: none;
+  border-right: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  height: 100%;
+}
+@media (max-width: 767.98px) {
+  .v-select .vs__dropdown-toggle {
+    background: #FFFFFF;
+    box-shadow: 0px 1px 2px rgba(184, 200, 224, 0.222055);
+    padding: 0 20px;
+  }
+}
+.v-select .vs__selected ~ input {
+  height: 0;
+  padding: 0;
+  margin: 0;
+}
+.v-select.vs--open .vs__selected ~ input {
+  height: auto;
+  padding: 15px 0;
+  margin: 4px 0 0;
+}
+.v-select .vs__search,
+.v-select .vs__selected {
+  font-family: "Montserrat", sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.25;
+  color: #121029;
+  padding: 15px 0;
+}
+.v-select .vs__search::-webkit-input-placeholder, .v-select .vs__search:-moz-placeholder, .v-select .vs__search::-moz-placeholder, .v-select .vs__search:-ms-input-placeholder, .v-select .vs__search::-ms-input-placeholder, .v-select .vs__search::placeholder,
+.v-select .vs__selected::-webkit-input-placeholder,
+.v-select .vs__selected:-moz-placeholder,
+.v-select .vs__selected::-moz-placeholder,
+.v-select .vs__selected:-ms-input-placeholder,
+.v-select .vs__selected::-ms-input-placeholder,
+.v-select .vs__selected::placeholder {
+  /* Most modern browsers support this now. */
+  color: #121029;
+  opacity: 1;
+}
+.v-select .vs__dropdown-menu {
+  max-height: 350px;
+  min-width: 160px;
+  width: auto;
+  border: none;
+  text-align: left;
+  background: #FFFFFF;
+  box-shadow: 0px 20px 15px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  padding: 10px 10px 10px 10px;
+  font-weight: 400;
+}
+.v-select .vs__dropdown-option {
+  line-height: 1.42857143;
+  padding: 15px 20px;
+  color: #121029;
+}
+.v-select .vs__dropdown-option:hover {
+  cursor: pointer;
+}
+.v-select .vs__dropdown-option--highlight {
+  background: #F2F8FF;
+  color: #121029;
+  border-radius: 20px;
+}
+.v-select .vs__dropdown-option--disabled {
+  background: inherit;
+  color: #bfbfbf;
+}
+.v-select .vs__dropdown-option--disabled:hover {
+  cursor: inherit;
+}
+.v-select .vs__selected-options .vs__search {
+  background: transparent;
+  cursor: pointer;
+}
+
+/*# sourceMappingURL=vue-select.css.map */

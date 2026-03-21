@@ -1,0 +1,153 @@
+.list-collapse .info .info-speciality {
+  font-size: 18px;
+}
+.list-collapse .info .info-date {
+  font-size: 12px;
+}
+.list-collapse .legends .legend {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 30px;
+  color: white;
+  margin-bottom: 10px !important;
+}
+.list-collapse .legends .row-p5 {
+  margin-right: -5px;
+  margin-left: -5px;
+}
+.list-collapse .legends .row-p5 > div {
+  padding-right: 5px;
+  padding-left: 5px;
+}
+.list-collapse .how-enroll .navbar-toggler {
+  font-size: 16px;
+  padding: inherit;
+}
+.list-collapse .card {
+  background-color: #fff;
+  background-clip: border-box;
+  border: none;
+  border-radius: 0;
+  margin-bottom: 5px;
+}
+.list-collapse .card *[data-toggle=collapse] {
+  cursor: pointer;
+}
+.list-collapse .card .card-header {
+  border: solid 1px;
+  border-radius: 0;
+  background: transparent;
+  transition: 0.2s;
+}
+.list-collapse .card .card-header .number {
+  border: solid 1px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  margin-right: 10px;
+  font-family: PTSansBold;
+  width: 30px;
+  height: 30px;
+}
+.list-collapse .card .card-header .arrow-circle {
+  margin-right: 25px;
+  position: relative;
+  display: block;
+}
+.list-collapse .card .card-header .arrow-circle:after {
+  display: flex;
+  align-items: center;
+  width: 10px;
+  height: 10px;
+  content: "";
+  background-image: url("data:image/svg+xml,%3Csvg width='9' height='10' viewBox='0 0 9 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0L0 10L8.28125 5L0 0Z' fill='white'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+.list-collapse .card .card-header .arrow-circle[aria-expanded=true]:after {
+  background-image: url("data:image/svg+xml,%3Csvg width='10' height='9' viewBox='0 0 10 9' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 0L0 0L5 8.28125L10 0Z' fill='white'/%3E%3C/svg%3E");
+}
+.list-collapse .card .card-header-default .arrow-circle:after {
+  background-image: url("data:image/svg+xml,%3Csvg width='9' height='10' viewBox='0 0 9 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0L0 10L8.28125 5L0 0Z' fill='%2372C81E'/%3E%3C/svg%3E%0A");
+}
+.list-collapse .card .card-header-default:hover:not([aria-expanded=true]) .arrow-circle:after {
+  background-image: url("data:image/svg+xml,%3Csvg width='9' height='10' viewBox='0 0 9 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0L0 10L8.28125 5L0 0Z' fill='white'/%3E%3C/svg%3E");
+}
+.list-collapse .card .card-header-default[aria-expanded=true], .list-collapse .card .card-header-default:hover {
+  color: white;
+}
+.list-collapse .card .card-header-default[aria-expanded=true] .number, .list-collapse .card .card-header-default:hover .number {
+  color: white;
+  border-color: white;
+}
+.list-collapse .card .card-header-default[aria-expanded=true] .arrow-circle:after, .list-collapse .card .card-header-default:hover .arrow-circle:after {
+  background-image: url("data:image/svg+xml,%3Csvg width='10' height='9' viewBox='0 0 10 9' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 0L0 0L5 8.28125L10 0Z' fill='white'/%3E%3C/svg%3E");
+}
+.list-collapse .card .card-header-green {
+  color: white;
+}
+.list-collapse .card .card-header-green .number {
+  color: white;
+  border-color: white;
+}
+.list-collapse .card .card-header-blue {
+  border: solid 1px;
+  color: white;
+}
+.list-collapse .card .card-header-blue .number {
+  color: white;
+  border-color: white;
+}
+.list-collapse .card .card-header-orange {
+  border: solid 1px;
+  color: white;
+}
+.list-collapse .card .card-header-orange .number {
+  color: white;
+  border-color: white;
+}
+.list-collapse .card .card-header-red {
+  border: solid 1px;
+  color: white;
+}
+.list-collapse .card .card-header-red .number {
+  color: white;
+  border-color: white;
+}
+.list-collapse .card .card-header-violet {
+  border: solid 1px;
+  color: white;
+}
+.list-collapse .card .card-header-violet .number {
+  color: white;
+  border-color: white;
+}
+.list-collapse .card .card-body {
+  border: solid 1px;
+  border-top: none;
+}
+.list-collapse .card .card-body-green {
+  border: solid 1px;
+}
+.list-collapse .card .card-body-blue {
+  border: solid 1px;
+}
+.list-collapse .card .card-body-orange {
+  border: solid 1px;
+}
+.list-collapse .card .card-body-red {
+  border: solid 1px;
+}
+.list-collapse .card .card-body-violet {
+  border: solid 1px;
+}
+
+@media (max-width: 991.98px) {
+  .list-collapse .info {
+    font-size: 16px;
+  }
+}
+
+/*# sourceMappingURL=list-collapse.css.map */

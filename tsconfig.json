@@ -14,5 +14,9 @@
     }
   ],
   // https://nuxt.com/docs/guide/concepts/typescript
-  "files": []
+  "files": [],
+  "exclude": [
+    "public/nsu/**",
+    "app/pages/rating.vue"
+  ]
 }

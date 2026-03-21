@@ -1,0 +1,106 @@
+.icon {
+  display: inline-block;
+}
+.icon.icon-document {
+  flex: 0 0 51px;
+  width: 51px;
+  height: 72px;
+  background: url("https://abiturient.nsu.ru/images/icons/blank.png") no-repeat;
+  background-size: contain;
+}
+.icon.icon-arrow-right-white {
+  flex: 0 0 33px;
+  width: 33px;
+  height: 33px;
+  background: url("https://abiturient.nsu.ru/images/icons/arrow-right-white.svg") no-repeat;
+  background-size: contain;
+}
+.icon.icon-arrow-right-black {
+  flex: 0 0 33px;
+  width: 33px;
+  height: 33px;
+  background: url("https://abiturient.nsu.ru/images/icons/arrow-right-black.svg") no-repeat;
+  background-size: contain;
+}
+.icon.icon-loupe {
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  background: url("https://abiturient.nsu.ru/images/icons/loupe.svg") no-repeat;
+  background-size: contain;
+}
+.icon.icon-arrow-down {
+  flex: 0 0 20px;
+  width: 20px;
+  height: 12px;
+  background: url("https://abiturient.nsu.ru/images/icons/arrow-down.svg") no-repeat;
+  background-size: contain;
+}
+.icon.icon-arrow-down.open {
+  rotate: -180deg;
+  transition: all 0.1s linear;
+}
+.icon.icon-arrow-down-white {
+  flex: 0 0 20px;
+  width: 20px;
+  height: 12px;
+  background: url("https://abiturient.nsu.ru/images/icons/arrow-down-white.svg") no-repeat;
+  background-size: contain;
+}
+.icon.icon-arrow-down-white.open {
+  rotate: -180deg;
+  transition: all 0.1s linear;
+}
+.icon.icon-arrow-up {
+  flex: 0 0 20px;
+  width: 20px;
+  height: 12px;
+  background: url("https://abiturient.nsu.ru/images/icons/arrow-down.svg") no-repeat;
+  rotate: 180deg;
+  background-size: contain;
+}
+.icon.icon-arrow-up.open {
+  rotate: 0;
+  transition: all 1s linear;
+}
+.icon.icon-menu {
+  flex: 0 0 27px;
+  width: 27px;
+  height: 18px;
+  background: url("https://abiturient.nsu.ru/images/icons/menu-black.svg") no-repeat;
+  background-size: contain;
+}
+.icon.icon-menu.open {
+  background: url("https://abiturient.nsu.ru/images/icons/menu-white.svg") no-repeat;
+}
+.icon.icon-menu-white {
+  flex: 0 0 27px;
+  width: 27px;
+  height: 18px;
+  background: url("https://abiturient.nsu.ru/images/icons/menu-white.svg") no-repeat;
+  background-size: contain;
+}
+.icon.icon-menu-white.open {
+  background: url("https://abiturient.nsu.ru/images/icons/menu-black.svg") no-repeat;
+}
+.icon.icon-info {
+  flex: 0 0 6px;
+  width: 6px;
+  height: 10px;
+  background: url("https://abiturient.nsu.ru/images/icons/info.svg") no-repeat;
+  background-size: contain;
+}
+
+.open .icon.icon-arrow-down, .open .icon.icon-arrow-down-white {
+  rotate: -180deg;
+  transition: all 0.1s linear;
+}
+.open .icon.icon-arrow-up {
+  rotate: 0;
+  transition: all 1s linear;
+}
+.open .icon.icon-menu {
+  background: url("https://abiturient.nsu.ru/images/icons/menu-white.svg") no-repeat;
+}
+
+/*# sourceMappingURL=icon.css.map */
