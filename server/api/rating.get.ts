@@ -1,65 +1,73 @@
 import { defineEventHandler } from "h3"
 
-export default defineEventHandler(() => {
-  const generateConsistentId = (i: number) => {
-    return `${4000000 + ((i + 1) * 374821) % 1000000}`
-  }
+let cachedData: any = null
+let lastUpdate = 0
 
-  const generateTable = (count: number, startIdIndex: number) => {
-    const rawEntrants = Array.from({ length: count }, (_, i) => {
-      const idx = startIdIndex + i
-      const math = 60 + Math.floor(Math.random() * 41)
-      const informatics = 60 + Math.floor(Math.random() * 41)
-      const russian = 60 + Math.floor(Math.random() * 41)
-      const ind = Math.floor(Math.random() * 11)
-      const total = math + informatics + russian + ind
+const generateConsistentId = (i: number) => {
+  return `${4000000 + ((i + 1) * 374821) % 1000000}`
+}
 
+const generateTable = (count: number, startIdIndex: number) => {
+  const rawEntrants = Array.from({ length: count }, (_, i) => {
+    const idx = startIdIndex + i
+    const math = 60 + Math.floor(Math.random() * 41)
+    const informatics = 60 + Math.floor(Math.random() * 41)
+    const russian = 60 + Math.floor(Math.random() * 41)
+    const ind = Math.floor(Math.random() * 11)
+    const total = math + informatics + russian + ind
+
+    return {
+      idx,
+      math,
+      informatics,
+      russian,
+      ind,
+      total,
+    }
+  })
+
+  return rawEntrants
+    .sort((a, b) => b.total - a.total)
+    .map((e, i) => {
       return {
-        idx,
-        math,
-        informatics,
-        russian,
-        ind,
-        total,
+        number: `${i + 1}`,
+        type: "результаты ЕГЭ",
+        controlPassed: "Да",
+        disciplines: [
+          { name: "Высшая математика / Математика", point: `${e.math}` },
+          { name: "Компьютерные науки / Физические основы информатики / Информатика и ИКТ / Физика", point: `${e.informatics}` },
+          { name: "Русский язык", point: `${e.russian}` },
+        ],
+        sumPointDiscipline: `${e.math + e.informatics + e.russian}`,
+        sumPointAchievement: `${e.ind}`,
+        sumPointTotal: `${e.total}`,
+        code: generateConsistentId(e.idx),
+        priority: `${1 + (e.idx % 5)}`,
+        original: "",
+        consent: Math.random() > 0.5 ? "Да" : "Нет",
+        hostel: Math.random() > 0.5 ? "Да" : "Нет",
+        status: "Подано",
+        personalNumber: `123-450-164 ${e.idx % 99}`,
+        enlisted: "",
+        without_entrance_tests: "",
+        originalNSU: "",
+        originalIS: "",
+        originalE: "",
+        originalEPGU: "",
+        codeEGPU: generateConsistentId(e.idx),
+        isMainTopPriority: "",
+        name: generateConsistentId(e.idx),
       }
     })
+}
 
-    return rawEntrants
-      .sort((a, b) => b.total - a.total)
-      .map((e, i) => {
-        return {
-          number: `${i + 1}`,
-          type: "результаты ЕГЭ",
-          controlPassed: "Да",
-          disciplines: [
-            { name: "Высшая математика / Математика", point: `${e.math}` },
-            { name: "Компьютерные науки / Физические основы информатики / Информатика и ИКТ / Физика", point: `${e.informatics}` },
-            { name: "Русский язык", point: `${e.russian}` },
-          ],
-          sumPointDiscipline: `${e.math + e.informatics + e.russian}`,
-          sumPointAchievement: `${e.ind}`,
-          sumPointTotal: `${e.total}`,
-          code: generateConsistentId(e.idx),
-          priority: `${1 + (e.idx % 5)}`,
-          original: "",
-          consent: Math.random() > 0.5 ? "Да" : "Нет",
-          hostel: Math.random() > 0.5 ? "Да" : "Нет",
-          status: "Подано",
-          personalNumber: `123-450-164 ${e.idx % 99}`,
-          enlisted: "",
-          without_entrance_tests: "",
-          originalNSU: "",
-          originalIS: "",
-          originalE: "",
-          originalEPGU: "",
-          codeEGPU: generateConsistentId(e.idx),
-          isMainTopPriority: "",
-          name: generateConsistentId(e.idx),
-        }
-      })
+export default defineEventHandler(() => {
+  const now = Date.now()
+  if (cachedData && now - lastUpdate < 60000) {
+    return cachedData
   }
 
-  return {
+  const generatedData = {
     filter: {
       faculty: 8,
       direction: 7,
@@ -217,4 +225,8 @@ export default defineEventHandler(() => {
       },
     ],
   }
+
+  cachedData = generatedData
+  lastUpdate = now
+  return generatedData
 })
