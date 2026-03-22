@@ -3,11 +3,6 @@ import type { TabsItem } from "@nuxt/ui"
 
 const items = ref<TabsItem[]>([
   {
-    label: "Сообщения",
-    value: "messages",
-    icon: "i-heroicons-chat-bubble-left-right",
-  },
-  {
     label: "FAQ Бота",
     value: "faq",
     icon: "i-heroicons-question-mark-circle",
@@ -19,7 +14,7 @@ const items = ref<TabsItem[]>([
   },
 ])
 
-const currentTab = ref("messages")
+const currentTab = ref("faq")
 </script>
 
 <template lang="pug">
@@ -32,10 +27,7 @@ div(class="py-8 w-full")
     class="mb-8"
   )
 
-  div(v-if="currentTab === 'messages'" class="w-full mt-4")
-    messages-message-list
-
-  div(v-else-if="currentTab === 'faq'" class="w-full mt-4")
+  div(v-if="currentTab === 'faq'" class="w-full mt-4")
     faq-list
 
   div(v-else-if="currentTab === 'general'" class="w-full mt-4")

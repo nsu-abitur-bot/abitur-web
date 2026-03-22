@@ -33,13 +33,13 @@ const formatDate = (dateStr?: string | null) => {
     return "—"
   }
   try {
-    return new Date(dateStr).toLocaleString("ru-RU", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    })
+    const date = new Date(dateStr)
+    const d = date.getDate().toString().padStart(2, "0")
+    const m = (date.getMonth() + 1).toString().padStart(2, "0")
+    const y = date.getFullYear()
+    const h = date.getHours().toString().padStart(2, "0")
+    const min = date.getMinutes().toString().padStart(2, "0")
+    return `${d}.${m}.${y} ${h}:${min}`
   } catch {
     return dateStr
   }
@@ -69,7 +69,7 @@ div
             div(class="text-sm font-medium text-gray-900 dark:text-white truncate max-w-xs" :title="doc.id") {{ doc.id }}
             div(v-if="doc.content_summary" class="text-xs text-gray-500 truncate max-w-xs") {{ doc.content_summary }}
           td(class="px-4 py-4 whitespace-nowrap")
-            u-badge(:color="doc.status === 'success' || doc.status === 'indexed' ? 'green' : 'amber'" variant="subtle") {{ doc.status }}
+            u-badge(:color="doc.status === 'success' || doc.status === 'indexed' ? 'success' : 'warning'" variant="subtle") {{ doc.status }}
           td(class="px-4 py-4 whitespace-nowrap text-sm text-gray-500") {{ doc.content_length || '—' }}
           td(class="px-4 py-4 whitespace-nowrap text-sm text-gray-500") {{ formatDate(doc.created_at) }}
 </template>
