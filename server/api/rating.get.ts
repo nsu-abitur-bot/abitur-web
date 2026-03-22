@@ -6,7 +6,7 @@ export default defineEventHandler(() => {
   }
 
   const generateTable = (count: number, startIdIndex: number) => {
-    return Array.from({ length: count }, (_, i) => {
+    const rawEntrants = Array.from({ length: count }, (_, i) => {
       const idx = startIdIndex + i
       const math = 60 + Math.floor(Math.random() * 41)
       const informatics = 60 + Math.floor(Math.random() * 41)
@@ -15,35 +15,48 @@ export default defineEventHandler(() => {
       const total = math + informatics + russian + ind
 
       return {
-        number: `${i + 1}`,
-        type: "результаты ЕГЭ",
-        controlPassed: "Да",
-        disciplines: [
-          { name: "Высшая математика / Математика", point: `${math}` },
-          { name: "Компьютерные науки / Физические основы информатики / Информатика и ИКТ / Физика", point: `${informatics}` },
-          { name: "Русский язык", point: `${russian}` },
-        ],
-        sumPointDiscipline: `${math + informatics + russian}`,
-        sumPointAchievement: `${ind}`,
-        sumPointTotal: `${total}`,
-        code: generateConsistentId(idx),
-        priority: `${1 + (idx % 5)}`,
-        original: "",
-        consent: Math.random() > 0.5 ? "Да" : "Нет",
-        hostel: Math.random() > 0.5 ? "Да" : "Нет",
-        status: "Подано",
-        personalNumber: `123-450-164 ${idx % 99}`,
-        enlisted: "",
-        without_entrance_tests: "",
-        originalNSU: "",
-        originalIS: "",
-        originalE: "",
-        originalEPGU: "",
-        codeEGPU: generateConsistentId(idx),
-        isMainTopPriority: "",
-        name: generateConsistentId(idx),
+        idx,
+        math,
+        informatics,
+        russian,
+        ind,
+        total,
       }
     })
+
+    return rawEntrants
+      .sort((a, b) => b.total - a.total)
+      .map((e, i) => {
+        return {
+          number: `${i + 1}`,
+          type: "результаты ЕГЭ",
+          controlPassed: "Да",
+          disciplines: [
+            { name: "Высшая математика / Математика", point: `${e.math}` },
+            { name: "Компьютерные науки / Физические основы информатики / Информатика и ИКТ / Физика", point: `${e.informatics}` },
+            { name: "Русский язык", point: `${e.russian}` },
+          ],
+          sumPointDiscipline: `${e.math + e.informatics + e.russian}`,
+          sumPointAchievement: `${e.ind}`,
+          sumPointTotal: `${e.total}`,
+          code: generateConsistentId(e.idx),
+          priority: `${1 + (e.idx % 5)}`,
+          original: "",
+          consent: Math.random() > 0.5 ? "Да" : "Нет",
+          hostel: Math.random() > 0.5 ? "Да" : "Нет",
+          status: "Подано",
+          personalNumber: `123-450-164 ${e.idx % 99}`,
+          enlisted: "",
+          without_entrance_tests: "",
+          originalNSU: "",
+          originalIS: "",
+          originalE: "",
+          originalEPGU: "",
+          codeEGPU: generateConsistentId(e.idx),
+          isMainTopPriority: "",
+          name: generateConsistentId(e.idx),
+        }
+      })
   }
 
   return {
@@ -82,7 +95,14 @@ export default defineEventHandler(() => {
           value: 0,
         },
       },
-      date: "28.08.2025 16:10:26",
+      date: new Date().toLocaleString("ru-RU", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      }),
       countApplications: 91,
       topPriorities: 74,
       fields: {
