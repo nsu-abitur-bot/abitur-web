@@ -1,65 +1,20 @@
-import type { RagUploadResponse } from "~/types/rag-upload"
+import type {
+  ConfirmUploadRequest,
+  ParsedPageResult,
+  RagDocument,
+  RagUploadResponse,
+} from "~/types/rag-upload"
 
 export type RagUploadRequest = (formData: FormData) => Promise<RagUploadResponse>
-
-type RagUploadRawResponse = Partial<RagUploadResponse> & {
-  graphId?: string
-  indexedCount?: number
-  skippedCount?: number
-  acceptedFormats?: string[]
-  data?: Partial<RagUploadResponse>
-}
-
-function safeNumber(value: unknown): number | null {
-  if (typeof value === "number" && Number.isFinite(value)) {
-    return value
-  }
-
-  if (typeof value === "string" && value.trim() !== "") {
-    const parsed = Number(value)
-    if (Number.isFinite(parsed)) {
-      return parsed
-    }
-  }
-
-  return null
-}
-
-function normalizeRagUploadResponse(raw: RagUploadRawResponse): RagUploadResponse {
-  const payload = raw.data && typeof raw.data === "object" ? { ...raw, ...raw.data } : raw
-  const results = Array.isArray(payload.results) ? payload.results : []
-
-  const indexedCountFromPayload = safeNumber(payload.indexed_count ?? payload.indexedCount)
-  const skippedCountFromPayload = safeNumber(payload.skipped_count ?? payload.skippedCount)
-
-  const indexedCountFromResults = results.filter(item => item?.status === "indexed").length
-  const skippedCountFromResults = results.filter(item => item?.status === "skipped").length
-
-  const indexedCount = indexedCountFromPayload ?? indexedCountFromResults
-  const skippedCount = skippedCountFromPayload ?? skippedCountFromResults
-
-  return {
-    accepted_formats: Array.isArray(payload.accepted_formats)
-      ? payload.accepted_formats
-      : Array.isArray(payload.acceptedFormats)
-        ? payload.acceptedFormats
-        : [],
-    indexed_count: indexedCount,
-    skipped_count: skippedCount,
-    results,
-  }
-}
 
 async function defaultRagUploadRequest(formData: FormData): Promise<RagUploadResponse> {
   const apiBaseUrl = useRuntimeConfig().public.apiBaseUrl
 
-  const data = await $fetch<RagUploadRawResponse>("/api/v1/rag/upload", {
+  return await $fetch<RagUploadResponse>("/api/v1/rag/upload", {
     baseURL: apiBaseUrl,
     method: "POST",
     body: formData,
   })
-
-  return normalizeRagUploadResponse(data)
 }
 
 export async function uploadRagDocuments(params: {
@@ -74,4 +29,38 @@ export async function uploadRagDocuments(params: {
   }
 
   return await request(formData)
+}
+
+export async function listRagDocuments(): Promise<RagDocument[]> {
+  const apiBaseUrl = useRuntimeConfig().public.apiBaseUrl
+  const data = await $fetch<{ documents: RagDocument[] }>("/api/v1/rag/docs", {
+    baseURL: apiBaseUrl,
+  })
+  return data.documents
+}
+
+export async function deleteRagDocument(docId: string): Promise<void> {
+  const apiBaseUrl = useRuntimeConfig().public.apiBaseUrl
+  await $fetch(`/api/v1/rag/docs/${encodeURIComponent(docId)}`, {
+    baseURL: apiBaseUrl,
+    method: "DELETE",
+  })
+}
+
+export async function parsePageForRag(url: string): Promise<ParsedPageResult> {
+  const apiBaseUrl = useRuntimeConfig().public.apiBaseUrl
+  return await $fetch<ParsedPageResult>("/api/v1/rag/parse", {
+    baseURL: apiBaseUrl,
+    method: "POST",
+    params: { url },
+  })
+}
+
+export async function confirmRagUpload(payload: ConfirmUploadRequest): Promise<void> {
+  const apiBaseUrl = useRuntimeConfig().public.apiBaseUrl
+  await $fetch("/api/v1/rag/confirm", {
+    baseURL: apiBaseUrl,
+    method: "POST",
+    body: payload,
+  })
 }

@@ -1,21 +1,25 @@
 <script setup lang="ts">
-import type { RagUploadViewModel } from "~/components/document/list.vue"
-import type { RagUploadResponse } from "~/types/rag-upload"
+import { ref } from "vue"
 
-const uploadResult = ref<RagUploadViewModel | null>(null)
+const refreshTrigger = ref(0)
 
-function handleUploaded(payload: { response: RagUploadResponse }) {
-  uploadResult.value = {
-    indexedCount: payload.response.indexed_count,
-    skippedCount: payload.response.skipped_count,
-    results: payload.response.results,
-  }
+function handleRefresh() {
+  refreshTrigger.value++
 }
 </script>
 
 <template lang="pug">
-u-container(class="py-8")
-  div(class="flex flex-col gap-6 lg:flex-row items-start")
-    document-list(:upload-result="uploadResult" class="flex-1")
-    document-uploader(class="flex-1" @uploaded="handleUploaded")
+u-container(class="py-8 space-y-8")
+  div(class="grid grid-cols-1 xl:grid-cols-2 gap-8 items-start")
+    // Left side: Uploaders
+    div(class="space-y-6")
+      ui-box(title="Добавить новые знания")
+        template(#body)
+          rag-parser(@success="handleRefresh")
+
+    // Right side: Document List
+    div(class="space-y-6")
+      ui-box(title="База знаний (RAG)")
+        template(#body)
+          rag-list(:refresh-trigger="refreshTrigger")
 </template>

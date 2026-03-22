@@ -19,7 +19,7 @@ export interface paths {
     put?: never
     /**
      * Создать FAQ
-     * @description Создает новый вопрос FAQ и автоматически применяет его для новых запросов к боту.
+     * @description Создает новый вопрос FAQ и автоматически применяет для новых запросов к боту.
      */
     post: operations["create_faq_api_v1_faq_post"]
     delete?: never
@@ -47,6 +47,103 @@ export interface paths {
      * @description Удаляет существующий FAQ элемент по его позиции (индексу) в списке.
      */
     delete: operations["delete_faq_api_v1_faq__index__delete"]
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/rag/upload": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Загрузить документы в RAG */
+    post: operations["upload_documents_to_rag_api_v1_rag_upload_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/rag/parse": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Спарсить страницу для RAG
+     * @description Парсит страницу, очищает текст через LLM и находит документы.
+     */
+    post: operations["parse_page_for_rag_api_v1_rag_parse_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/rag/confirm": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Подтвердить загрузку в RAG
+     * @description Загружает отредактированный текст и выбранные документы в RAG.
+     */
+    post: operations["confirm_rag_upload_api_v1_rag_confirm_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/rag/docs": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Список документов в RAG
+     * @description Возвращает список всех загруженных в RAG документов.
+     */
+    get: operations["list_rag_documents_api_v1_rag_docs_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/rag/docs/{doc_id}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
+    /**
+     * Удалить документ из RAG
+     * @description Удаляет документ из RAG по его ID (URL или имени файла).
+     */
+    delete: operations["delete_rag_document_api_v1_rag_docs__doc_id__delete"]
     options?: never
     head?: never
     patch?: never
@@ -93,6 +190,27 @@ export interface paths {
 export type webhooks = Record<string, never>
 export interface components {
   schemas: {
+    /** Body_upload_documents_to_rag_api_v1_rag_upload_post */
+    Body_upload_documents_to_rag_api_v1_rag_upload_post: {
+      /**
+       * Files
+       * @description Файлы для индексации в RAG
+       */
+      files: string[]
+    }
+    /** ConfirmUploadRequest */
+    ConfirmUploadRequest: {
+      /**
+       * Text
+       * @description Отредактированный текст страницы
+       */
+      text: string
+      /**
+       * Documents
+       * @description Финальный список файлов для загрузки
+       */
+      documents: components["schemas"]["ParsedDocument"][]
+    }
     /**
      * FaqItem
      * @description Схема для отдельного элемента FAQ.
@@ -136,6 +254,8 @@ export interface components {
       id: string
       /** User Id */
       user_id: number
+      /** Username */
+      username?: string | null
       /** Session Id */
       session_id: string
       /** User Text */
@@ -147,6 +267,115 @@ export interface components {
        * Format: date-time
        */
       created_at: string
+    }
+    /** ParsedDocument */
+    ParsedDocument: {
+      /**
+       * Title
+       * @description Название документа
+       */
+      title: string
+      /**
+       * Url
+       * @description URL для скачивания/ссылки на документ
+       */
+      url: string
+    }
+    /** ParsedPageResult */
+    ParsedPageResult: {
+      /**
+       * Text
+       * @description Сырой или предобработанный текст страницы
+       */
+      text: string
+      /**
+       * Documents
+       * @description Список найденных PDF-документов
+       */
+      documents: components["schemas"]["ParsedDocument"][]
+    }
+    /** RagDocument */
+    RagDocument: {
+      /**
+       * Id
+       * @description Идентификатор документа (обычно URL или имя файла)
+       */
+      id: string
+      /**
+       * Status
+       * @description Статус обработки
+       */
+      status: string
+      /**
+       * Content Summary
+       * @description Краткое содержание
+       */
+      content_summary?: string | null
+      /**
+       * Content Length
+       * @description Длина контента
+       */
+      content_length?: number | null
+      /**
+       * Created At
+       * @description Дата создания
+       */
+      created_at?: string | null
+    }
+    /** RagDocumentListResponse */
+    RagDocumentListResponse: {
+      /**
+       * Documents
+       * @description Список документов в RAG
+       */
+      documents: components["schemas"]["RagDocument"][]
+    }
+    /** RagUploadResponse */
+    RagUploadResponse: {
+      /**
+       * Accepted Formats
+       * @description Поддерживаемые расширения файлов
+       */
+      accepted_formats: string[]
+      /**
+       * Indexed Count
+       * @description Количество успешно проиндексированных файлов
+       */
+      indexed_count: number
+      /**
+       * Skipped Count
+       * @description Количество пропущенных файлов
+       */
+      skipped_count: number
+      /**
+       * Results
+       * @description Результаты обработки по каждому загруженному файлу
+       */
+      results: components["schemas"]["UploadedDocumentResult"][]
+    }
+    /** UploadedDocumentResult */
+    UploadedDocumentResult: {
+      /**
+       * Filename
+       * @description Имя загруженного файла
+       */
+      filename: string
+      /**
+       * Status
+       * @description Статус обработки: indexed или skipped
+       */
+      status: string
+      /**
+       * Message
+       * @description Подробности результата обработки
+       */
+      message: string
+      /**
+       * Chars
+       * @description Количество символов, отправленных в RAG
+       * @default 0
+       */
+      chars: number
     }
     /** UserCountStatsResponse */
     UserCountStatsResponse: {
@@ -277,6 +506,153 @@ export interface operations {
       header?: never
       path: {
         index: number
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  upload_documents_to_rag_api_v1_rag_upload_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "multipart/form-data": components["schemas"]["Body_upload_documents_to_rag_api_v1_rag_upload_post"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["RagUploadResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  parse_page_for_rag_api_v1_rag_parse_post: {
+    parameters: {
+      query: {
+        /** @description URL страницы */
+        url: string
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["ParsedPageResult"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  confirm_rag_upload_api_v1_rag_confirm_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ConfirmUploadRequest"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": unknown
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  list_rag_documents_api_v1_rag_docs_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["RagDocumentListResponse"]
+        }
+      }
+    }
+  }
+  delete_rag_document_api_v1_rag_docs__doc_id__delete: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        doc_id: string
       }
       cookie?: never
     }

@@ -31,7 +31,7 @@
           "FAQ Management"
         ],
         "summary": "Создать FAQ",
-        "description": "Создает новый вопрос FAQ и автоматически применяет его для новых запросов к боту.",
+        "description": "Создает новый вопрос FAQ и автоматически применяет для новых запросов к боту.",
         "operationId": "create_faq_api_v1_faq_post",
         "requestBody": {
           "content": {
@@ -195,6 +195,154 @@
         }
       }
     },
+    "/api/v1/rag/parse": {
+      "post": {
+        "tags": [
+          "RAG Management"
+        ],
+        "summary": "Спарсить страницу для RAG",
+        "description": "Парсит страницу, очищает текст через LLM и находит документы.",
+        "operationId": "parse_page_for_rag_api_v1_rag_parse_post",
+        "parameters": [
+          {
+            "name": "url",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uri",
+              "minLength": 1,
+              "maxLength": 2083,
+              "description": "URL страницы",
+              "title": "Url"
+            },
+            "description": "URL страницы"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ParsedPageResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/rag/confirm": {
+      "post": {
+        "tags": [
+          "RAG Management"
+        ],
+        "summary": "Подтвердить загрузку в RAG",
+        "description": "Загружает отредактированный текст и выбранные документы в RAG.",
+        "operationId": "confirm_rag_upload_api_v1_rag_confirm_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmUploadRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/rag/docs": {
+      "get": {
+        "tags": [
+          "RAG Management"
+        ],
+        "summary": "Список документов в RAG",
+        "description": "Возвращает список всех загруженных в RAG документов.",
+        "operationId": "list_rag_documents_api_v1_rag_docs_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RagDocumentListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/rag/docs/{doc_id}": {
+      "delete": {
+        "tags": [
+          "RAG Management"
+        ],
+        "summary": "Удалить документ из RAG",
+        "description": "Удаляет документ из RAG по его ID (URL или имени файла).",
+        "operationId": "delete_rag_document_api_v1_rag_docs__doc_id__delete",
+        "parameters": [
+          {
+            "name": "doc_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Doc Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/users/count-stats": {
       "get": {
         "summary": "Get Users Count Stats",
@@ -314,6 +462,29 @@
         ],
         "title": "Body_upload_documents_to_rag_api_v1_rag_upload_post"
       },
+      "ConfirmUploadRequest": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "title": "Text",
+            "description": "Отредактированный текст страницы"
+          },
+          "documents": {
+            "items": {
+              "$ref": "#/components/schemas/ParsedDocument"
+            },
+            "type": "array",
+            "title": "Documents",
+            "description": "Финальный список файлов для загрузки"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text",
+          "documents"
+        ],
+        "title": "ConfirmUploadRequest"
+      },
       "FaqItem": {
         "properties": {
           "question": {
@@ -384,6 +555,17 @@
             "type": "integer",
             "title": "User Id"
           },
+          "username": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Username"
+          },
           "session_id": {
             "type": "string",
             "title": "Session Id"
@@ -412,6 +594,122 @@
           "created_at"
         ],
         "title": "MessageResponse"
+      },
+      "ParsedDocument": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Название документа"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url",
+            "description": "URL для скачивания/ссылки на документ"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "url"
+        ],
+        "title": "ParsedDocument"
+      },
+      "ParsedPageResult": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "title": "Text",
+            "description": "Сырой или предобработанный текст страницы"
+          },
+          "documents": {
+            "items": {
+              "$ref": "#/components/schemas/ParsedDocument"
+            },
+            "type": "array",
+            "title": "Documents",
+            "description": "Список найденных PDF-документов"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text",
+          "documents"
+        ],
+        "title": "ParsedPageResult"
+      },
+      "RagDocument": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Идентификатор документа (обычно URL или имя файла)"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Статус обработки"
+          },
+          "content_summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content Summary",
+            "description": "Краткое содержание"
+          },
+          "content_length": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content Length",
+            "description": "Длина контента"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At",
+            "description": "Дата создания"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "status"
+        ],
+        "title": "RagDocument"
+      },
+      "RagDocumentListResponse": {
+        "properties": {
+          "documents": {
+            "items": {
+              "$ref": "#/components/schemas/RagDocument"
+            },
+            "type": "array",
+            "title": "Documents",
+            "description": "Список документов в RAG"
+          }
+        },
+        "type": "object",
+        "required": [
+          "documents"
+        ],
+        "title": "RagDocumentListResponse"
       },
       "RagUploadResponse": {
         "properties": {
