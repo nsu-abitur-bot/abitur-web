@@ -16,7 +16,7 @@ let interval: any = null
 onMounted(() => {
   interval = setInterval(() => {
     refresh()
-  }, 60000)
+  }, 20000)
 })
 
 onUnmounted(() => {
