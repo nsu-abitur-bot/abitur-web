@@ -63,7 +63,7 @@ const generateTable = (count: number, startIdIndex: number) => {
 
 export default defineEventHandler(() => {
   const now = Date.now()
-  if (cachedData && now - lastUpdate < 60000) {
+  if (cachedData && now - lastUpdate < 20000) {
     return cachedData
   }
 
