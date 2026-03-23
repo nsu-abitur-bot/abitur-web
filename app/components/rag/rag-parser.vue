@@ -10,6 +10,8 @@ const emit = defineEmits<{
 const url = ref("")
 const isParsing = ref(false)
 const isUploading = ref(false)
+const toast = useToast()
+
 const parsedResult = ref<ParsedPageResult | null>(null)
 const editableText = ref("")
 const selectedDocumentsTitles = ref<Set<string>>(new Set())
@@ -34,8 +36,11 @@ const handleParse = async () => {
     editableText.value = res.text
     selectedDocumentsTitles.value = new Set(res.documents.map((d: { title: string }) => d.title))
   } catch {
-    // eslint-disable-next-line no-alert
-    alert("Не удалось спарсить страницу. Проверьте URL.")
+    toast.add({
+      title: "Ошибка",
+      description: "Не удалось спарсить страницу. Проверьте URL.",
+      color: "error",
+    })
   } finally {
     isParsing.value = false
   }
@@ -62,13 +67,19 @@ const handleConfirmUpload = async () => {
       text: editableText.value,
       documents: finalDocuments,
     })
-    // eslint-disable-next-line no-alert
-    alert("Успешно загружено в RAG")
+    toast.add({
+      title: "Успех",
+      description: "Успешно загружено в RAG",
+      color: "success",
+    })
     reset()
     emit("success")
   } catch {
-    // eslint-disable-next-line no-alert
-    alert("Ошибка при загрузке в RAG")
+    toast.add({
+      title: "Ошибка",
+      description: "Ошибка при загрузке в RAG",
+      color: "error",
+    })
   } finally {
     isUploading.value = false
   }

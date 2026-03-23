@@ -27,6 +27,7 @@ const state = reactive<FaqItem>({
 })
 
 const isLoading = ref(false)
+const toast = useToast()
 
 const addAlias = () => {
   const trimmed = newAlias.value.trim()
@@ -60,8 +61,11 @@ const onSubmit = async () => {
     emit("submit")
   } catch (err) {
     console.error("Failed to submit FAQ:", err)
-    // eslint-disable-next-line no-alert
-    alert("Произошла ошибка при сохранении")
+    toast.add({
+      title: "Ошибка",
+      description: "Произошла ошибка при сохранении",
+      color: "error",
+    })
   } finally {
     isLoading.value = false
   }
