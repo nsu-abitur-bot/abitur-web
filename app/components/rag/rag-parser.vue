@@ -14,13 +14,14 @@ const toast = useToast()
 
 const parsedResult = ref<ParsedPageResult | null>(null)
 const editableText = ref("")
-const selectedDocumentsTitles = ref<Set<string>>(new Set())
+const selectedDocumentsIndices = ref<Set<number>>(new Set())
 
 const reset = () => {
   parsedResult.value = null
   url.value = ""
   isParsing.value = false
   isUploading.value = false
+  selectedDocumentsIndices.value = new Set()
 }
 
 // --- URL Parsing Logic ---
@@ -34,7 +35,8 @@ const handleParse = async () => {
     const res = await parsePageForRag(url.value)
     parsedResult.value = res
     editableText.value = res.text
-    selectedDocumentsTitles.value = new Set(res.documents.map((d: { title: string }) => d.title))
+    // select all by default
+    selectedDocumentsIndices.value = new Set(res.documents.map((_, i) => i))
   } catch {
     toast.add({
       title: "Ошибка",
@@ -46,11 +48,30 @@ const handleParse = async () => {
   }
 }
 
-const toggleDocument = (title: string) => {
-  if (selectedDocumentsTitles.value.has(title)) {
-    selectedDocumentsTitles.value.delete(title)
+const toggleDocument = (index: number) => {
+  if (selectedDocumentsIndices.value.has(index)) {
+    selectedDocumentsIndices.value.delete(index)
   } else {
-    selectedDocumentsTitles.value.add(title)
+    selectedDocumentsIndices.value.add(index)
+  }
+}
+
+const isAllSelected = computed(() => {
+  if (!parsedResult.value?.documents.length) {
+    return false
+  }
+  return selectedDocumentsIndices.value.size === parsedResult.value.documents.length
+})
+
+const isSomeSelected = computed(() => {
+  return selectedDocumentsIndices.value.size > 0 && !isAllSelected.value
+})
+
+const toggleAll = () => {
+  if (isAllSelected.value) {
+    selectedDocumentsIndices.value = new Set()
+  } else if (parsedResult.value) {
+    selectedDocumentsIndices.value = new Set(parsedResult.value.documents.map((_, i) => i))
   }
 }
 
@@ -60,8 +81,8 @@ const handleConfirmUpload = async () => {
   }
   isUploading.value = true
   try {
-    const finalDocuments = parsedResult.value.documents.filter((d: { title: string }) =>
-      selectedDocumentsTitles.value.has(d.title),
+    const finalDocuments = parsedResult.value.documents.filter((_, i) =>
+      selectedDocumentsIndices.value.has(i),
     )
     await confirmRagUpload({
       title: parsedResult.value.title,
@@ -128,24 +149,32 @@ div(class="space-y-6")
 
       // Documents List
       div(class="space-y-4")
-        label(class="text-sm font-medium text-gray-700 dark:text-gray-300") Найденные PDF ({{ parsedResult.documents.length }})
+        div(class="flex items-center justify-between")
+          label(class="text-sm font-medium text-gray-700 dark:text-gray-300") Найденные PDF ({{ parsedResult.documents.length }})
+          u-checkbox(
+            v-if="parsedResult.documents.length > 0"
+            label="Выбрать все"
+            :model-value="isAllSelected"
+            :indeterminate="isSomeSelected"
+            @update:model-value="toggleAll"
+          )
         div(v-if="parsedResult.documents.length === 0" class="text-xs text-gray-500 italic p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-dashed")
           | PDF документов не найдено.
 
         div(v-else class="space-y-2 max-h-[350px] overflow-y-auto pr-2")
           div(
-            v-for="doc in parsedResult.documents"
-            :key="doc.title"
+            v-for="(doc, index) in parsedResult.documents"
+            :key="index"
             class="group p-3 rounded-lg border dark:border-gray-800 flex items-start gap-2 transition-all"
-            :class="selectedDocumentsTitles.has(doc.title) ? 'bg-indigo-50/50 dark:bg-indigo-900/20 border-indigo-200 dark:border-indigo-800' : 'bg-gray-50 dark:bg-gray-800/50 grayscale opacity-60 border-transparent'"
+            :class="selectedDocumentsIndices.has(index) ? 'bg-indigo-50/50 dark:bg-indigo-900/20 border-indigo-200 dark:border-indigo-800' : 'bg-gray-50 dark:bg-gray-800/50 grayscale opacity-60 border-transparent'"
           )
             u-checkbox(
               class="mt-1"
-              :model-value="selectedDocumentsTitles.has(doc.title)"
-              @update:model-value="toggleDocument(doc.title)"
+              :model-value="selectedDocumentsIndices.has(index)"
+              @update:model-value="toggleDocument(index)"
             )
             div(class="flex-1 min-w-0")
-              div(class="text-xs font-semibold truncate" :class="selectedDocumentsTitles.has(doc.title) ? 'text-indigo-700 dark:text-indigo-300' : 'text-gray-600 dark:text-gray-400'") {{ doc.title }}
+              div(class="text-xs font-semibold truncate" :class="selectedDocumentsIndices.has(index) ? 'text-indigo-700 dark:text-indigo-300' : 'text-gray-600 dark:text-gray-400'") {{ doc.title }}
               div(class="flex gap-2 mt-1")
                 a(
                   :href="doc.url"
