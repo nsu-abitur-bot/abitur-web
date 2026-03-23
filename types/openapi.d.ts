@@ -129,26 +129,6 @@ export interface paths {
     patch?: never
     trace?: never
   }
-  "/api/v1/rag/docs/{doc_id}": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    post?: never
-    /**
-     * Удалить документ из RAG
-     * @description Удаляет документ из RAG по его ID (URL или имени файла).
-     */
-    delete: operations["delete_rag_document_api_v1_rag_docs__doc_id__delete"]
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
   "/api/v1/users/count-stats": {
     parameters: {
       query?: never
@@ -200,6 +180,16 @@ export interface components {
     }
     /** ConfirmUploadRequest */
     ConfirmUploadRequest: {
+      /**
+       * Title
+       * @description Название страницы
+       */
+      title: string
+      /**
+       * Url
+       * @description URL страницы
+       */
+      url: string
       /**
        * Text
        * @description Отредактированный текст страницы
@@ -283,6 +273,16 @@ export interface components {
     }
     /** ParsedPageResult */
     ParsedPageResult: {
+      /**
+       * Title
+       * @description Название страницы
+       */
+      title: string
+      /**
+       * Url
+       * @description URL страницы
+       */
+      url: string
       /**
        * Text
        * @description Сырой или предобработанный текст страницы
@@ -643,35 +643,6 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["RagDocumentListResponse"]
-        }
-      }
-    }
-  }
-  delete_rag_document_api_v1_rag_docs__doc_id__delete: {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        doc_id: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Successful Response */
-      204: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-      /** @description Validation Error */
-      422: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"]
         }
       }
     }

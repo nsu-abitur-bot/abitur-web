@@ -307,42 +307,6 @@
         }
       }
     },
-    "/api/v1/rag/docs/{doc_id}": {
-      "delete": {
-        "tags": [
-          "RAG Management"
-        ],
-        "summary": "Удалить документ из RAG",
-        "description": "Удаляет документ из RAG по его ID (URL или имени файла).",
-        "operationId": "delete_rag_document_api_v1_rag_docs__doc_id__delete",
-        "parameters": [
-          {
-            "name": "doc_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Doc Id"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Successful Response"
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/v1/users/count-stats": {
       "get": {
         "summary": "Get Users Count Stats",
@@ -464,6 +428,16 @@
       },
       "ConfirmUploadRequest": {
         "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Название страницы"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url",
+            "description": "URL страницы"
+          },
           "text": {
             "type": "string",
             "title": "Text",
@@ -480,6 +454,8 @@
         },
         "type": "object",
         "required": [
+          "title",
+          "url",
           "text",
           "documents"
         ],
@@ -617,6 +593,16 @@
       },
       "ParsedPageResult": {
         "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Название страницы"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url",
+            "description": "URL страницы"
+          },
           "text": {
             "type": "string",
             "title": "Text",
@@ -633,6 +619,8 @@
         },
         "type": "object",
         "required": [
+          "title",
+          "url",
           "text",
           "documents"
         ],

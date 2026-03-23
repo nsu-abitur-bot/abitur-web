@@ -38,15 +38,6 @@ export async function listRagDocuments(): Promise<RagDocument[]> {
   })
   return data.documents
 }
-
-export async function deleteRagDocument(docId: string): Promise<void> {
-  const apiBaseUrl = useRuntimeConfig().public.apiBaseUrl
-  await $fetch(`/api/v1/rag/docs/${encodeURIComponent(docId)}`, {
-    baseURL: apiBaseUrl,
-    method: "DELETE",
-  })
-}
-
 export async function parsePageForRag(url: string): Promise<ParsedPageResult> {
   const apiBaseUrl = useRuntimeConfig().public.apiBaseUrl
   return await $fetch<ParsedPageResult>("/api/v1/rag/parse", {

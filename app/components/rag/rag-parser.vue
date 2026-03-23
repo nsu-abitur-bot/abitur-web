@@ -64,6 +64,8 @@ const handleConfirmUpload = async () => {
       selectedDocumentsTitles.value.has(d.title),
     )
     await confirmRagUpload({
+      title: parsedResult.value.title,
+      url: parsedResult.value.url,
       text: editableText.value,
       documents: finalDocuments,
     })
