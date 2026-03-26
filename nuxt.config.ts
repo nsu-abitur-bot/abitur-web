@@ -25,7 +25,7 @@ export default defineNuxtConfig({
   },
 
   app: {
-    baseURL: "/abitur-web/",
+    baseURL: "/",
   },
 
   typescript: {
@@ -131,7 +131,10 @@ export default defineNuxtConfig({
   //
 
   runtimeConfig: {
-    baseUrl: "https://nsu-abitur-bot.github.io/abitur-web/",
+    database: {
+      url: "", // NUXT_DATABASE_URL
+      log: false,
+    },
     session: {
       name: "abitur-session",
       // NUXT_SESSION_PASSWORD
@@ -156,11 +159,6 @@ export default defineNuxtConfig({
         // Для отладки колбеков через туннельные сервисы.
         allowedHosts: true,
         proxy: {
-          "/abitur-web/api/v1": {
-            target: "http://localhost:8000",
-            changeOrigin: true,
-            rewrite: path => path.replace(/^\/abitur-web/, ""),
-          },
           "/api/v1": {
             target: "http://localhost:8000",
             changeOrigin: true,
@@ -172,6 +170,9 @@ export default defineNuxtConfig({
       public: {
         baseUrl: "https://abitur.localhost",
         apiBaseUrl: "http://localhost:8000",
+      },
+      database: {
+        url: "postgres://localhost/abitur_web",
       },
     },
   },

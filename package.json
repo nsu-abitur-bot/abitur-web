@@ -5,12 +5,9 @@
   "scripts": {
     "prepare": "husky",
     "check": "pnpm run lint && pnpm run types",
-    "build": "nuxt build",
+    "db": "curl localhost:7868/api/db/rake -d",
     "dev": "nuxt dev",
-    "generate": "nuxt generate",
     "lint": "eslint --fix . && stylelint --fix '**/*.{css,scss,vue}'",
-    "preview": "nuxt preview",
-    "postinstall": "nuxt prepare",
     "types": "nuxt typecheck",
     "test": "vitest run"
   },
@@ -20,9 +17,14 @@
     "@nuxt/ui": "^4.5.0",
     "@vueuse/core": "^14.2.1",
     "chart.js": "^4.5.1",
+    "h3-errors": "^3.0.0",
     "nuxt": "^4.3.1",
     "nuxt-auth-utils": "^0.5.29",
+    "orchid-orm": "1.59.0",
+    "postgres": "3.4.8",
     "tailwindcss": "^4.2.1",
+    "ts-essentials": "10.1.1",
+    "uuid": "13.0.0",
     "vue": "^3.5.28",
     "vue-chartjs": "^5.3.3",
     "vue-router": "^4.6.4"
