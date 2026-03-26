@@ -46,7 +46,7 @@ services:
       - -c
       - |
         curl -fsS -X POST \
-          -H "service-token: $NUXT_SERVICE_TOKEN" \
+          -H "service-token: $$NUXT_SERVICE_TOKEN" \
           http://app:3000/api/db/rake \
           -d up
     restart: "no"

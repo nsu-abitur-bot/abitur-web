@@ -131,6 +131,7 @@ export default defineNuxtConfig({
   //
 
   runtimeConfig: {
+    serviceToken: "", // NUXT_SERVICE_TOKEN
     database: {
       url: "", // NUXT_DATABASE_URL
       log: false,

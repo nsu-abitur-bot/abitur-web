@@ -34,7 +34,7 @@ COPY . .
 
 RUN pnpm install --frozen-lockfile --offline
 
-RUN pnpm run build
+RUN pnpm exec nuxt build
 
 #
 # runner
