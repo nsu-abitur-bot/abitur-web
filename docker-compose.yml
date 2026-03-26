@@ -19,7 +19,7 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      NUXT_SESSION_PASSWORD: change-me
+      NUXT_SESSION_PASSWORD: local-session-password-min-32-chars
       NUXT_DATABASE_URL: postgres://abitur:abitur@db:5432/abitur_web
       NUXT_SERVICE_TOKEN: local-service-token
     depends_on:

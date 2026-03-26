@@ -85,7 +85,7 @@ docker build -t abitur-web:local .
 Run container:
 
 ```bash
-docker run --rm -p 3000:3000 -e NUXT_SESSION_PASSWORD=change-me -e NUXT_DATABASE_URL=postgres://user:pass@host:5432/abitur_web abitur-web:local
+docker run --rm -p 3000:3000 -e NUXT_SESSION_PASSWORD=local-session-password-min-32-chars -e NUXT_DATABASE_URL=postgres://user:pass@host:5432/abitur_web abitur-web:local
 ```
 
 App will be available at `http://localhost:3000`.

@@ -58,4 +58,4 @@ COPY --from=builder /app/node_modules ./node_modules
 
 EXPOSE 3000
 
-CMD ["sh", "-eu", "-c", "test -n \"$NUXT_SESSION_PASSWORD\" || { echo 'NUXT_SESSION_PASSWORD is required'; exit 1; }; test -n \"$NUXT_DATABASE_URL\" || { echo 'NUXT_DATABASE_URL is required'; exit 1; }; exec node .output/server/index.mjs"]
+CMD ["sh", "-eu", "-c", "test -n \"$NUXT_SESSION_PASSWORD\" || { echo 'NUXT_SESSION_PASSWORD is required'; exit 1; }; [ ${#NUXT_SESSION_PASSWORD} -ge 32 ] || { echo 'NUXT_SESSION_PASSWORD must be at least 32 characters'; exit 1; }; test -n \"$NUXT_DATABASE_URL\" || { echo 'NUXT_DATABASE_URL is required'; exit 1; }; exec node .output/server/index.mjs"]
