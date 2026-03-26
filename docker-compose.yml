@@ -1,0 +1,55 @@
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: abitur_web
+      POSTGRES_USER: abitur
+      POSTGRES_PASSWORD: abitur
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  app:
+    image: abitur-web:local
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      NUXT_SESSION_PASSWORD: change-me
+      NUXT_DATABASE_URL: postgres://abitur:abitur@db:5432/abitur_web
+      NUXT_SERVICE_TOKEN: local-service-token
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:3000/login >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  migrate:
+    image: abitur-web:local
+    depends_on:
+      app:
+        condition: service_healthy
+    environment:
+      NUXT_SERVICE_TOKEN: local-service-token
+    command:
+      - sh
+      - -eu
+      - -c
+      - |
+        curl -fsS -X POST \
+          -H "service-token: $NUXT_SERVICE_TOKEN" \
+          http://app:3000/api/db/rake \
+          -d up
+    restart: "no"
+
+volumes:
+  pg_data:

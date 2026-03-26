@@ -13,19 +13,19 @@ docker build -t abitur-web:local .
 Минимальный запуск:
 
 ```sh
-docker run --rm -p 3000:3000 -e NUXT_SESSION_PASSWORD=change-me abitur-web:local
+docker run --rm -p 3000:3000 -e NUXT_SESSION_PASSWORD=change-me -e NUXT_DATABASE_URL=postgres://user:pass@host:5432/abitur_web abitur-web:local
 ```
 
 После запуска приложение будет доступно по адресу:
 
-http://localhost:3000/abitur-web
+http://localhost:3000
 
 ## 3. Запуск в фоне
 
 Если нужно запустить контейнер в фоне:
 
 ```sh
-docker run -d --name abitur-web --restart unless-stopped -p 3000:3000 -e NUXT_SESSION_PASSWORD=change-me abitur-web:local
+docker run -d --name abitur-web --restart unless-stopped -p 3000:3000 -e NUXT_SESSION_PASSWORD=change-me -e NUXT_DATABASE_URL=postgres://user:pass@host:5432/abitur_web abitur-web:local
 ```
 
 Проверка логов:
@@ -43,4 +43,22 @@ docker stop abitur-web && docker rm abitur-web
 ## 4. Важное про секреты
 
 - Не используйте значение change-me в продакшене.
-- Передавайте NUXT_SESSION_PASSWORD через безопасный секрет в CI/CD или менеджер секретов.
+- Передавайте NUXT_SESSION_PASSWORD и NUXT_DATABASE_URL через безопасные секреты в CI/CD или менеджер секретов.
+
+## 5. Запуск одной командой (Docker Compose)
+
+Если нужно автоматически поднять Postgres, приложение и миграции:
+
+```sh
+docker compose up --build
+```
+
+Compose поднимет сервисы:
+
+- `db` (PostgreSQL 17) и создаст БД `abitur_web`
+- `app` (Nuxt)
+- `migrate` (разовый сервис для применения миграций)
+
+После запуска приложение доступно по адресу:
+
+http://localhost:3000

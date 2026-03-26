@@ -47,13 +47,15 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NITRO_HOST=0.0.0.0
 ENV NITRO_PORT=3000
+ENV NUXT_SESSION_PASSWORD=
+ENV NUXT_DATABASE_URL=
 
-# Reduce sharp/font warnings in some setups.
-RUN apk add --no-cache fontconfig ttf-dejavu
+# Reduce sharp/font warnings in some setups and provide curl for health checks.
+RUN apk add --no-cache curl fontconfig ttf-dejavu
 
 COPY --from=builder /app/.output ./.output
 COPY --from=builder /app/node_modules ./node_modules
 
 EXPOSE 3000
 
-CMD ["node", ".output/server/index.mjs"]
+CMD ["sh", "-eu", "-c", "test -n \"$NUXT_SESSION_PASSWORD\" || { echo 'NUXT_SESSION_PASSWORD is required'; exit 1; }; test -n \"$NUXT_DATABASE_URL\" || { echo 'NUXT_DATABASE_URL is required'; exit 1; }; exec node .output/server/index.mjs"]
