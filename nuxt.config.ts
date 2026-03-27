@@ -142,8 +142,8 @@ export default defineNuxtConfig({
       // Generate with: openssl rand -hex 32
       password: "",
       cookie: {
-        // Разрешить авторизации работать в iframe (например в web.telegram.org)
-        sameSite: "none",
+        sameSite: "lax",
+        secure: false,
       },
     },
     public: {
