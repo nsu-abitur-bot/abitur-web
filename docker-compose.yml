@@ -22,6 +22,7 @@ services:
       NUXT_SESSION_PASSWORD: local-session-password-min-32-chars
       NUXT_DATABASE_URL: postgres://abitur:abitur@db:5432/abitur_web
       NUXT_SERVICE_TOKEN: local-service-token
+      NUXT_PUBLIC_API_BASE_URL: ${NUXT_PUBLIC_API_BASE_URL:-http://10.5.10.190:8000}
     depends_on:
       db:
         condition: service_healthy

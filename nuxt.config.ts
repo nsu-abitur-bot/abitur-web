@@ -1,4 +1,5 @@
 import * as fs from "node:fs/promises"
+import process from "node:process"
 import { fileURLToPath } from "node:url"
 
 import type { VueTSConfig } from "nuxt/schema"
@@ -150,7 +151,7 @@ export default defineNuxtConfig({
       // NUXT_PUBLIC_BASE_URL, без слеша на конце (пример: https://abitur.localhost)
       baseUrl: "",
       // NUXT_PUBLIC_API_BASE_URL, без слеша на конце (пример: http://localhost:8000)
-      apiBaseUrl: "http://localhost:8000",
+      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || "http://localhost:8000",
     },
   },
 
@@ -161,7 +162,7 @@ export default defineNuxtConfig({
         allowedHosts: true,
         proxy: {
           "/api/v1": {
-            target: "http://localhost:8000",
+            target: process.env.NUXT_PUBLIC_API_BASE_URL || "http://10.5.10.190:8000",
             changeOrigin: true,
           },
         },
@@ -170,7 +171,7 @@ export default defineNuxtConfig({
     runtimeConfig: {
       public: {
         baseUrl: "https://abitur.localhost",
-        apiBaseUrl: "http://localhost:8000",
+        apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || "http://10.5.10.190:8000",
       },
       database: {
         url: "postgres://localhost/abitur_web",
