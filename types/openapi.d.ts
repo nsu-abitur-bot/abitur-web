@@ -52,6 +52,98 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/logs/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Получить логи сообщений
+     * @description Получает логи сообщений с фильтрацией.
+     *
+     *     - **user_id**: фильтр по ID пользователя
+     *     - **session_id**: фильтр по ID сессии
+     *     - **message_type**: фильтр по типу сообщения
+     *     - **limit**: количество записей (макс. 1000)
+     *     - **offset**: сдвиг для пагинации
+     */
+    get: operations["get_message_logs_api_v1_logs__get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/logs/session/{session_id}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Получить логи по сессии
+     * @description Получает все логи для конкретной сессии.
+     */
+    get: operations["get_session_logs_api_v1_logs_session__session_id__get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/logs/user/{user_id}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Получить логи по пользователю
+     * @description Получает все логи для конкретного пользователя.
+     */
+    get: operations["get_user_logs_api_v1_logs_user__user_id__get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/logs/type/{message_type}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Получить логи по типу сообщения
+     * @description Получает логи по типу сообщения.
+     *
+     *     Возможные типы:
+     *     - `user_input` - входящие сообщения от пользователей
+     *     - `rag_context` - контекст полученный из RAG
+     *     - `llm_response` - ответы от LLM
+     *     - `faq_match` - совпадения из FAQ
+     */
+    get: operations["get_type_logs_api_v1_logs_type__message_type__get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/rag/upload": {
     parameters: {
       query?: never
@@ -257,6 +349,45 @@ export interface components {
     HTTPValidationError: {
       /** Detail */
       detail?: components["schemas"]["ValidationError"][]
+    }
+    /**
+     * MessageLogListResponse
+     * @description Модель ответа для списка логов.
+     */
+    MessageLogListResponse: {
+      /** Logs */
+      logs: components["schemas"]["MessageLogResponse"][]
+      /** Total */
+      total: number
+      /** Limit */
+      limit: number
+      /** Offset */
+      offset: number
+    }
+    /**
+     * MessageLogResponse
+     * @description Модель ответа для лога сообщения.
+     */
+    MessageLogResponse: {
+      /** Id */
+      id: number
+      /** User Id */
+      user_id: number
+      /** Session Id */
+      session_id: string
+      /** Message Type */
+      message_type: string
+      /** Content */
+      content: string
+      /** Message Metadata */
+      message_metadata?: {
+        [key: string]: unknown
+      } | null
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string
     }
     /** MessageResponse */
     MessageResponse: {
@@ -550,6 +681,143 @@ export interface operations {
           [name: string]: unknown
         }
         content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_message_logs_api_v1_logs__get: {
+    parameters: {
+      query?: {
+        user_id?: number | null
+        session_id?: string | null
+        message_type?: string | null
+        limit?: number
+        offset?: number
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["MessageLogListResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_session_logs_api_v1_logs_session__session_id__get: {
+    parameters: {
+      query?: {
+        limit?: number
+        offset?: number
+      }
+      header?: never
+      path: {
+        session_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["MessageLogListResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_user_logs_api_v1_logs_user__user_id__get: {
+    parameters: {
+      query?: {
+        limit?: number
+        offset?: number
+      }
+      header?: never
+      path: {
+        user_id: number
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["MessageLogListResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_type_logs_api_v1_logs_type__message_type__get: {
+    parameters: {
+      query?: {
+        limit?: number
+        offset?: number
+      }
+      header?: never
+      path: {
+        message_type: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["MessageLogListResponse"]
+        }
       }
       /** @description Validation Error */
       422: {

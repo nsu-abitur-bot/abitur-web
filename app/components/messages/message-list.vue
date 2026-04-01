@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CalendarDate } from "@internationalized/date"
-import { shallowRef, useTemplateRef } from "vue"
+import { ref, shallowRef, useTemplateRef } from "vue"
 
 import type { components } from "../../../types/openapi"
 
@@ -44,7 +44,16 @@ const columns: any[] = [
   { id: "user", accessorKey: "user_id", header: "Пользователь" },
   { id: "user_text", accessorKey: "user_text", header: "Вопрос" },
   { id: "bot_response", accessorKey: "bot_response", header: "Ответ" },
+  { id: "actions", header: "" },
 ]
+
+const selectedSessionId = ref<string | null>(null)
+const isLogsOpen = ref(false)
+
+const openLogs = (sessionId: string) => {
+  selectedSessionId.value = sessionId
+  isLogsOpen.value = true
+}
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString)
@@ -147,4 +156,18 @@ ui-box(title="Сообщения пользователей")
       template(#bot_response-cell="{ row }")
         div(class="max-w-xs sm:max-w-sm md:max-w-md lg:max-w-xl whitespace-normal leading-relaxed text-gray-600 dark:text-gray-400")
           span {{ row.original.bot_response }}
+
+      template(#actions-cell="{ row }")
+        u-button(
+          icon="i-heroicons-list-bullet"
+          color="neutral"
+          variant="ghost"
+          size="sm"
+          title="Логи"
+          @click="openLogs(row.original.session_id)"
+        )
+
+  u-slideover(v-model:open="isLogsOpen" title="Детальные логи сессии" :description="selectedSessionId ?? ''")
+    template(#content)
+      messages-logs-viewer(v-if="selectedSessionId" :session-id="selectedSessionId")
 </template>
