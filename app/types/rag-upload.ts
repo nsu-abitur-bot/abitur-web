@@ -19,6 +19,7 @@ export type ParsedDocument = components["schemas"]["ParsedDocument"]
 export type ConfirmUploadRequest = components["schemas"]["ConfirmUploadRequest"]
 export type RagUploadResponse = components["schemas"]["RagUploadResponse"]
 export type UploadedDocumentResult = components["schemas"]["UploadedDocumentResult"]
+export type RagDocumentContentResponse = components["schemas"]["RagDocumentContentResponse"]
 
 export type RagUploadFileStatus = "indexed" | "skipped"
 

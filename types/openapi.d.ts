@@ -129,6 +129,26 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/rag/docs/{doc_id}/content": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Получить полный текст документа
+     * @description Возвращает полный исходный текст документа по его ID.
+     */
+    get: operations["get_rag_document_content_api_v1_rag_docs__doc_id__content_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/users/count-stats": {
     parameters: {
       query?: never
@@ -321,6 +341,19 @@ export interface components {
        * @description Дата создания
        */
       created_at?: string | null
+    }
+    /** RagDocumentContentResponse */
+    RagDocumentContentResponse: {
+      /**
+       * Id
+       * @description Идентификатор документа
+       */
+      id: string
+      /**
+       * Content
+       * @description Полный текст документа
+       */
+      content: string
     }
     /** RagDocumentListResponse */
     RagDocumentListResponse: {
@@ -643,6 +676,37 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["RagDocumentListResponse"]
+        }
+      }
+    }
+  }
+  get_rag_document_content_api_v1_rag_docs__doc_id__content_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        doc_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["RagDocumentContentResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
         }
       }
     }

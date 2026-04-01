@@ -307,6 +307,49 @@
         }
       }
     },
+    "/api/v1/rag/docs/{doc_id}/content": {
+      "get": {
+        "tags": [
+          "RAG Management"
+        ],
+        "summary": "Получить полный текст документа",
+        "description": "Возвращает полный исходный текст документа по его ID.",
+        "operationId": "get_rag_document_content_api_v1_rag_docs__doc_id__content_get",
+        "parameters": [
+          {
+            "name": "doc_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Doc Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RagDocumentContentResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/users/count-stats": {
       "get": {
         "summary": "Get Users Count Stats",
@@ -681,6 +724,26 @@
           "status"
         ],
         "title": "RagDocument"
+      },
+      "RagDocumentContentResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Идентификатор документа"
+          },
+          "content": {
+            "type": "string",
+            "title": "Content",
+            "description": "Полный текст документа"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "content"
+        ],
+        "title": "RagDocumentContentResponse"
       },
       "RagDocumentListResponse": {
         "properties": {

@@ -2,6 +2,7 @@ import type {
   ConfirmUploadRequest,
   ParsedPageResult,
   RagDocument,
+  RagDocumentContentResponse,
   RagUploadResponse,
 } from "~/types/rag-upload"
 
@@ -53,5 +54,12 @@ export async function confirmRagUpload(payload: ConfirmUploadRequest): Promise<v
     baseURL: apiBaseUrl,
     method: "POST",
     body: payload,
+  })
+}
+
+export async function getRagDocumentContent(docId: string): Promise<RagDocumentContentResponse> {
+  const apiBaseUrl = useRuntimeConfig().public.apiBaseUrl
+  return await $fetch<RagDocumentContentResponse>(`/api/v1/rag/docs/${encodeURIComponent(docId)}/content`, {
+    baseURL: apiBaseUrl,
   })
 }

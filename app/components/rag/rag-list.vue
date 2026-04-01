@@ -63,6 +63,7 @@ div
           th(class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider") Статус
           th(class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider") Символов
           th(class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider") Создан
+          th(class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider") Действия
       tbody(class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800")
         tr(v-for="doc in documents" :key="doc.id" class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors")
           td(class="px-4 py-4 whitespace-nowrap")
@@ -72,4 +73,12 @@ div
             u-badge(:color="doc.status === 'success' || doc.status === 'indexed' ? 'success' : 'warning'" variant="subtle") {{ doc.status }}
           td(class="px-4 py-4 whitespace-nowrap text-sm text-gray-500") {{ doc.content_length || '—' }}
           td(class="px-4 py-4 whitespace-nowrap text-sm text-gray-500") {{ formatDate(doc.created_at) }}
+          td(class="px-4 py-4 whitespace-nowrap text-right text-sm font-medium")
+            u-button(
+              icon="i-heroicons-eye"
+              variant="ghost"
+              color="neutral"
+              :to="`/rag/document/${encodeURIComponent(doc.id)}`"
+              title="Просмотреть контент"
+            )
 </template>
