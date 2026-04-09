@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import type { components } from "../../../types/openapi"
-
-type FaqItem = components["schemas"]["FaqItem"]
-
 const apiBaseUrl = useRuntimeConfig().public.apiBaseUrl
 
 const { data: faqRes, refresh, status } = await useMyApi("/api/v1/faq", {
@@ -30,7 +26,7 @@ const handleFaqCreated = async () => {
   await refresh()
 }
 
-const fileInput = ref<HTMLInputElement | null>(null)
+const fileInput = useTemplateRef("fileInput")
 const isUploading = ref(false)
 
 const triggerFileInput = () => {
@@ -57,6 +53,7 @@ const handleFileUpload = async (event: Event) => {
 
     // Simulate API call for now
     await new Promise(resolve => setTimeout(resolve, 1000))
+    // eslint-disable-next-line no-console
     console.log("File to upload:", file.name)
 
     await refresh()
@@ -77,7 +74,7 @@ ui-box(title="Управление FAQ")
       input(ref="fileInput" type="file" accept=".csv" class="hidden" @change="handleFileUpload")
       u-button(
         icon="i-heroicons-arrow-up-tray"
-        color="gray"
+        color="info"
         variant="soft"
         :loading="isUploading"
         @click="triggerFileInput"
