@@ -187,7 +187,7 @@ div(class="space-y-4")
                   span(class="text-sm font-semibold truncate text-gray-900 dark:text-white" :title="doc.id") {{ doc.id }}
                   div(v-if="getDocStatusExtra(doc)" class="text-[10px] text-error-500 font-medium") — {{ getDocStatusExtra(doc) }}
                 div(class="text-[11px] text-gray-500 truncate max-w-lg")
-                  a(:href="doc.id" target="_blank" class="hover:underline hover:text-primary-600 flex items-center gap-1")
+                  a(:href="doc.url" target="_blank" class="hover:underline hover:text-primary-600 flex items-center gap-1")
                     u-icon(name="i-heroicons-link" class="w-3 h-3")
                     | {{ doc.id }}
                 div(v-if="doc.content_summary" class="text-[10px] text-gray-400 italic mt-1 line-clamp-1") {{ doc.content_summary }}
