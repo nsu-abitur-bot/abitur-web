@@ -1,5 +1,6 @@
 import type {
   ConfirmUploadRequest,
+  CsvImportPreviewResponse,
   CsvImportResponse,
   ParsedPageResult,
   RagDocument,
@@ -35,6 +36,16 @@ export async function uploadCsvDocuments(file: File): Promise<CsvImportResponse>
   formData.append("file", file)
 
   return await apiFetch<CsvImportResponse>("/api/v1/rag/upload/csv", {
+    method: "POST",
+    body: formData,
+  })
+}
+
+export async function previewCsvDocuments(file: File): Promise<CsvImportPreviewResponse> {
+  const formData = new FormData()
+  formData.append("file", file)
+
+  return await apiFetch<CsvImportPreviewResponse>("/api/v1/rag/upload/csv/preview", {
     method: "POST",
     body: formData,
   })

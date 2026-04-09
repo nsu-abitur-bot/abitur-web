@@ -34,6 +34,17 @@ export interface CsvImportResponse {
   results: CsvImportResult[]
 }
 
+export interface CsvImportPreviewResult {
+  title: string
+  url: string
+  comment?: string | null
+}
+
+export interface CsvImportPreviewResponse {
+  total_found: number
+  results: CsvImportPreviewResult[]
+}
+
 export type RagUploadFileStatus = "indexed" | "skipped"
 
 export interface RejectedRagFile {

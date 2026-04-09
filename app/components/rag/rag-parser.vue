@@ -1,35 +1,78 @@
 <script setup lang="ts">
-import { confirmRagUpload, parsePageForRag, uploadCsvDocuments } from "~/services/rag-upload"
-import type { CsvImportResponse, ParsedPageResult } from "~/types/rag-upload"
+import { confirmRagUpload, parsePageForRag, previewCsvDocuments } from "~/services/rag-upload"
 
 const emit = defineEmits<{
   (e: "success"): void
 }>()
 
-interface PendingItem extends ParsedPageResult {
-  isParsing: boolean
+interface PendingItem {
+  url: string
+  title: string
+  text: string
+  documents: any[]
+  status: "idle" | "parsing" | "success" | "error" | "indexing" | "indexed" | "index_error"
   error?: string
 }
 
 const url = ref("")
 const pendingItems = ref<PendingItem[]>([])
+// For checkbox selection
 const selectedIndices = ref<Set<number>>(new Set())
+
 const isUploading = ref(false)
 const editingIndex = ref<number | null>(null)
 const fileInput = useTemplateRef("fileInput")
 const isCsvUploading = ref(false)
-const csvImportResult = ref<CsvImportResponse | null>(null)
 const toast = useToast()
 
 const triggerCsvUpload = () => {
   fileInput.value?.click()
 }
 
-const formatCsvResultMessage = (message?: string | null) => {
-  if (!message) {
-    return "Успешно обработано"
+const isProcessingQueue = ref(false)
+const CONCURRENCY_LIMIT = 3
+
+const parseItem = async (item: PendingItem) => {
+  try {
+    const res = await parsePageForRag(item.url)
+    item.title = res.title || item.title
+    item.text = res.text || ""
+    item.documents = res.documents || []
+    item.status = "success"
+  } catch (err: any) {
+    item.status = "error"
+    item.error = err?.data?.detail || "Ошибка препроцессинга"
   }
-  return message
+}
+
+const processQueue = async () => {
+  if (isProcessingQueue.value) {
+    return
+  }
+  isProcessingQueue.value = true
+
+  try {
+    while (true) {
+      const idleItems = pendingItems.value.filter(item => item.status === "idle")
+      if (idleItems.length === 0) {
+        break
+      }
+
+      const parsingItems = pendingItems.value.filter(item => item.status === "parsing")
+      if (parsingItems.length >= CONCURRENCY_LIMIT) {
+        await new Promise(resolve => setTimeout(resolve, 500))
+        continue
+      }
+
+      const itemToStart = idleItems[0]
+      if (itemToStart) {
+        itemToStart.status = "parsing"
+        parseItem(itemToStart)
+      }
+    }
+  } finally {
+    isProcessingQueue.value = false
+  }
 }
 
 const handleCsvUpload = async (event: Event) => {
@@ -37,28 +80,37 @@ const handleCsvUpload = async (event: Event) => {
   if (!target.files?.length) {
     return
   }
-
   const file = target.files[0]
   if (!file) {
     return
   }
 
   isCsvUploading.value = true
-  csvImportResult.value = null
-
   try {
-    const result = await uploadCsvDocuments(file)
-    csvImportResult.value = result
+    const result = await previewCsvDocuments(file)
     toast.add({
-      title: "CSV обработан",
-      description: `Импортировано ${result.imported_count} из ${result.total_found}`,
-      color: "success",
+      title: "CSV прочитан",
+      description: `Найдено ссылок: ${result.total_found}. Начинаем загрузку и препроцессинг.`,
+      color: "info",
     })
-    emit("success")
-  } catch {
+
+    for (const res of result.results) {
+      const index = pendingItems.value.length
+      pendingItems.value.push({
+        url: res.url,
+        title: res.title || res.url,
+        text: "",
+        documents: [],
+        status: "idle",
+      })
+      selectedIndices.value.add(index)
+    }
+
+    processQueue()
+  } catch (err: any) {
     toast.add({
       title: "Ошибка",
-      description: "Не удалось импортировать CSV",
+      description: err?.data?.detail || err.message || "Не удалось прочитать CSV",
       color: "error",
     })
   } finally {
@@ -67,41 +119,23 @@ const handleCsvUpload = async (event: Event) => {
   }
 }
 
-const handleAdd = async () => {
+const handleAdd = () => {
   if (!url.value) {
     return
   }
-
   const currentUrl = url.value
   url.value = ""
 
-  const newItem: PendingItem = {
+  const index = pendingItems.value.length
+  pendingItems.value.push({
     url: currentUrl,
-    title: currentUrl, // Default to URL until parsed
+    title: currentUrl,
     text: "",
     documents: [],
-    isParsing: true,
-  }
-
-  const index = pendingItems.value.length
-  pendingItems.value.push(newItem)
+    status: "idle",
+  })
   selectedIndices.value.add(index)
-
-  try {
-    const res = await parsePageForRag(currentUrl)
-    pendingItems.value[index] = {
-      ...res,
-      isParsing: false,
-    }
-  } catch {
-    pendingItems.value[index]!.isParsing = false
-    pendingItems.value[index]!.error = "Ошибка парсинга"
-    toast.add({
-      title: "Ошибка",
-      description: `Не удалось спарсить ${currentUrl}`,
-      color: "error",
-    })
-  }
+  processQueue()
 }
 
 const toggleSelection = (index: number) => {
@@ -113,56 +147,81 @@ const toggleSelection = (index: number) => {
 }
 
 const toggleAll = () => {
-  if (selectedIndices.value.size === pendingItems.value.length) {
+  const validForSelection = pendingItems.value.map((item, i) =>
+    (item.status !== "idle" && item.status !== "parsing" && item.status !== "indexing") ? i : -1,
+  ).filter(i => i !== -1)
+
+  if (selectedIndices.value.size === validForSelection.length && validForSelection.length > 0) {
     selectedIndices.value.clear()
   } else {
-    selectedIndices.value = new Set(pendingItems.value.keys())
+    selectedIndices.value = new Set(validForSelection)
   }
 }
 
 const removeItem = (index: number) => {
   pendingItems.value.splice(index, 1)
   selectedIndices.value.delete(index)
-  // Need to shift other indices in Set if we use index as key,
-  // but for simplicity let's just re-create selection or use IDs.
-  // Using index is risky with splice. Let's use reactive Set of IDs if items had IDs.
-  // For now just clear and re-select valid ones or use a different approach.
   selectedIndices.value = new Set([...selectedIndices.value].filter(i => i !== index).map(i => i > index ? i - 1 : i))
 }
 
 const handleConfirmUpload = async () => {
   const itemsToUpload = [...selectedIndices.value]
     .map(i => pendingItems.value[i])
-    .filter((item): item is PendingItem => !!item && !item.isParsing && !item.error)
+    .filter((item): item is PendingItem => !!item && item.status === "success" && !item.error)
 
   if (itemsToUpload.length === 0) {
     return
   }
 
   isUploading.value = true
+  let successCount = 0
+
   try {
     for (const item of itemsToUpload) {
-      await confirmRagUpload({
-        title: item.title,
-        url: item.url,
-        text: item.text,
-        documents: item.documents,
-      })
+      item.status = "indexing"
+      try {
+        await confirmRagUpload({
+          title: item.title,
+          url: item.url,
+          text: item.text,
+          documents: [], // Больше не отправляем вложенные документы
+        })
+        item.status = "indexed"
+        successCount++
+      } catch (err: any) {
+        item.status = "index_error"
+        item.error = err?.data?.detail || "Ошибка загрузки в RAG"
+      }
     }
+
     toast.add({
-      title: "Успех",
-      description: `Документы (${itemsToUpload.length}) отправлены на индексацию`,
-      color: "success",
+      title: "Готово",
+      description: `Успешно загружено в RAG: ${successCount} из ${itemsToUpload.length}`,
+      color: successCount === itemsToUpload.length ? "success" : "warning",
     })
 
-    // Remove uploaded items from pending
-    pendingItems.value = pendingItems.value.filter((_, i) => !selectedIndices.value.has(i))
-    selectedIndices.value.clear()
-    emit("success")
+    // Cleanup indexed items after a short delay
+    setTimeout(() => {
+      const indexedItems = new Set(pendingItems.value.map((v, i) => v.status === "indexed" ? i : -1))
+      pendingItems.value = pendingItems.value.filter((_, i) => !indexedItems.has(i))
+
+      const newSelected = new Set<number>()
+      let shiftCount = 0
+      for (let i = 0; i < pendingItems.value.length + indexedItems.size; i++) {
+        if (indexedItems.has(i)) {
+          shiftCount++
+        } else if (selectedIndices.value.has(i)) {
+          newSelected.add(i - shiftCount)
+        }
+      }
+      selectedIndices.value = newSelected
+
+      emit("success")
+    }, 3000)
   } catch {
     toast.add({
       title: "Ошибка",
-      description: "Ошибка при загрузке в RAG",
+      description: "Общая ошибка при загрузке в RAG",
       color: "error",
     })
   } finally {
@@ -171,6 +230,9 @@ const handleConfirmUpload = async () => {
 }
 
 const openEditor = (index: number) => {
+  if (pendingItems.value[index]?.status !== "success" && pendingItems.value[index]?.status !== "error") {
+    return
+  }
   editingIndex.value = index
 }
 
@@ -195,6 +257,22 @@ const editingText = computed({
     }
   },
 })
+
+const parsingStats = computed(() => {
+  const items = pendingItems.value
+  const total = items.length
+  // Everything not idle or parsing is 'done' with parsing step
+  const done = items.filter(i => i.status !== "idle" && i.status !== "parsing").length
+  return { total, done }
+})
+
+const indexingStats = computed(() => {
+  // Items that we are trying to index right now (indexing, indexed, index_error)
+  const items = pendingItems.value.filter(i => i.status === "indexing" || i.status === "indexed" || i.status === "index_error")
+  const total = items.length
+  const done = items.filter(i => i.status === "indexed" || i.status === "index_error").length
+  return { total, done }
+})
 </script>
 
 <template lang="pug">
@@ -213,27 +291,12 @@ div(class="space-y-6")
             variant="outline"
             :loading="isCsvUploading"
             @click="triggerCsvUpload"
-          ) Загрузить CSV
+          ) Открыть CSV
 
       p(class="text-xs text-gray-500") Формат CSV: Название, Link, Комментарий
 
-      div(v-if="csvImportResult" class="space-y-2")
-        div(class="text-xs text-gray-600 dark:text-gray-300")
-          | Импортировано {{ csvImportResult.imported_count }} из {{ csvImportResult.total_found }} ссылок
-        div(class="max-h-40 overflow-y-auto space-y-1 pr-1")
-          div(
-            v-for="(result, index) in csvImportResult.results"
-            :key="`${result.url}-${index}`"
-            class="text-xs rounded border p-2 flex items-start justify-between gap-3"
-            :class="result.success ? 'border-success-200 bg-success-50/50 dark:bg-success-900/10 dark:border-success-900/40' : 'border-error-200 bg-error-50/50 dark:bg-error-900/10 dark:border-error-900/40'"
-          )
-            div(class="min-w-0")
-              p(class="font-medium truncate") {{ result.title }}
-              p(class="text-[11px] text-gray-500 truncate") {{ result.url }}
-            p(class="text-[11px] text-right shrink-0" :class="result.success ? 'text-success-700 dark:text-success-300' : 'text-error-700 dark:text-error-300'") {{ formatCsvResultMessage(result.message) }}
-
     // URL Input
-    u-form-field(label="URL" class="w-full")
+    u-form-field(label="Единичный URL" class="w-full")
       div(class="flex gap-2 w-full")
         u-input(
           v-model="url"
@@ -250,86 +313,114 @@ div(class="space-y-6")
         ) Добавить
 
     // Pending List
-    div(v-if="pendingItems.length > 0" class="space-y-2 border-t pt-4 dark:border-gray-800")
-      div(class="flex items-center justify-between mb-2")
-        div(class="text-sm font-medium text-gray-500") Очередь на индексацию ({{ pendingItems.length }})
+    div(v-if="pendingItems.length > 0" class="space-y-4 border-t pt-4 dark:border-gray-800")
+      div(class="flex items-center justify-between")
+        div(class="text-sm font-medium text-gray-500") Очередь документов ({{ pendingItems.length }})
         u-button(variant="ghost" size="xs" color="neutral" @click="toggleAll") {{ selectedIndices.size === pendingItems.length ? 'Снять выделение' : 'Выделить все' }}
 
-      div(class="space-y-2 max-h-[300px] overflow-y-auto")
+      // Parsing Progress Bar
+      div(v-if="parsingStats.done < parsingStats.total" class="space-y-1 bg-gray-50 dark:bg-gray-800/50 p-3 rounded-lg border dark:border-gray-800")
+        div(class="flex justify-between text-xs font-medium text-gray-600 dark:text-gray-300")
+          span Препроцессинг LLM (идет параллельная загрузка)...
+          span {{ parsingStats.done }} / {{ parsingStats.total }}
+        u-progress(:value="parsingStats.done" :max="parsingStats.total" color="primary" size="sm")
+
+      // Indexing Progress Bar
+      div(v-if="indexingStats.total > 0 && indexingStats.done < indexingStats.total" class="space-y-1 bg-primary-50 dark:bg-primary-900/20 p-3 rounded-lg border border-primary-100 dark:border-primary-800/50")
+        div(class="flex justify-between text-xs font-medium text-primary-700 dark:text-primary-300")
+          span Загрузка обработанных документов в RAG...
+          span {{ indexingStats.done }} / {{ indexingStats.total }}
+        u-progress(:value="indexingStats.done" :max="indexingStats.total" color="primary" size="sm")
+
+      div(class="space-y-2 max-h-[400px] overflow-y-auto pr-1")
         div(
           v-for="(item, index) in pendingItems"
           :key="index"
-          class="flex items-center gap-3 p-3 rounded-lg border dark:border-gray-800 transition-colors"
-          :class="selectedIndices.has(index) ? 'bg-primary-50/50 dark:bg-primary-900/10 border-primary-200 dark:border-primary-800' : 'bg-gray-50 dark:bg-gray-800/50 border-transparent'"
+          class="flex flex-col gap-2 p-3 rounded-lg border dark:border-gray-800 transition-colors bg-gray-50 dark:bg-gray-800/50"
+          :class="[selectedIndices.has(index) ? 'border-l-2 border-l-primary-500 border-t-primary-100 border-r-primary-100 border-b-primary-100 dark:border-primary-800' : 'border-transparent']"
         )
-          u-checkbox(
-            :model-value="selectedIndices.has(index)"
-            :disabled="item.isParsing"
-            @update:model-value="toggleSelection(index)"
-          )
-          div(class="flex-1 min-w-0")
-            div(class="flex items-center gap-2")
-              u-icon(v-if="item.isParsing" name="i-heroicons-arrow-path" class="animate-spin w-3 h-3 text-gray-400")
-              div(class="text-sm font-semibold truncate") {{ item.title }}
-            div(class="text-[10px] text-gray-500 truncate") {{ item.url }}
+          div(class="flex items-center gap-3")
+            u-checkbox(
+              :model-value="selectedIndices.has(index)"
+              :disabled="item.status === 'idle' || item.status === 'parsing' || item.status === 'indexing'"
+              @update:model-value="toggleSelection(index)"
+            )
 
-          div(class="flex items-center gap-1")
-            u-button(
-              v-if="!item.isParsing && !item.error"
-              icon="i-heroicons-pencil-square"
-              variant="ghost"
-              size="xs"
-              color="neutral"
-              title="Редактировать текст"
-              @click="openEditor(index)"
-            )
-            u-button(
-              icon="i-heroicons-trash"
-              variant="ghost"
-              size="xs"
-              color="error"
-              @click="removeItem(index)"
-            )
+            div(class="flex-1 min-w-0 flex items-center gap-2")
+              // Status Icons mapping
+              u-icon(v-if="item.status === 'idle'" name="i-heroicons-clock" class="w-4 h-4 text-gray-400 shrink-0" title="Ожидает очереди")
+              u-icon(v-else-if="item.status === 'parsing'" name="i-heroicons-arrow-path" class="animate-spin w-4 h-4 text-primary-500 shrink-0" title="Препроцессинг")
+              u-icon(v-else-if="item.status === 'success'" name="i-heroicons-check-circle" class="w-4 h-4 text-success-500 shrink-0" title="Готово к загрузке")
+              u-icon(v-else-if="item.status === 'error'" name="i-heroicons-exclamation-circle" class="w-4 h-4 text-error-500 shrink-0" title="Ошибка")
+              u-icon(v-else-if="item.status === 'indexing'" name="i-heroicons-arrow-path" class="animate-spin w-4 h-4 text-warning-500 shrink-0" title="Загрузка в RAG")
+              u-icon(v-else-if="item.status === 'indexed'" name="i-heroicons-check-badge" class="w-4 h-4 text-success-600 shrink-0" title="В базе RAG")
+              u-icon(v-else-if="item.status === 'index_error'" name="i-heroicons-x-circle" class="w-4 h-4 text-error-600 shrink-0" title="Ошибка загрузки")
+
+              div(class="min-w-0 flex-1")
+                div(class="text-sm font-semibold truncate flex items-center gap-2")
+                  | {{ item.title }}
+                  span(v-if="item.status === 'success'" class="text-[10px] px-1.5 py-0.5 rounded bg-success-100 text-success-700 dark:bg-success-900/30 dark:text-success-400 font-normal shrink-0") Ожидает RAG
+                  span(v-if="item.status === 'indexed'" class="text-[10px] px-1.5 py-0.5 rounded bg-success-50 text-success-600 dark:bg-success-900/10 dark:text-success-500 font-normal shrink-0") Загружено
+                div(class="text-[10px] text-gray-500 truncate" :title="item.url") {{ item.url }}
+
+            div(class="flex items-center gap-1 shrink-0")
+              u-button(
+                v-if="item.status === 'success' || item.status === 'error'"
+                icon="i-heroicons-magnifying-glass"
+                variant="ghost"
+                size="xs"
+                color="neutral"
+                title="Посмотреть результат"
+                @click="openEditor(index)"
+              )
+              u-button(
+                icon="i-heroicons-trash"
+                variant="ghost"
+                size="xs"
+                color="error"
+                @click="removeItem(index)"
+              )
+
+          div(v-if="item.error" class="text-[11px] text-error-600 dark:text-error-400 font-medium")
+            | {{ item.error }}
 
     // Action Button
-    div(class="pt-4 border-t dark:border-gray-800 flex justify-start")
+    div(class="pt-4 border-t dark:border-gray-800 flex justify-end")
       u-button(
-        color="neutral"
-        variant="outline"
-        size="lg"
-        class="font-bold"
+        color="primary"
+        variant="solid"
+        size="md"
+        class="font-medium"
         :loading="isUploading"
         :disabled="selectedIndices.size === 0 || isUploading"
         @click="handleConfirmUpload"
-      ) Проиндексировать
+      ) Отправить выбранные в RAG
 
   // Editor View
   div(v-else class="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm space-y-6 animate-in fade-in slide-in-from-right-4")
     div(class="flex items-center justify-between border-b pb-4 dark:border-gray-800")
       h3(class="text-lg font-semibold flex items-center gap-2")
-        u-icon(name="i-heroicons-pencil-square" class="text-primary-500")
-        | Редактирование: {{ currentEditingItem?.title }}
+        u-icon(name="i-heroicons-eye" class="text-primary-500")
+        | Просмотр результата
       u-button(icon="i-heroicons-x-mark" color="neutral" variant="ghost" size="sm" @click="closeEditor")
 
     div(class="space-y-4")
       u-form-field(label="Название")
         u-input(v-model="editingTitle")
 
-      u-form-field(label="Извлеченный текст")
+      u-form-field(label="Предобработанный текст")
         u-textarea(
           v-model="editingText"
           autoresize
-          :rows="12"
+          :maxrows="25"
+          :rows="14"
           class="w-full font-mono text-xs"
         )
 
-      div(v-if="currentEditingItem?.documents?.length" class="space-y-2")
-        label(class="text-xs font-medium text-gray-500") Найденные PDF (будут проиндексированы)
-        div(class="space-y-1")
-          div(v-for="doc in currentEditingItem?.documents ?? []" :key="doc.url" class="text-[10px] p-2 bg-gray-50 dark:bg-gray-800 rounded flex items-center gap-2")
-            u-icon(name="i-heroicons-document" class="w-3 h-3 text-gray-400")
-            span(class="truncate flex-1") {{ doc.title }}
+      div(v-if="currentEditingItem?.error" class="p-3 bg-error-50 dark:bg-error-900/10 border border-error-100 dark:border-error-900/50 text-error-600 dark:text-error-400 rounded-md text-sm")
+        span(class="font-semibold block mb-1") Ошибка препроцессинга:
+        | {{ currentEditingItem.error }}
 
     div(class="flex justify-end gap-3 pt-4 border-t dark:border-gray-800")
-      u-button(variant="ghost" color="neutral" @click="closeEditor") Готово
+      u-button(variant="ghost" color="neutral" @click="closeEditor") Назад к списку
 </template>
