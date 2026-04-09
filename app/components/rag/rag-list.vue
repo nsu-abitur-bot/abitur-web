@@ -206,11 +206,10 @@ div(class="space-y-4")
             // Actions Column
             td(class="pr-4 py-4 whitespace-nowrap text-right w-20")
               u-button(
-                v-if="doc.status === 'indexed' || doc.status === 'success'"
                 icon="i-heroicons-eye"
                 variant="ghost"
                 color="neutral"
-                size="sm"
+                size="md"
                 :to="`/rag/document/${encodeURIComponent(doc.id)}`"
                 title="Просмотреть"
               )
