@@ -9,10 +9,7 @@ import type {
 export type RagUploadRequest = (formData: FormData) => Promise<RagUploadResponse>
 
 async function defaultRagUploadRequest(formData: FormData): Promise<RagUploadResponse> {
-  const apiBaseUrl = useRuntimeConfig().public.apiBaseUrl
-
-  return await $fetch<RagUploadResponse>("/api/v1/rag/upload", {
-    baseURL: apiBaseUrl,
+  return await apiFetch<RagUploadResponse>("/api/v1/rag/upload", {
     method: "POST",
     body: formData,
   })
@@ -33,35 +30,25 @@ export async function uploadRagDocuments(params: {
 }
 
 export async function listRagDocuments(): Promise<RagDocument[]> {
-  const apiBaseUrl = useRuntimeConfig().public.apiBaseUrl
-  const data = await $fetch<{ documents: RagDocument[] }>("/api/v1/rag/docs", {
-    baseURL: apiBaseUrl,
-  })
+  const data = await apiFetch<{ documents: RagDocument[] }>("/api/v1/rag/docs")
   return data.documents
 }
 export async function parsePageForRag(url: string): Promise<ParsedPageResult> {
-  const apiBaseUrl = useRuntimeConfig().public.apiBaseUrl
-  return await $fetch<ParsedPageResult>("/api/v1/rag/parse", {
-    baseURL: apiBaseUrl,
+  return await apiFetch<ParsedPageResult>("/api/v1/rag/parse", {
     method: "POST",
     params: { url },
   })
 }
 
 export async function confirmRagUpload(payload: ConfirmUploadRequest): Promise<void> {
-  const apiBaseUrl = useRuntimeConfig().public.apiBaseUrl
-  await $fetch("/api/v1/rag/confirm", {
-    baseURL: apiBaseUrl,
+  await apiFetch("/api/v1/rag/confirm", {
     method: "POST",
     body: payload,
   })
 }
 
 export async function getRagDocumentContent(docId: string): Promise<RagDocumentContentResponse> {
-  const apiBaseUrl = useRuntimeConfig().public.apiBaseUrl
-  return await $fetch<RagDocumentContentResponse>(`/api/v1/rag/docs/${encodeURIComponent(docId)}/content`, {
-    baseURL: apiBaseUrl,
-  })
+  return await apiFetch<RagDocumentContentResponse>(`/api/v1/rag/docs/${encodeURIComponent(docId)}/content`)
 }
 
 // --- Mocked Methods (Frontend only for now) ---

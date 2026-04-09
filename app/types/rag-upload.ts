@@ -1,4 +1,4 @@
-import type { components } from "../../types/openapi"
+import type { components } from "#openapi"
 
 export const RAG_ACCEPTED_EXTENSIONS = [
   ".txt",

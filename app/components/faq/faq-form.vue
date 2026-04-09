@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { components } from "../../../types/openapi"
+import type { components } from "#openapi"
 
 type FaqItem = components["schemas"]["FaqItem"]
 
@@ -12,8 +12,6 @@ const emit = defineEmits<{
   (e: "submit"): void
   (e: "cancel"): void
 }>()
-
-const apiBaseUrl = useRuntimeConfig().public.apiBaseUrl
 
 const isEditMode = computed(() => props.initialData !== undefined && props.index !== undefined)
 
@@ -45,15 +43,13 @@ const onSubmit = async () => {
   isLoading.value = true
   try {
     if (isEditMode.value && props.index !== undefined) {
-      await useMyApi("/api/v1/faq/{index}", {
-        baseURL: apiBaseUrl,
+      await useApi("/api/v1/faq/{index}", {
         method: "PUT",
         path: { index: props.index },
         body: state,
       })
     } else {
-      await useMyApi("/api/v1/faq", {
-        baseURL: apiBaseUrl,
+      await useApi("/api/v1/faq", {
         method: "POST",
         body: state,
       })

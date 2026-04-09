@@ -2,14 +2,11 @@
 import type { CalendarDate } from "@internationalized/date"
 import { ref, shallowRef, useTemplateRef } from "vue"
 
-import type { components } from "../../../types/openapi"
+import type { components } from "#openapi"
 
 type MessageResponse = components["schemas"]["MessageResponse"] & { username?: string }
 
-const apiBaseUrl = useRuntimeConfig().public.apiBaseUrl
-
-const { data: messages, refresh, status } = await useMyApi("/api/v1/messages", {
-  baseURL: apiBaseUrl,
+const { data: messages, refresh, status } = await useApi("/api/v1/messages", {
   query: {
     limit: 500,
   },

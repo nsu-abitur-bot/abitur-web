@@ -1,9 +1,5 @@
 <script setup lang="ts">
-const apiBaseUrl = useRuntimeConfig().public.apiBaseUrl
-
-const { data: faqRes, refresh, status } = await useMyApi("/api/v1/faq", {
-  baseURL: apiBaseUrl,
-})
+const { data: faqRes, refresh, status } = await useApi("/api/v1/faq")
 
 const isCreateModalOpen = ref(false)
 
@@ -12,8 +8,7 @@ const items = computed(() => faqRes.value?.items ?? [])
 const handleDelete = async (index: number) => {
   // eslint-disable-next-line no-alert
   if (confirm("Вы уверены, что хотите удалить этот вопрос?")) {
-    await useMyApi("/api/v1/faq/{index}", {
-      baseURL: apiBaseUrl,
+    await useApi("/api/v1/faq/{index}", {
       method: "DELETE",
       path: { index },
     })
@@ -49,7 +44,7 @@ const handleFileUpload = async (event: Event) => {
     // TODO: Send to backend when openapi.json is updated
     // const formData = new FormData()
     // formData.append('file', file)
-    // await useMyApi('/api/v1/faq/upload', { ... })
+    // await useApi('/api/v1/faq/upload', { ... })
 
     // Simulate API call for now
     await new Promise(resolve => setTimeout(resolve, 1000))
