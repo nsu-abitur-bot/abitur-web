@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { confirmRagUpload, parsePageForRag } from "~/services/rag-upload"
-import type { ParsedPageResult } from "~/types/rag-upload"
+import { confirmRagUpload, parsePageForRag, uploadCsvDocuments } from "~/services/rag-upload"
+import type { CsvImportResponse, ParsedPageResult } from "~/types/rag-upload"
 
 const emit = defineEmits<{
   (e: "success"): void
@@ -16,7 +16,56 @@ const pendingItems = ref<PendingItem[]>([])
 const selectedIndices = ref<Set<number>>(new Set())
 const isUploading = ref(false)
 const editingIndex = ref<number | null>(null)
+const fileInput = useTemplateRef("fileInput")
+const isCsvUploading = ref(false)
+const csvImportResult = ref<CsvImportResponse | null>(null)
 const toast = useToast()
+
+const triggerCsvUpload = () => {
+  fileInput.value?.click()
+}
+
+const formatCsvResultMessage = (message?: string | null) => {
+  if (!message) {
+    return "Успешно обработано"
+  }
+  return message
+}
+
+const handleCsvUpload = async (event: Event) => {
+  const target = event.target as HTMLInputElement
+  if (!target.files?.length) {
+    return
+  }
+
+  const file = target.files[0]
+  if (!file) {
+    return
+  }
+
+  isCsvUploading.value = true
+  csvImportResult.value = null
+
+  try {
+    const result = await uploadCsvDocuments(file)
+    csvImportResult.value = result
+    toast.add({
+      title: "CSV обработан",
+      description: `Импортировано ${result.imported_count} из ${result.total_found}`,
+      color: "success",
+    })
+    emit("success")
+  } catch {
+    toast.add({
+      title: "Ошибка",
+      description: "Не удалось импортировать CSV",
+      color: "error",
+    })
+  } finally {
+    isCsvUploading.value = false
+    target.value = ""
+  }
+}
 
 const handleAdd = async () => {
   if (!url.value) {
@@ -152,6 +201,37 @@ const editingText = computed({
 div(class="space-y-6")
   // Main Logic View
   div(v-if="editingIndex === null" class="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm space-y-4")
+    // CSV Upload
+    div(class="space-y-3 pb-4 border-b dark:border-gray-800")
+      div(class="flex flex-wrap items-center justify-between gap-2")
+        div(class="text-sm font-semibold text-gray-800 dark:text-gray-200") Импорт из CSV
+        div(class="flex items-center gap-2")
+          input(ref="fileInput" type="file" accept=".csv,text/csv" class="hidden" @change="handleCsvUpload")
+          u-button(
+            icon="i-heroicons-arrow-up-tray"
+            color="neutral"
+            variant="outline"
+            :loading="isCsvUploading"
+            @click="triggerCsvUpload"
+          ) Загрузить CSV
+
+      p(class="text-xs text-gray-500") Формат CSV: Название, Link, Комментарий
+
+      div(v-if="csvImportResult" class="space-y-2")
+        div(class="text-xs text-gray-600 dark:text-gray-300")
+          | Импортировано {{ csvImportResult.imported_count }} из {{ csvImportResult.total_found }} ссылок
+        div(class="max-h-40 overflow-y-auto space-y-1 pr-1")
+          div(
+            v-for="(result, index) in csvImportResult.results"
+            :key="`${result.url}-${index}`"
+            class="text-xs rounded border p-2 flex items-start justify-between gap-3"
+            :class="result.success ? 'border-success-200 bg-success-50/50 dark:bg-success-900/10 dark:border-success-900/40' : 'border-error-200 bg-error-50/50 dark:bg-error-900/10 dark:border-error-900/40'"
+          )
+            div(class="min-w-0")
+              p(class="font-medium truncate") {{ result.title }}
+              p(class="text-[11px] text-gray-500 truncate") {{ result.url }}
+            p(class="text-[11px] text-right shrink-0" :class="result.success ? 'text-success-700 dark:text-success-300' : 'text-error-700 dark:text-error-300'") {{ formatCsvResultMessage(result.message) }}
+
     // URL Input
     u-form-field(label="URL" class="w-full")
       div(class="flex gap-2 w-full")

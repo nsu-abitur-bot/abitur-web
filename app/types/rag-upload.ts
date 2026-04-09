@@ -21,6 +21,19 @@ export type RagUploadResponse = components["schemas"]["RagUploadResponse"]
 export type UploadedDocumentResult = components["schemas"]["UploadedDocumentResult"]
 export type RagDocumentContentResponse = components["schemas"]["RagDocumentContentResponse"]
 
+export interface CsvImportResult {
+  title: string
+  url: string
+  success: boolean
+  message?: string | null
+}
+
+export interface CsvImportResponse {
+  imported_count: number
+  total_found: number
+  results: CsvImportResult[]
+}
+
 export type RagUploadFileStatus = "indexed" | "skipped"
 
 export interface RejectedRagFile {

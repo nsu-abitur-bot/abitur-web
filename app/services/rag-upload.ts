@@ -1,5 +1,6 @@
 import type {
   ConfirmUploadRequest,
+  CsvImportResponse,
   ParsedPageResult,
   RagDocument,
   RagDocumentContentResponse,
@@ -29,6 +30,16 @@ export async function uploadRagDocuments(params: {
   return await request(formData)
 }
 
+export async function uploadCsvDocuments(file: File): Promise<CsvImportResponse> {
+  const formData = new FormData()
+  formData.append("file", file)
+
+  return await apiFetch<CsvImportResponse>("/api/v1/rag/upload/csv", {
+    method: "POST",
+    body: formData,
+  })
+}
+
 export async function listRagDocuments(): Promise<RagDocument[]> {
   const data = await apiFetch<{ documents: RagDocument[] }>("/api/v1/rag/docs")
   return data.documents
@@ -49,6 +60,20 @@ export async function confirmRagUpload(payload: ConfirmUploadRequest): Promise<v
 
 export async function getRagDocumentContent(docId: string): Promise<RagDocumentContentResponse> {
   return await apiFetch<RagDocumentContentResponse>(`/api/v1/rag/docs/${encodeURIComponent(docId)}/content`)
+}
+
+export interface PopularQuestion {
+  question: string
+  count: number
+}
+
+export async function getPopularQuestions(limit = 10): Promise<PopularQuestion[]> {
+  const data = await apiFetch<{ questions: PopularQuestion[] }>("/api/v1/logs/popular", {
+    query: {
+      limit,
+    },
+  })
+  return data.questions ?? []
 }
 
 // --- Mocked Methods (Frontend only for now) ---
