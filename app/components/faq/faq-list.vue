@@ -29,12 +29,60 @@ const handleFaqCreated = async () => {
   isCreateModalOpen.value = false
   await refresh()
 }
+
+const fileInput = ref<HTMLInputElement | null>(null)
+const isUploading = ref(false)
+
+const triggerFileInput = () => {
+  fileInput.value?.click()
+}
+
+const handleFileUpload = async (event: Event) => {
+  const target = event.target as HTMLInputElement
+  if (!target.files?.length) {
+    return
+  }
+
+  const file = target.files[0]
+  if (!file) {
+    return
+  }
+
+  try {
+    isUploading.value = true
+    // TODO: Send to backend when openapi.json is updated
+    // const formData = new FormData()
+    // formData.append('file', file)
+    // await useMyApi('/api/v1/faq/upload', { ... })
+
+    // Simulate API call for now
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    console.log("File to upload:", file.name)
+
+    await refresh()
+  } catch (error) {
+    console.error("Upload failed", error)
+  } finally {
+    isUploading.value = false
+    // Reset input
+    target.value = ""
+  }
+}
 </script>
 
 <template lang="pug">
 ui-box(title="Управление FAQ")
   template(#right)
-    u-button(icon="i-heroicons-plus" color="primary" @click="isCreateModalOpen = true") Добавить вопрос
+    div(class="flex items-center gap-2")
+      input(ref="fileInput" type="file" accept=".csv" class="hidden" @change="handleFileUpload")
+      u-button(
+        icon="i-heroicons-arrow-up-tray"
+        color="gray"
+        variant="soft"
+        :loading="isUploading"
+        @click="triggerFileInput"
+      ) Загрузить CSV
+      u-button(icon="i-heroicons-plus" color="primary" @click="isCreateModalOpen = true") Добавить вопрос
 
   div(v-if="status === 'pending'" class="py-10 flex justify-center text-gray-500")
     u-icon(name="i-heroicons-arrow-path" class="animate-spin w-8 h-8")
