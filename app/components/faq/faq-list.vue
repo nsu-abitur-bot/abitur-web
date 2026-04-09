@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { uploadFaqCsv } from "~/services/faq"
+
 const { data: faqRes, refresh, status } = await useApi("/api/v1/faq")
 
 const isCreateModalOpen = ref(false)
@@ -41,15 +43,7 @@ const handleFileUpload = async (event: Event) => {
 
   try {
     isUploading.value = true
-    // TODO: Send to backend when openapi.json is updated
-    // const formData = new FormData()
-    // formData.append('file', file)
-    // await useApi('/api/v1/faq/upload', { ... })
-
-    // Simulate API call for now
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    // eslint-disable-next-line no-console
-    console.log("File to upload:", file.name)
+    await uploadFaqCsv(file)
 
     await refresh()
   } catch (error) {
