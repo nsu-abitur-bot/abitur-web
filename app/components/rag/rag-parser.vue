@@ -1,101 +1,114 @@
 <script setup lang="ts">
-import { confirmRagUpload, parsePageForRag } from "../../services/rag-upload"
-import type { ParsedPageResult } from "../../types/rag-upload"
+import { confirmRagUpload, parsePageForRag } from "~/services/rag-upload"
+import type { ParsedPageResult } from "~/types/rag-upload"
 
 const emit = defineEmits<{
   (e: "success"): void
 }>()
 
-// URL Parsing State
-const url = ref("")
-const isParsing = ref(false)
-const isUploading = ref(false)
-const toast = useToast()
-
-const parsedResult = ref<ParsedPageResult | null>(null)
-const editableText = ref("")
-const selectedDocumentsIndices = ref<Set<number>>(new Set())
-
-const reset = () => {
-  parsedResult.value = null
-  url.value = ""
-  isParsing.value = false
-  isUploading.value = false
-  selectedDocumentsIndices.value = new Set()
+interface PendingItem extends ParsedPageResult {
+  isParsing: boolean
+  error?: string
 }
 
-// --- URL Parsing Logic ---
-const handleParse = async () => {
+const url = ref("")
+const pendingItems = ref<PendingItem[]>([])
+const selectedIndices = ref<Set<number>>(new Set())
+const isUploading = ref(false)
+const editingIndex = ref<number | null>(null)
+const toast = useToast()
+
+const handleAdd = async () => {
   if (!url.value) {
     return
   }
-  isParsing.value = true
-  parsedResult.value = null
+
+  const currentUrl = url.value
+  url.value = ""
+
+  const newItem: PendingItem = {
+    url: currentUrl,
+    title: currentUrl, // Default to URL until parsed
+    text: "",
+    documents: [],
+    isParsing: true,
+  }
+
+  const index = pendingItems.value.length
+  pendingItems.value.push(newItem)
+  selectedIndices.value.add(index)
+
   try {
-    const res = await parsePageForRag(url.value)
-    parsedResult.value = res
-    editableText.value = res.text
-    // select all by default
-    selectedDocumentsIndices.value = new Set(res.documents.map((_, i) => i))
+    const res = await parsePageForRag(currentUrl)
+    pendingItems.value[index] = {
+      ...res,
+      isParsing: false,
+    }
   } catch {
+    pendingItems.value[index]!.isParsing = false
+    pendingItems.value[index]!.error = "Ошибка парсинга"
     toast.add({
       title: "Ошибка",
-      description: "Не удалось спарсить страницу. Проверьте URL.",
+      description: `Не удалось спарсить ${currentUrl}`,
       color: "error",
     })
-  } finally {
-    isParsing.value = false
   }
 }
 
-const toggleDocument = (index: number) => {
-  if (selectedDocumentsIndices.value.has(index)) {
-    selectedDocumentsIndices.value.delete(index)
+const toggleSelection = (index: number) => {
+  if (selectedIndices.value.has(index)) {
+    selectedIndices.value.delete(index)
   } else {
-    selectedDocumentsIndices.value.add(index)
+    selectedIndices.value.add(index)
   }
 }
-
-const isAllSelected = computed(() => {
-  if (!parsedResult.value?.documents.length) {
-    return false
-  }
-  return selectedDocumentsIndices.value.size === parsedResult.value.documents.length
-})
-
-const isSomeSelected = computed(() => {
-  return selectedDocumentsIndices.value.size > 0 && !isAllSelected.value
-})
 
 const toggleAll = () => {
-  if (isAllSelected.value) {
-    selectedDocumentsIndices.value = new Set()
-  } else if (parsedResult.value) {
-    selectedDocumentsIndices.value = new Set(parsedResult.value.documents.map((_, i) => i))
+  if (selectedIndices.value.size === pendingItems.value.length) {
+    selectedIndices.value.clear()
+  } else {
+    selectedIndices.value = new Set(pendingItems.value.keys())
   }
+}
+
+const removeItem = (index: number) => {
+  pendingItems.value.splice(index, 1)
+  selectedIndices.value.delete(index)
+  // Need to shift other indices in Set if we use index as key,
+  // but for simplicity let's just re-create selection or use IDs.
+  // Using index is risky with splice. Let's use reactive Set of IDs if items had IDs.
+  // For now just clear and re-select valid ones or use a different approach.
+  selectedIndices.value = new Set([...selectedIndices.value].filter(i => i !== index).map(i => i > index ? i - 1 : i))
 }
 
 const handleConfirmUpload = async () => {
-  if (!parsedResult.value) {
+  const itemsToUpload = [...selectedIndices.value]
+    .map(i => pendingItems.value[i])
+    .filter((item): item is PendingItem => !!item && !item.isParsing && !item.error)
+
+  if (itemsToUpload.length === 0) {
     return
   }
+
   isUploading.value = true
   try {
-    const finalDocuments = parsedResult.value.documents.filter((_, i) =>
-      selectedDocumentsIndices.value.has(i),
-    )
-    await confirmRagUpload({
-      title: parsedResult.value.title,
-      url: parsedResult.value.url,
-      text: editableText.value,
-      documents: finalDocuments,
-    })
+    for (const item of itemsToUpload) {
+      await confirmRagUpload({
+        title: item.title,
+        url: item.url,
+        text: item.text,
+        documents: item.documents,
+      })
+    }
     toast.add({
       title: "Успех",
-      description: "Успешно загружено в RAG",
+      description: `Документы (${itemsToUpload.length}) отправлены на индексацию`,
       color: "success",
     })
-    reset()
+
+    // Remove uploaded items from pending
+    pendingItems.value = pendingItems.value.filter((_, i) => !selectedIndices.value.has(i))
+    selectedIndices.value.clear()
     emit("success")
   } catch {
     toast.add({
@@ -107,89 +120,136 @@ const handleConfirmUpload = async () => {
     isUploading.value = false
   }
 }
+
+const openEditor = (index: number) => {
+  editingIndex.value = index
+}
+
+const closeEditor = () => {
+  editingIndex.value = null
+}
+
+const currentEditingItem = computed(() => editingIndex.value !== null ? pendingItems.value[editingIndex.value] : null)
+const editingTitle = computed({
+  get: () => currentEditingItem.value?.title ?? "",
+  set: (value: string) => {
+    if (currentEditingItem.value) {
+      currentEditingItem.value.title = value
+    }
+  },
+})
+const editingText = computed({
+  get: () => currentEditingItem.value?.text ?? "",
+  set: (value: string) => {
+    if (currentEditingItem.value) {
+      currentEditingItem.value.text = value
+    }
+  },
+})
 </script>
 
 <template lang="pug">
 div(class="space-y-6")
-  div(v-if="!parsedResult" class="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm")
-    u-form-field(label="Ссылка на страницу для анализа" class="w-full")
+  // Main Logic View
+  div(v-if="editingIndex === null" class="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm space-y-4")
+    // URL Input
+    u-form-field(label="URL" class="w-full")
       div(class="flex gap-2 w-full")
         u-input(
           v-model="url"
           class="flex-1"
-          placeholder="https://nsu.ru/..."
+          placeholder="http://nsu.ru/document1.pdf"
           icon="i-heroicons-globe-alt"
-          :disabled="isParsing"
-          @keyup.enter="handleParse"
+          @keyup.enter="handleAdd"
         )
         u-button(
-          :loading="isParsing"
-          :disabled="!url || isParsing"
-          @click="handleParse"
-        ) Спарсить
+          color="neutral"
+          variant="outline"
+          :disabled="!url"
+          @click="handleAdd"
+        ) Добавить
 
-  // Refinement View (Visible after URL parse)
-  div(v-else class="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm space-y-6 animate-in fade-in slide-in-from-bottom-2")
+    // Pending List
+    div(v-if="pendingItems.length > 0" class="space-y-2 border-t pt-4 dark:border-gray-800")
+      div(class="flex items-center justify-between mb-2")
+        div(class="text-sm font-medium text-gray-500") Очередь на индексацию ({{ pendingItems.length }})
+        u-button(variant="ghost" size="xs" color="neutral" @click="toggleAll") {{ selectedIndices.size === pendingItems.length ? 'Снять выделение' : 'Выделить все' }}
+
+      div(class="space-y-2 max-h-[300px] overflow-y-auto")
+        div(
+          v-for="(item, index) in pendingItems"
+          :key="index"
+          class="flex items-center gap-3 p-3 rounded-lg border dark:border-gray-800 transition-colors"
+          :class="selectedIndices.has(index) ? 'bg-primary-50/50 dark:bg-primary-900/10 border-primary-200 dark:border-primary-800' : 'bg-gray-50 dark:bg-gray-800/50 border-transparent'"
+        )
+          u-checkbox(
+            :model-value="selectedIndices.has(index)"
+            :disabled="item.isParsing"
+            @update:model-value="toggleSelection(index)"
+          )
+          div(class="flex-1 min-w-0")
+            div(class="flex items-center gap-2")
+              u-icon(v-if="item.isParsing" name="i-heroicons-arrow-path" class="animate-spin w-3 h-3 text-gray-400")
+              div(class="text-sm font-semibold truncate") {{ item.title }}
+            div(class="text-[10px] text-gray-500 truncate") {{ item.url }}
+
+          div(class="flex items-center gap-1")
+            u-button(
+              v-if="!item.isParsing && !item.error"
+              icon="i-heroicons-pencil-square"
+              variant="ghost"
+              size="xs"
+              color="neutral"
+              title="Редактировать текст"
+              @click="openEditor(index)"
+            )
+            u-button(
+              icon="i-heroicons-trash"
+              variant="ghost"
+              size="xs"
+              color="error"
+              @click="removeItem(index)"
+            )
+
+    // Action Button
+    div(class="pt-4 border-t dark:border-gray-800 flex justify-start")
+      u-button(
+        color="neutral"
+        variant="outline"
+        size="lg"
+        class="font-bold"
+        :loading="isUploading"
+        :disabled="selectedIndices.size === 0 || isUploading"
+        @click="handleConfirmUpload"
+      ) Проиндексировать
+
+  // Editor View
+  div(v-else class="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm space-y-6 animate-in fade-in slide-in-from-right-4")
     div(class="flex items-center justify-between border-b pb-4 dark:border-gray-800")
       h3(class="text-lg font-semibold flex items-center gap-2")
-        u-icon(name="i-heroicons-sparkles" class="text-amber-500")
-        | Результаты парсинга страницы
-      u-button(icon="i-heroicons-x-mark" color="neutral" variant="ghost" size="sm" @click="reset")
+        u-icon(name="i-heroicons-pencil-square" class="text-primary-500")
+        | Редактирование: {{ currentEditingItem?.title }}
+      u-button(icon="i-heroicons-x-mark" color="neutral" variant="ghost" size="sm" @click="closeEditor")
 
-    div(class="grid grid-cols-1 gap-6")
-      // Text Editor
-      u-form-field(label="Извлеченный и очищенный текст" class="w-full")
+    div(class="space-y-4")
+      u-form-field(label="Название")
+        u-input(v-model="editingTitle")
+
+      u-form-field(label="Извлеченный текст")
         u-textarea(
-          v-model="editableText"
+          v-model="editingText"
           autoresize
           :rows="12"
-          class="w-full font-mono text-sm"
-          placeholder="Текст страницы..."
+          class="w-full font-mono text-xs"
         )
 
-      // Documents List
-      div(class="space-y-4")
-        div(class="flex items-center justify-between")
-          label(class="text-sm font-medium text-gray-700 dark:text-gray-300") Найденные PDF ({{ parsedResult.documents.length }})
-          u-checkbox(
-            v-if="parsedResult.documents.length > 0"
-            label="Выбрать все"
-            :model-value="isAllSelected"
-            :indeterminate="isSomeSelected"
-            @update:model-value="toggleAll"
-          )
-        div(v-if="parsedResult.documents.length === 0" class="text-xs text-gray-500 italic p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-dashed")
-          | PDF документов не найдено.
-
-        div(v-else class="space-y-2 max-h-[350px] overflow-y-auto pr-2")
-          div(
-            v-for="(doc, index) in parsedResult.documents"
-            :key="index"
-            class="group p-3 rounded-lg border dark:border-gray-800 flex items-start gap-2 transition-all"
-            :class="selectedDocumentsIndices.has(index) ? 'bg-indigo-50/50 dark:bg-indigo-900/20 border-indigo-200 dark:border-indigo-800' : 'bg-gray-50 dark:bg-gray-800/50 grayscale opacity-60 border-transparent'"
-          )
-            u-checkbox(
-              class="mt-1"
-              :model-value="selectedDocumentsIndices.has(index)"
-              @update:model-value="toggleDocument(index)"
-            )
-            div(class="flex-1 min-w-0")
-              div(class="text-xs font-semibold truncate" :class="selectedDocumentsIndices.has(index) ? 'text-indigo-700 dark:text-indigo-300' : 'text-gray-600 dark:text-gray-400'") {{ doc.title }}
-              div(class="flex gap-2 mt-1")
-                a(
-                  :href="doc.url"
-                  target="_blank"
-                  class="text-[10px] text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 flex items-center gap-1 hover:underline"
-                )
-                  u-icon(name="i-heroicons-arrow-down-tray" class="w-3 h-3")
-                  | Скачать документ
+      div(v-if="currentEditingItem?.documents?.length" class="space-y-2")
+        label(class="text-xs font-medium text-gray-500") Найденные PDF (будут проиндексированы)
+        div(class="space-y-1")
+          div(v-for="doc in currentEditingItem?.documents ?? []" :key="doc.url" class="text-[10px] p-2 bg-gray-50 dark:bg-gray-800 rounded flex items-center gap-2")
+            u-icon(name="i-heroicons-document" class="w-3 h-3 text-gray-400")
+            span(class="truncate flex-1") {{ doc.title }}
 
     div(class="flex justify-end gap-3 pt-4 border-t dark:border-gray-800")
-      u-button(variant="ghost" color="neutral" @click="reset") Отмена
-      u-button(
-        color="primary"
-        icon="i-heroicons-cloud-arrow-up"
-        :loading="isUploading"
-        @click="handleConfirmUpload"
-      ) Подтвердить и загрузить
+      u-button(variant="ghost" color="neutral" @click="closeEditor") Готово
 </template>

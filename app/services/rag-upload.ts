@@ -63,3 +63,20 @@ export async function getRagDocumentContent(docId: string): Promise<RagDocumentC
     baseURL: apiBaseUrl,
   })
 }
+
+// --- Mocked Methods (Frontend only for now) ---
+
+export async function deleteRagDocuments(ids: string[]): Promise<void> {
+  console.log("[Mock] Deleting RAG documents:", ids)
+  return new Promise(resolve => setTimeout(resolve, 500))
+}
+
+export async function refreshRagDocument(id: string): Promise<void> {
+  console.log("[Mock] Refreshing RAG document:", id)
+  return new Promise(resolve => setTimeout(resolve, 500))
+}
+
+export async function rebuildRagIndices(): Promise<void> {
+  console.log("[Mock] Rebuilding RAG indices")
+  return new Promise(resolve => setTimeout(resolve, 1000))
+}
