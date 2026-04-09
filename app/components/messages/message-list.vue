@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { CalendarDate } from "@internationalized/date"
-import { ref, shallowRef, useTemplateRef } from "vue"
 
 import type { components } from "#openapi"
 
