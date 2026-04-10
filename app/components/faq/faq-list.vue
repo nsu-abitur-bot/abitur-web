@@ -5,12 +5,19 @@ const { data: faqRes, refresh, status } = await useApi("/api/v1/faq")
 
 const isCreateModalOpen = ref(false)
 
+const toast = useToast()
+
 const items = computed(() => faqRes.value?.items ?? [])
 
 const handleDelete = async (index: number) => {
   await useApi("/api/v1/faq/{index}", {
     method: "DELETE",
     path: { index },
+  })
+  toast.add({
+    title: "Успешно",
+    description: "Вопрос удален",
+    color: "success",
   })
   await refresh()
 }
@@ -41,10 +48,19 @@ const handleFileUpload = async (event: Event) => {
   try {
     isUploading.value = true
     await uploadFaqCsv(file)
-
+    toast.add({
+      title: "Успешно",
+      description: "FAQ обновлен",
+      color: "success",
+    })
     await refresh()
   } catch (error) {
     console.error("Upload failed", error)
+    toast.add({
+      title: "Ошибка",
+      description: "Не удалось обновить FAQ",
+      color: "error",
+    })
   } finally {
     isUploading.value = false
     // Reset input
