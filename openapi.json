@@ -741,6 +741,49 @@
         }
       }
     },
+    "/api/v1/rag/docs/{doc_id}": {
+      "delete": {
+        "tags": [
+          "RAG Management"
+        ],
+        "summary": "Удалить документ из RAG",
+        "description": "Удаляет документ из базы знаний RAG.",
+        "operationId": "delete_rag_document_api_v1_rag_docs__doc_id__delete",
+        "parameters": [
+          {
+            "name": "doc_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Doc Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/rag/upload/csv": {
       "post": {
         "tags": [

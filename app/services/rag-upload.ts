@@ -90,8 +90,9 @@ export async function getPopularQuestions(limit = 10): Promise<PopularQuestion[]
 // --- Mocked Methods (Frontend only for now) ---
 
 export async function deleteRagDocuments(ids: string[]): Promise<void> {
-  console.log("[Mock] Deleting RAG documents:", ids)
-  return new Promise(resolve => setTimeout(resolve, 500))
+  await Promise.all(ids.map(id => apiFetch(`/api/v1/rag/docs/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  })))
 }
 
 export async function refreshRagDocument(id: string): Promise<void> {
