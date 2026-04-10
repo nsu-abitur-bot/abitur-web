@@ -8,14 +8,11 @@ const isCreateModalOpen = ref(false)
 const items = computed(() => faqRes.value?.items ?? [])
 
 const handleDelete = async (index: number) => {
-  // eslint-disable-next-line no-alert
-  if (confirm("Вы уверены, что хотите удалить этот вопрос?")) {
-    await useApi("/api/v1/faq/{index}", {
-      method: "DELETE",
-      path: { index },
-    })
-    await refresh()
-  }
+  await useApi("/api/v1/faq/{index}", {
+    method: "DELETE",
+    path: { index },
+  })
+  await refresh()
 }
 
 const handleFaqCreated = async () => {

@@ -64,10 +64,6 @@ const handleBatchDelete = async () => {
   if (selectedIds.value.size === 0) {
     return
   }
-  // eslint-disable-next-line no-alert
-  if (!confirm(`Удалить выбранные документы (${selectedIds.value.size})?`)) {
-    return
-  }
 
   isLoading.value = true
   try {
@@ -94,10 +90,6 @@ const handleBatchRefresh = async () => {
 }
 
 const handleRebuild = async () => {
-  // eslint-disable-next-line no-alert
-  if (!confirm("Вы уверены, что хотите полностью перестроить индексы? Это может занять время.")) {
-    return
-  }
   isLoading.value = true
   try {
     await rebuildRagIndices()
@@ -139,21 +131,37 @@ div(class="space-y-4")
         @click="handleBatchRefresh"
       ) Обновить
 
-      u-button(
-        variant="outline"
-        color="neutral"
-        size="sm"
-        :disabled="selectedIds.size === 0"
-        @click="handleBatchDelete"
-      ) Удалить
+      u-modal(
+        title="Удалить документы"
+        :description="`Удалить выбранные документы (${selectedIds.size})?`"
+      )
+        u-button(
+          variant="outline"
+          color="neutral"
+          size="sm"
+          :disabled="selectedIds.size === 0"
+        ) Удалить
+
+        template(#footer="{ close }")
+          div(class="flex justify-end gap-2 w-full")
+            u-button(color="neutral" variant="ghost" @click="close") Отмена
+            u-button(color="error" @click="handleBatchDelete(); close()") Удалить
 
     div
-      u-button(
-        variant="solid"
-        color="neutral"
-        size="sm"
-        @click="handleRebuild"
-      ) Перестроить индексы
+      u-modal(
+        title="Перестроить индексы"
+        description="Вы уверены, что хотите полностью перестроить индексы? Это может занять время."
+      )
+        u-button(
+          variant="solid"
+          color="neutral"
+          size="sm"
+        ) Перестроить индексы
+
+        template(#footer="{ close }")
+          div(class="flex justify-end gap-2 w-full")
+            u-button(color="neutral" variant="ghost" @click="close") Отмена
+            u-button(color="primary" @click="handleRebuild(); close()") Начать перестройку
 
   // Table
   div(v-if="isLoading && documents.length === 0" class="py-10 flex justify-center text-gray-500")
