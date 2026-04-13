@@ -174,7 +174,7 @@ div(class="space-y-6")
               @update:model-value="toggleDocument(index)"
             )
             div(class="flex-1 min-w-0")
-              div(class="text-xs font-semibold truncate" :class="selectedDocumentsIndices.has(index) ? 'text-indigo-700 dark:text-indigo-300' : 'text-gray-600 dark:text-gray-400'") {{ doc.title }}
+              div(class="w-full text-xs font-semibold whitespace-normal break-words" :class="selectedDocumentsIndices.has(index) ? 'text-indigo-700 dark:text-indigo-300' : 'text-gray-600 dark:text-gray-400'") {{ doc.title }}
               div(class="flex gap-2 mt-1")
                 a(
                   :href="doc.url"
