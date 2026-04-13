@@ -2,10 +2,12 @@ export const useApiBaseUrl = () => useRuntimeConfig().public.apiBaseUrl
 
 // Временный костыль пока мы не сделали авторизацию на питон бекенде.
 export const useApi: typeof useMyApi = ((path, options) => {
-  return useMyApi(path, {
+  const mergedOptions = {
     ...options,
     baseURL: useApiBaseUrl(),
-  })
+  }
+
+  return useMyApi(path as never, mergedOptions as never)
 }) as typeof useMyApi
 
 export const apiFetch = async <T>(

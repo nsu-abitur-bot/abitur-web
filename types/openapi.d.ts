@@ -28,6 +28,29 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/faq/upload": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Загрузить FAQ из CSV
+     * @description Загружает вопросы и ответы FAQ из CSV-файла.
+     *     Ожидается CSV файл с колонками "Вопросы" и "Ответы".
+     *     Пустая строка означает, что начинается новый вопрос.
+     *     Первый вопрос в блоке становится основным, остальные - альтернативными формулировками (aliases).
+     */
+    post: operations["upload_faq_csv_api_v1_faq_upload_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/faq/{index}": {
     parameters: {
       query?: never
@@ -144,6 +167,28 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/logs/popular": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Получить самые популярные вопросы
+     * @description Получает самые часто задаваемые вопросы пользователей.
+     *
+     *     - **limit**: максимальное количество возвращаемых вопросов
+     */
+    get: operations["get_popular_questions_api_v1_logs_popular_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/rag/upload": {
     parameters: {
       query?: never
@@ -172,7 +217,7 @@ export interface paths {
     put?: never
     /**
      * Спарсить страницу для RAG
-     * @description Парсит страницу, очищает текст через LLM и находит документы.
+     * @description Парсит страницу или PDF-документ, очищает текст через LLM и находит документы.
      */
     post: operations["parse_page_for_rag_api_v1_rag_parse_post"]
     delete?: never
@@ -241,6 +286,67 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/rag/docs/{doc_id}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
+    /**
+     * Удалить документ из RAG
+     * @description Удаляет документ из базы знаний RAG.
+     */
+    delete: operations["delete_rag_document_api_v1_rag_docs__doc_id__delete"]
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/rag/upload/csv": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Импорт документов по ссылкам из CSV
+     * @description Принимает CSV документ на вход и обрабатывает все документы там.
+     *     Ожидаемый формат: Название,Link,Комментарий
+     */
+    post: operations["upload_csv_documents_api_v1_rag_upload_csv_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/rag/upload/csv/preview": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Превью документов из CSV (без обработки)
+     * @description Принимает CSV документ и возвращает список найденных в нём ссылок без их обработки.
+     */
+    post: operations["preview_csv_documents_api_v1_rag_upload_csv_preview_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/users/count-stats": {
     parameters: {
       query?: never
@@ -282,6 +388,22 @@ export interface paths {
 export type webhooks = Record<string, never>
 export interface components {
   schemas: {
+    /** Body_preview_csv_documents_api_v1_rag_upload_csv_preview_post */
+    Body_preview_csv_documents_api_v1_rag_upload_csv_preview_post: {
+      /**
+       * File
+       * @description CSV файл с полями (Название, Link, Комментарий)
+       */
+      file: string
+    }
+    /** Body_upload_csv_documents_api_v1_rag_upload_csv_post */
+    Body_upload_csv_documents_api_v1_rag_upload_csv_post: {
+      /**
+       * File
+       * @description CSV файл с полями (Название, Link, Комментарий)
+       */
+      file: string
+    }
     /** Body_upload_documents_to_rag_api_v1_rag_upload_post */
     Body_upload_documents_to_rag_api_v1_rag_upload_post: {
       /**
@@ -289,6 +411,11 @@ export interface components {
        * @description Файлы для индексации в RAG
        */
       files: string[]
+    }
+    /** Body_upload_faq_csv_api_v1_faq_upload_post */
+    Body_upload_faq_csv_api_v1_faq_upload_post: {
+      /** File */
+      file: string
     }
     /** ConfirmUploadRequest */
     ConfirmUploadRequest: {
@@ -312,6 +439,78 @@ export interface components {
        * @description Финальный список файлов для загрузки
        */
       documents: components["schemas"]["ParsedDocument"][]
+    }
+    /** CsvImportPreviewResponse */
+    CsvImportPreviewResponse: {
+      /**
+       * Total Found
+       * @description Всего найдено ссылок в CSV
+       */
+      total_found: number
+      /**
+       * Results
+       * @description Список найденных документов для превью
+       */
+      results: components["schemas"]["CsvImportPreviewResult"][]
+    }
+    /** CsvImportPreviewResult */
+    CsvImportPreviewResult: {
+      /**
+       * Title
+       * @description Название документа
+       */
+      title: string
+      /**
+       * Url
+       * @description URL документа
+       */
+      url: string
+      /**
+       * Comment
+       * @description Комментарий из CSV
+       */
+      comment?: string | null
+    }
+    /** CsvImportResponse */
+    CsvImportResponse: {
+      /**
+       * Imported Count
+       * @description Количество успешно импортированных документов
+       */
+      imported_count: number
+      /**
+       * Total Found
+       * @description Всего найдено ссылок в CSV
+       */
+      total_found: number
+      /**
+       * Results
+       * @description Результаты обработки по каждой ссылке
+       */
+      results: components["schemas"]["CsvImportResult"][]
+    }
+    /** CsvImportResult */
+    CsvImportResult: {
+      /**
+       * Title
+       * @description Название документа
+       */
+      title: string
+      /**
+       * Url
+       * @description URL документа
+       */
+      url: string
+      /**
+       * Success
+       * @description Статус обработки
+       */
+      success: boolean
+      /**
+       * Message
+       * @description Сообщение об ошибке или статус
+       */
+      message?: string | null
     }
     /**
      * FaqItem
@@ -445,6 +644,18 @@ export interface components {
        */
       documents: components["schemas"]["ParsedDocument"][]
     }
+    /** PopularQuestion */
+    PopularQuestion: {
+      /** Question */
+      question: string
+      /** Count */
+      count: number
+    }
+    /** PopularQuestionsResponse */
+    PopularQuestionsResponse: {
+      /** Questions */
+      questions: components["schemas"]["PopularQuestion"][]
+    }
     /** RagDocument */
     RagDocument: {
       /**
@@ -452,6 +663,11 @@ export interface components {
        * @description Идентификатор документа (обычно URL или имя файла)
        */
       id: string
+      /**
+       * Url
+       * @description Оригинальный URL или путь к файлу
+       */
+      url?: string | null
       /**
        * Status
        * @description Статус обработки
@@ -616,6 +832,39 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["FaqItem"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  upload_faq_csv_api_v1_faq_upload_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "multipart/form-data": components["schemas"]["Body_upload_faq_csv_api_v1_faq_upload_post"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["FaqListResponse"]
         }
       }
       /** @description Validation Error */
@@ -830,6 +1079,37 @@ export interface operations {
       }
     }
   }
+  get_popular_questions_api_v1_logs_popular_get: {
+    parameters: {
+      query?: {
+        limit?: number
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["PopularQuestionsResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
   upload_documents_to_rag_api_v1_rag_upload_post: {
     parameters: {
       query?: never
@@ -966,6 +1246,103 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["RagDocumentContentResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  delete_rag_document_api_v1_rag_docs__doc_id__delete: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        doc_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": unknown
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  upload_csv_documents_api_v1_rag_upload_csv_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "multipart/form-data": components["schemas"]["Body_upload_csv_documents_api_v1_rag_upload_csv_post"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["CsvImportResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  preview_csv_documents_api_v1_rag_upload_csv_preview_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "multipart/form-data": components["schemas"]["Body_preview_csv_documents_api_v1_rag_upload_csv_preview_post"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["CsvImportPreviewResponse"]
         }
       }
       /** @description Validation Error */
