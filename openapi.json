@@ -67,6 +67,48 @@
         }
       }
     },
+    "/api/v1/faq/upload": {
+      "post": {
+        "tags": [
+          "FAQ Management"
+        ],
+        "summary": "Загрузить FAQ из CSV",
+        "description": "Загружает вопросы и ответы FAQ из CSV-файла.\nОжидается CSV файл с колонками \"Вопросы\" и \"Ответы\".\nПустая строка означает, что начинается новый вопрос.\nПервый вопрос в блоке становится основным, остальные - альтернативными формулировками (aliases).",
+        "operationId": "upload_faq_csv_api_v1_faq_upload_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_faq_csv_api_v1_faq_upload_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FaqListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/faq/{index}": {
       "put": {
         "tags": [
@@ -457,6 +499,52 @@
         }
       }
     },
+    "/api/v1/logs/popular": {
+      "get": {
+        "tags": [
+          "Message Logs"
+        ],
+        "summary": "Получить самые популярные вопросы",
+        "description": "Получает самые часто задаваемые вопросы пользователей.\n\n- **limit**: максимальное количество возвращаемых вопросов",
+        "operationId": "get_popular_questions_api_v1_logs_popular_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 10,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PopularQuestionsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/rag/upload": {
       "post": {
         "tags": [
@@ -504,7 +592,7 @@
           "RAG Management"
         ],
         "summary": "Спарсить страницу для RAG",
-        "description": "Парсит страницу, очищает текст через LLM и находит документы.",
+        "description": "Парсит страницу или PDF-документ, очищает текст через LLM и находит документы.",
         "operationId": "parse_page_for_rag_api_v1_rag_parse_post",
         "parameters": [
           {
@@ -653,6 +741,133 @@
         }
       }
     },
+    "/api/v1/rag/docs/{doc_id}": {
+      "delete": {
+        "tags": [
+          "RAG Management"
+        ],
+        "summary": "Удалить документ из RAG",
+        "description": "Удаляет документ из базы знаний RAG.",
+        "operationId": "delete_rag_document_api_v1_rag_docs__doc_id__delete",
+        "parameters": [
+          {
+            "name": "doc_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Doc Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/rag/upload/csv": {
+      "post": {
+        "tags": [
+          "RAG Management"
+        ],
+        "summary": "Импорт документов по ссылкам из CSV",
+        "description": "Принимает CSV документ на вход и обрабатывает все документы там.\nОжидаемый формат: Название,Link,Комментарий",
+        "operationId": "upload_csv_documents_api_v1_rag_upload_csv_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_csv_documents_api_v1_rag_upload_csv_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CsvImportResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/rag/upload/csv/preview": {
+      "post": {
+        "tags": [
+          "RAG Management"
+        ],
+        "summary": "Превью документов из CSV (без обработки)",
+        "description": "Принимает CSV документ и возвращает список найденных в нём ссылок без их обработки.",
+        "operationId": "preview_csv_documents_api_v1_rag_upload_csv_preview_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_preview_csv_documents_api_v1_rag_upload_csv_preview_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CsvImportPreviewResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/users/count-stats": {
       "get": {
         "summary": "Get Users Count Stats",
@@ -754,6 +969,36 @@
   },
   "components": {
     "schemas": {
+      "Body_preview_csv_documents_api_v1_rag_upload_csv_preview_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File",
+            "description": "CSV файл с полями (Название, Link, Комментарий)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_preview_csv_documents_api_v1_rag_upload_csv_preview_post"
+      },
+      "Body_upload_csv_documents_api_v1_rag_upload_csv_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File",
+            "description": "CSV файл с полями (Название, Link, Комментарий)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_upload_csv_documents_api_v1_rag_upload_csv_post"
+      },
       "Body_upload_documents_to_rag_api_v1_rag_upload_post": {
         "properties": {
           "files": {
@@ -771,6 +1016,20 @@
           "files"
         ],
         "title": "Body_upload_documents_to_rag_api_v1_rag_upload_post"
+      },
+      "Body_upload_faq_csv_api_v1_faq_upload_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_upload_faq_csv_api_v1_faq_upload_post"
       },
       "ConfirmUploadRequest": {
         "properties": {
@@ -806,6 +1065,128 @@
           "documents"
         ],
         "title": "ConfirmUploadRequest"
+      },
+      "CsvImportPreviewResponse": {
+        "properties": {
+          "total_found": {
+            "type": "integer",
+            "title": "Total Found",
+            "description": "Всего найдено ссылок в CSV"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/CsvImportPreviewResult"
+            },
+            "type": "array",
+            "title": "Results",
+            "description": "Список найденных документов для превью"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_found",
+          "results"
+        ],
+        "title": "CsvImportPreviewResponse"
+      },
+      "CsvImportPreviewResult": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Название документа"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url",
+            "description": "URL документа"
+          },
+          "comment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment",
+            "description": "Комментарий из CSV"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "url"
+        ],
+        "title": "CsvImportPreviewResult"
+      },
+      "CsvImportResponse": {
+        "properties": {
+          "imported_count": {
+            "type": "integer",
+            "title": "Imported Count",
+            "description": "Количество успешно импортированных документов"
+          },
+          "total_found": {
+            "type": "integer",
+            "title": "Total Found",
+            "description": "Всего найдено ссылок в CSV"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/CsvImportResult"
+            },
+            "type": "array",
+            "title": "Results",
+            "description": "Результаты обработки по каждой ссылке"
+          }
+        },
+        "type": "object",
+        "required": [
+          "imported_count",
+          "total_found",
+          "results"
+        ],
+        "title": "CsvImportResponse"
+      },
+      "CsvImportResult": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Название документа"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url",
+            "description": "URL документа"
+          },
+          "success": {
+            "type": "boolean",
+            "title": "Success",
+            "description": "Статус обработки"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message",
+            "description": "Сообщение об ошибке или статус"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "url",
+          "success"
+        ],
+        "title": "CsvImportResult"
       },
       "FaqItem": {
         "properties": {
@@ -1056,12 +1437,58 @@
         ],
         "title": "ParsedPageResult"
       },
+      "PopularQuestion": {
+        "properties": {
+          "question": {
+            "type": "string",
+            "title": "Question"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "question",
+          "count"
+        ],
+        "title": "PopularQuestion"
+      },
+      "PopularQuestionsResponse": {
+        "properties": {
+          "questions": {
+            "items": {
+              "$ref": "#/components/schemas/PopularQuestion"
+            },
+            "type": "array",
+            "title": "Questions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "questions"
+        ],
+        "title": "PopularQuestionsResponse"
+      },
       "RagDocument": {
         "properties": {
           "id": {
             "type": "string",
             "title": "Id",
             "description": "Идентификатор документа (обычно URL или имя файла)"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url",
+            "description": "Оригинальный URL или путь к файлу"
           },
           "status": {
             "type": "string",

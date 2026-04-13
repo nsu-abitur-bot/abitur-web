@@ -1,40 +1,87 @@
 <script setup lang="ts">
-import type { components } from "../../../types/openapi"
+import { uploadFaqCsv } from "~/services/faq"
 
-type FaqItem = components["schemas"]["FaqItem"]
-
-const apiBaseUrl = useRuntimeConfig().public.apiBaseUrl
-
-const { data: faqRes, refresh, status } = await useMyApi("/api/v1/faq", {
-  baseURL: apiBaseUrl,
-})
+const { data: faqRes, refresh, status } = await useApi("/api/v1/faq")
 
 const isCreateModalOpen = ref(false)
+
+const toast = useToast()
 
 const items = computed(() => faqRes.value?.items ?? [])
 
 const handleDelete = async (index: number) => {
-  // eslint-disable-next-line no-alert
-  if (confirm("Вы уверены, что хотите удалить этот вопрос?")) {
-    await useMyApi("/api/v1/faq/{index}", {
-      baseURL: apiBaseUrl,
-      method: "DELETE",
-      path: { index },
-    })
-    await refresh()
-  }
+  await useApi("/api/v1/faq/{index}", {
+    method: "DELETE",
+    path: { index },
+  })
+  toast.add({
+    title: "Успешно",
+    description: "Вопрос удален",
+    color: "success",
+  })
+  await refresh()
 }
 
 const handleFaqCreated = async () => {
   isCreateModalOpen.value = false
   await refresh()
 }
+
+const fileInput = useTemplateRef("fileInput")
+const isUploading = ref(false)
+
+const triggerFileInput = () => {
+  fileInput.value?.click()
+}
+
+const handleFileUpload = async (event: Event) => {
+  const target = event.target as HTMLInputElement
+  if (!target.files?.length) {
+    return
+  }
+
+  const file = target.files[0]
+  if (!file) {
+    return
+  }
+
+  try {
+    isUploading.value = true
+    await uploadFaqCsv(file)
+    toast.add({
+      title: "Успешно",
+      description: "FAQ обновлен",
+      color: "success",
+    })
+    await refresh()
+  } catch (error) {
+    console.error("Upload failed", error)
+    toast.add({
+      title: "Ошибка",
+      description: "Не удалось обновить FAQ",
+      color: "error",
+    })
+  } finally {
+    isUploading.value = false
+    // Reset input
+    target.value = ""
+  }
+}
 </script>
 
 <template lang="pug">
 ui-box(title="Управление FAQ")
   template(#right)
-    u-button(icon="i-heroicons-plus" color="primary" @click="isCreateModalOpen = true") Добавить вопрос
+    div(class="flex items-center gap-2")
+      input(ref="fileInput" type="file" accept=".csv" class="hidden" @change="handleFileUpload")
+      u-button(
+        icon="i-heroicons-arrow-up-tray"
+        color="info"
+        variant="soft"
+        :loading="isUploading"
+        @click="triggerFileInput"
+      ) Загрузить CSV
+      u-button(icon="i-heroicons-plus" color="primary" @click="isCreateModalOpen = true") Добавить вопрос
 
   div(v-if="status === 'pending'" class="py-10 flex justify-center text-gray-500")
     u-icon(name="i-heroicons-arrow-path" class="animate-spin w-8 h-8")
