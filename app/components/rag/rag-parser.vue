@@ -1,78 +1,37 @@
 <script setup lang="ts">
-import { confirmRagUpload, parsePageForRag, previewCsvDocuments } from "~/services/rag-upload"
+import { storeToRefs } from "pinia"
+
+import { previewCsvDocuments } from "~/services/rag-upload"
+import { useRagParserStore } from "~/stores/rag-parser"
 
 const emit = defineEmits<{
   (e: "success"): void
 }>()
 
-interface PendingItem {
-  url: string
-  title: string
-  text: string
-  documents: any[]
-  status: "idle" | "parsing" | "success" | "error" | "indexing" | "indexed" | "index_error"
-  error?: string
-}
+const store = useRagParserStore()
+const {
+  indexingStats,
+  isCsvUploading,
+  isUploading,
+  parsingStats,
+  pendingItems,
+  selectedIndices,
+  url,
+} = storeToRefs(store)
 
-const url = ref("")
-const pendingItems = ref<PendingItem[]>([])
-// For checkbox selection
-const selectedIndices = ref<Set<number>>(new Set())
+const selectedIndicesSet = computed(() => new Set(selectedIndices.value))
+const selectedCount = computed(() => selectedIndices.value.length)
 
-const isUploading = ref(false)
 const editingIndex = ref<number | null>(null)
 const fileInput = useTemplateRef("fileInput")
-const isCsvUploading = ref(false)
 const toast = useToast()
+
+onMounted(() => {
+  store.init()
+})
 
 const triggerCsvUpload = () => {
   fileInput.value?.click()
-}
-
-const isProcessingQueue = ref(false)
-const CONCURRENCY_LIMIT = 3
-
-const parseItem = async (item: PendingItem) => {
-  try {
-    const res = await parsePageForRag(item.url)
-    item.title = res.title || item.title
-    item.text = res.text || ""
-    item.documents = res.documents || []
-    item.status = "success"
-  } catch (err: any) {
-    item.status = "error"
-    item.error = err?.data?.detail || "Ошибка препроцессинга"
-  }
-}
-
-const processQueue = async () => {
-  if (isProcessingQueue.value) {
-    return
-  }
-  isProcessingQueue.value = true
-
-  try {
-    while (true) {
-      const idleItems = pendingItems.value.filter(item => item.status === "idle")
-      if (idleItems.length === 0) {
-        break
-      }
-
-      const parsingItems = pendingItems.value.filter(item => item.status === "parsing")
-      if (parsingItems.length >= CONCURRENCY_LIMIT) {
-        await new Promise(resolve => setTimeout(resolve, 500))
-        continue
-      }
-
-      const itemToStart = idleItems[0]
-      if (itemToStart) {
-        itemToStart.status = "parsing"
-        parseItem(itemToStart)
-      }
-    }
-  } finally {
-    isProcessingQueue.value = false
-  }
 }
 
 const handleCsvUpload = async (event: Event) => {
@@ -94,19 +53,7 @@ const handleCsvUpload = async (event: Event) => {
       color: "info",
     })
 
-    for (const res of result.results) {
-      const index = pendingItems.value.length
-      pendingItems.value.push({
-        url: res.url,
-        title: res.title || res.url,
-        text: "",
-        documents: [],
-        status: "idle",
-      })
-      selectedIndices.value.add(index)
-    }
-
-    processQueue()
+    store.addCsvItems(result.results)
   } catch (err: any) {
     toast.add({
       title: "Ошибка",
@@ -120,113 +67,43 @@ const handleCsvUpload = async (event: Event) => {
 }
 
 const handleAdd = () => {
-  if (!url.value) {
+  const nextUrl = url.value.trim()
+  if (!nextUrl) {
     return
   }
-  const currentUrl = url.value
-  url.value = ""
 
-  const index = pendingItems.value.length
-  pendingItems.value.push({
-    url: currentUrl,
-    title: currentUrl,
-    text: "",
-    documents: [],
-    status: "idle",
-  })
-  selectedIndices.value.add(index)
-  processQueue()
+  url.value = ""
+  store.addUrlItem(nextUrl)
 }
 
 const toggleSelection = (index: number) => {
-  if (selectedIndices.value.has(index)) {
-    selectedIndices.value.delete(index)
-  } else {
-    selectedIndices.value.add(index)
-  }
+  store.toggleSelection(index)
 }
 
 const toggleAll = () => {
-  const validForSelection = pendingItems.value.map((item, i) =>
-    (item.status !== "idle" && item.status !== "parsing" && item.status !== "indexing") ? i : -1,
-  ).filter(i => i !== -1)
-
-  if (selectedIndices.value.size === validForSelection.length && validForSelection.length > 0) {
-    selectedIndices.value.clear()
-  } else {
-    selectedIndices.value = new Set(validForSelection)
-  }
+  store.toggleAll()
 }
 
 const removeItem = (index: number) => {
-  pendingItems.value.splice(index, 1)
-  selectedIndices.value.delete(index)
-  selectedIndices.value = new Set([...selectedIndices.value].filter(i => i !== index).map(i => i > index ? i - 1 : i))
+  store.removeItem(index)
 }
 
 const handleConfirmUpload = async () => {
-  const itemsToUpload = [...selectedIndices.value]
-    .map(i => pendingItems.value[i])
-    .filter((item): item is PendingItem => !!item && item.status === "success" && !item.error)
-
-  if (itemsToUpload.length === 0) {
+  const { successCount, totalCount } = await store.confirmSelectedUpload()
+  if (totalCount === 0) {
     return
   }
 
-  isUploading.value = true
-  let successCount = 0
+  toast.add({
+    title: "Готово",
+    description: `Успешно загружено в RAG: ${successCount} из ${totalCount}`,
+    color: successCount === totalCount ? "success" : "warning",
+  })
 
-  try {
-    for (const item of itemsToUpload) {
-      item.status = "indexing"
-      try {
-        await confirmRagUpload({
-          title: item.title,
-          url: item.url,
-          text: item.text,
-          documents: [], // Больше не отправляем вложенные документы
-        })
-        item.status = "indexed"
-        successCount++
-      } catch (err: any) {
-        item.status = "index_error"
-        item.error = err?.data?.detail || "Ошибка загрузки в RAG"
-      }
-    }
-
-    toast.add({
-      title: "Готово",
-      description: `Успешно загружено в RAG: ${successCount} из ${itemsToUpload.length}`,
-      color: successCount === itemsToUpload.length ? "success" : "warning",
-    })
-
-    // Cleanup indexed items after a short delay
-    setTimeout(() => {
-      const indexedItems = new Set(pendingItems.value.map((v, i) => v.status === "indexed" ? i : -1))
-      pendingItems.value = pendingItems.value.filter((_, i) => !indexedItems.has(i))
-
-      const newSelected = new Set<number>()
-      let shiftCount = 0
-      for (let i = 0; i < pendingItems.value.length + indexedItems.size; i++) {
-        if (indexedItems.has(i)) {
-          shiftCount++
-        } else if (selectedIndices.value.has(i)) {
-          newSelected.add(i - shiftCount)
-        }
-      }
-      selectedIndices.value = newSelected
-
-      emit("success")
-    }, 3000)
-  } catch {
-    toast.add({
-      title: "Ошибка",
-      description: "Общая ошибка при загрузке в RAG",
-      color: "error",
-    })
-  } finally {
-    isUploading.value = false
-  }
+  setTimeout(() => {
+    store.cleanupIndexedItems()
+    emit("success")
+  }, 3000)
 }
 
 const openEditor = (index: number) => {
@@ -256,22 +133,6 @@ const editingText = computed({
       currentEditingItem.value.text = value
     }
   },
-})
-
-const parsingStats = computed(() => {
-  const items = pendingItems.value
-  const total = items.length
-  // Everything not idle or parsing is 'done' with parsing step
-  const done = items.filter(i => i.status !== "idle" && i.status !== "parsing").length
-  return { total, done }
-})
-
-const indexingStats = computed(() => {
-  // Items that we are trying to index right now (indexing, indexed, index_error)
-  const items = pendingItems.value.filter(i => i.status === "indexing" || i.status === "indexed" || i.status === "index_error")
-  const total = items.length
-  const done = items.filter(i => i.status === "indexed" || i.status === "index_error").length
-  return { total, done }
 })
 </script>
 
@@ -316,7 +177,7 @@ div(class="space-y-6")
     div(v-if="pendingItems.length > 0" class="space-y-4 border-t pt-4 dark:border-gray-800")
       div(class="flex items-center justify-between")
         div(class="text-sm font-medium text-gray-500") Очередь документов ({{ pendingItems.length }})
-        u-button(variant="ghost" size="xs" color="neutral" @click="toggleAll") {{ selectedIndices.size === pendingItems.length ? 'Снять выделение' : 'Выделить все' }}
+        u-button(variant="ghost" size="xs" color="neutral" @click="toggleAll") {{ selectedCount === pendingItems.length ? 'Снять выделение' : 'Выделить все' }}
 
       // Parsing Progress Bar
       div(v-if="parsingStats.done < parsingStats.total" class="space-y-1 bg-gray-50 dark:bg-gray-800/50 p-3 rounded-lg border dark:border-gray-800")
@@ -337,11 +198,11 @@ div(class="space-y-6")
           v-for="(item, index) in pendingItems"
           :key="index"
           class="flex flex-col gap-2 p-3 rounded-lg border dark:border-gray-800 transition-colors bg-gray-50 dark:bg-gray-800/50"
-          :class="[selectedIndices.has(index) ? 'border-l-2 border-l-primary-500 border-t-primary-100 border-r-primary-100 border-b-primary-100 dark:border-primary-800' : 'border-transparent']"
+          :class="[selectedIndicesSet.has(index) ? 'border-l-2 border-l-primary-500 border-t-primary-100 border-r-primary-100 border-b-primary-100 dark:border-primary-800' : 'border-transparent']"
         )
           div(class="flex items-center gap-3")
             u-checkbox(
-              :model-value="selectedIndices.has(index)"
+              :model-value="selectedIndicesSet.has(index)"
               :disabled="item.status === 'idle' || item.status === 'parsing' || item.status === 'indexing'"
               @update:model-value="toggleSelection(index)"
             )
@@ -392,7 +253,7 @@ div(class="space-y-6")
         size="md"
         class="font-medium"
         :loading="isUploading"
-        :disabled="selectedIndices.size === 0 || isUploading"
+        :disabled="selectedCount === 0 || isUploading"
         @click="handleConfirmUpload"
       ) Отправить выбранные в RAG
 

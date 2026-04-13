@@ -103,6 +103,7 @@ export default defineNuxtConfig({
   modules: [
     "@nuxt/icon",
     "@nuxt/ui",
+    "@pinia/nuxt",
     "nuxt-auth-utils",
     "nuxt-open-fetch",
   ],
