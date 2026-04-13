@@ -218,7 +218,7 @@ div(class="space-y-6")
               u-icon(v-else-if="item.status === 'index_error'" name="i-heroicons-x-circle" class="w-4 h-4 text-error-600 shrink-0" title="Ошибка загрузки")
 
               div(class="min-w-0 flex-1")
-                div(class="w-full text-sm font-semibold truncate flex items-center gap-2")
+                div(class="text-sm font-semibold truncate flex items-center gap-2")
                   | {{ item.title }}
                   span(v-if="item.status === 'success'" class="text-[10px] px-1.5 py-0.5 rounded bg-success-100 text-success-700 dark:bg-success-900/30 dark:text-success-400 font-normal shrink-0") Ожидает RAG
                   span(v-if="item.status === 'indexed'" class="text-[10px] px-1.5 py-0.5 rounded bg-success-50 text-success-600 dark:bg-success-900/10 dark:text-success-500 font-normal shrink-0") Загружено
@@ -267,7 +267,7 @@ div(class="space-y-6")
 
     div(class="space-y-4")
       u-form-field(label="Название")
-        u-input(v-model="editingTitle")
+        u-input(v-model="editingTitle" class="w-full")
 
       u-form-field(label="Предобработанный текст")
         u-textarea(
