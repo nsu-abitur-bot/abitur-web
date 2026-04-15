@@ -16,12 +16,22 @@ const parsedResult = ref<ParsedPageResult | null>(null)
 const editableText = ref("")
 const selectedDocumentsIndices = ref<Set<number>>(new Set())
 
+// Manual Mode State
+const isManualMode = ref(false)
+const manualTitle = ref("")
+const manualUrl = ref("")
+const manualText = ref("")
+
 const reset = () => {
   parsedResult.value = null
   url.value = ""
   isParsing.value = false
   isUploading.value = false
   selectedDocumentsIndices.value = new Set()
+  isManualMode.value = false
+  manualTitle.value = ""
+  manualUrl.value = ""
+  manualText.value = ""
 }
 
 // --- URL Parsing Logic ---
@@ -107,26 +117,112 @@ const handleConfirmUpload = async () => {
     isUploading.value = false
   }
 }
+
+const handleManualUpload = async () => {
+  if (!manualTitle.value || !manualText.value) {
+    return
+  }
+  isUploading.value = true
+  try {
+    await confirmRagUpload({
+      title: manualTitle.value,
+      url: manualUrl.value || "",
+      text: manualText.value,
+      documents: [],
+    })
+    toast.add({
+      title: "Успех",
+      description: "Данные успешно добавлены в RAG",
+      color: "success",
+    })
+    reset()
+    emit("success")
+  } catch {
+    toast.add({
+      title: "Ошибка",
+      description: "Ошибка при добавлении в RAG",
+      color: "error",
+    })
+  } finally {
+    isUploading.value = false
+  }
+}
 </script>
 
 <template lang="pug">
 div(class="space-y-6")
-  div(v-if="!parsedResult" class="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm")
-    u-form-field(label="Ссылка на страницу для анализа" class="w-full")
-      div(class="flex gap-2 w-full")
-        u-input(
-          v-model="url"
-          class="flex-1"
-          placeholder="https://nsu.ru/..."
-          icon="i-heroicons-globe-alt"
-          :disabled="isParsing"
-          @keyup.enter="handleParse"
-        )
+  div(v-if="!parsedResult && !isManualMode" class="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm")
+    u-form-field(label="Разбор по ссылке" class="w-full")
+      div(class="flex flex-col gap-4")
+        div(class="flex gap-2 w-full")
+          u-input(
+            v-model="url"
+            class="flex-1"
+            placeholder="https://nsu.ru/..."
+            icon="i-heroicons-globe-alt"
+            :disabled="isParsing"
+            @keyup.enter="handleParse"
+          )
+          u-button(
+            :loading="isParsing"
+            :disabled="!url || isParsing"
+            @click="handleParse"
+          ) Спарсить
+
+        div(class="flex justify-center items-center relative")
+          div(class="absolute inset-0 flex items-center")
+            div(class="w-full border-t border-gray-200 dark:border-gray-700")
+          div(class="relative bg-white dark:bg-gray-900 px-4 text-sm text-gray-500 font-medium") ИЛИ
+
         u-button(
-          :loading="isParsing"
-          :disabled="!url || isParsing"
-          @click="handleParse"
-        ) Спарсить
+          color="neutral"
+          variant="outline"
+          icon="i-heroicons-document-plus"
+          class="w-full justify-center"
+          @click="isManualMode = true"
+        ) Добавить текст вручную
+
+  // Manual Mode View
+  div(v-else-if="isManualMode" class="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm space-y-6 animate-in fade-in slide-in-from-bottom-2")
+    div(class="flex items-center justify-between border-b pb-4 dark:border-gray-800")
+      h3(class="text-lg font-semibold flex items-center gap-2")
+        u-icon(name="i-heroicons-document-plus" class="text-amber-500")
+        | Ручное добавление документа
+
+    div(class="grid grid-cols-1 gap-6")
+      u-form-field(label="Название" class="w-full" required)
+        u-input(
+          v-model="manualTitle"
+          class="w-full"
+          placeholder="Введите название документа..."
+        )
+
+      u-form-field(label="Ссылка на источник (опционально, для цитирования)" class="w-full")
+        u-input(
+          v-model="manualUrl"
+          class="w-full"
+          placeholder="https://..."
+          icon="i-heroicons-link"
+        )
+
+      u-form-field(label="Содержимое" class="w-full" required)
+        u-textarea(
+          v-model="manualText"
+          autoresize
+          :rows="12"
+          class="w-full font-mono text-sm"
+          placeholder="Скопируйте или напишите текст документа здесь..."
+        )
+
+    div(class="flex justify-end gap-3 pt-4 border-t dark:border-gray-800")
+      u-button(variant="ghost" color="neutral" @click="reset") Отмена
+      u-button(
+        color="primary"
+        icon="i-heroicons-cloud-arrow-up"
+        :loading="isUploading"
+        :disabled="!manualTitle || !manualText"
+        @click="handleManualUpload"
+      ) Добавить в базу знаний
 
   // Refinement View (Visible after URL parse)
   div(v-else class="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm space-y-6 animate-in fade-in slide-in-from-bottom-2")
@@ -134,7 +230,6 @@ div(class="space-y-6")
       h3(class="text-lg font-semibold flex items-center gap-2")
         u-icon(name="i-heroicons-sparkles" class="text-amber-500")
         | Результаты парсинга страницы
-      u-button(icon="i-heroicons-x-mark" color="neutral" variant="ghost" size="sm" @click="reset")
 
     div(class="grid grid-cols-1 gap-6")
       // Text Editor
