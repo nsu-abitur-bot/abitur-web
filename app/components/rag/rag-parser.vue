@@ -209,13 +209,13 @@ div(class="space-y-6")
 
             div(class="flex-1 min-w-0 flex items-center gap-2")
               // Status Icons mapping
-              u-icon(v-if="item.status === 'idle'" name="i-heroicons-clock" class="w-4 h-4 text-gray-400 shrink-0" title="Ожидает очереди")
-              u-icon(v-else-if="item.status === 'parsing'" name="i-heroicons-arrow-path" class="animate-spin w-4 h-4 text-primary-500 shrink-0" title="Препроцессинг")
-              u-icon(v-else-if="item.status === 'success'" name="i-heroicons-check-circle" class="w-4 h-4 text-success-500 shrink-0" title="Готово к загрузке")
-              u-icon(v-else-if="item.status === 'error'" name="i-heroicons-exclamation-circle" class="w-4 h-4 text-error-500 shrink-0" title="Ошибка")
-              u-icon(v-else-if="item.status === 'indexing'" name="i-heroicons-arrow-path" class="animate-spin w-4 h-4 text-warning-500 shrink-0" title="Загрузка в RAG")
-              u-icon(v-else-if="item.status === 'indexed'" name="i-heroicons-check-badge" class="w-4 h-4 text-success-600 shrink-0" title="В базе RAG")
-              u-icon(v-else-if="item.status === 'index_error'" name="i-heroicons-x-circle" class="w-4 h-4 text-error-600 shrink-0" title="Ошибка загрузки")
+              u-icon(v-if="item.status === 'idle'" name="i-heroicons-clock" size="lg" class="text-gray-400 shrink-0" title="Ожидает очереди")
+              u-icon(v-else-if="item.status === 'parsing'" name="i-heroicons-arrow-path" size="lg" class="animate-spin text-primary-500 shrink-0" title="Препроцессинг")
+              u-icon(v-else-if="item.status === 'success'" name="i-heroicons-check-circle" size="lg" class="text-success-500 shrink-0" title="Готово к загрузке")
+              u-icon(v-else-if="item.status === 'error'" name="i-heroicons-exclamation-circle" size="lg" class="text-error-500 shrink-0" title="Ошибка")
+              u-icon(v-else-if="item.status === 'indexing'" name="i-heroicons-arrow-path" size="lg" class="animate-spin text-warning-500 shrink-0" title="Загрузка в RAG")
+              u-icon(v-else-if="item.status === 'indexed'" name="i-heroicons-check-badge" size="lg" class="text-success-600 shrink-0" title="В базе RAG")
+              u-icon(v-else-if="item.status === 'index_error'" name="i-heroicons-x-circle" size="lg" class="text-error-600 shrink-0" title="Ошибка загрузки")
 
               div(class="min-w-0 flex-1")
                 div(class="text-sm font-semibold truncate flex items-center gap-2")
@@ -229,7 +229,7 @@ div(class="space-y-6")
                 v-if="item.status === 'success' || item.status === 'error'"
                 icon="i-heroicons-magnifying-glass"
                 variant="ghost"
-                size="xs"
+                size="lg"
                 color="neutral"
                 title="Посмотреть результат"
                 @click="openEditor(index)"
@@ -237,7 +237,7 @@ div(class="space-y-6")
               u-button(
                 icon="i-heroicons-trash"
                 variant="ghost"
-                size="xs"
+                size="lg"
                 color="error"
                 @click="removeItem(index)"
               )
@@ -268,6 +268,9 @@ div(class="space-y-6")
     div(class="space-y-4")
       u-form-field(label="Название")
         u-input(v-model="editingTitle" class="w-full")
+
+      u-form-field(label="Источник")
+        u-input(:model-value="currentEditingItem?.url" disabled class="w-full")
 
       u-form-field(label="Предобработанный текст")
         u-textarea(

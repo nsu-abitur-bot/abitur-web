@@ -196,7 +196,7 @@ div(class="space-y-4")
                   div(v-if="getDocStatusExtra(doc)" class="text-[10px] text-error-500 font-medium") — {{ getDocStatusExtra(doc) }}
                 div(class="text-[11px] text-gray-500 truncate max-w-lg")
                   a(:href="doc.url" target="_blank" class="hover:underline hover:text-primary-600 flex items-center gap-1")
-                    u-icon(name="i-heroicons-link" class="w-3 h-3")
+                    u-icon(name="i-heroicons-link" size="lg")
                     | {{ doc.id }}
                 div(v-if="doc.content_summary" class="text-[10px] text-gray-400 italic mt-1 line-clamp-1") {{ doc.content_summary }}
 
@@ -217,7 +217,7 @@ div(class="space-y-4")
                 icon="i-heroicons-eye"
                 variant="ghost"
                 color="neutral"
-                size="md"
+                size="lg"
                 :to="`/rag/document/${encodeURIComponent(doc.id)}`"
                 title="Просмотреть"
               )

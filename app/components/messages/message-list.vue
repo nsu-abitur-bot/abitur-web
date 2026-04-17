@@ -115,7 +115,7 @@ div(class="space-y-6")
         )
 
     div(v-if="popularStatus === 'pending' && !popularQuestions?.length" class="py-8 flex justify-center text-gray-500")
-      u-icon(name="i-heroicons-arrow-path" class="animate-spin w-6 h-6")
+      u-icon(name="i-heroicons-arrow-path" class="animate-spin" size="lg")
 
     div(v-else-if="!popularQuestions || popularQuestions.length === 0" class="py-6 text-center text-gray-500 bg-gray-50 dark:bg-gray-800 rounded-lg")
       p Популярные вопросы пока отсутствуют.
@@ -168,10 +168,10 @@ div(class="space-y-6")
         ) Экспорт в CSV
 
     div(v-if="status === 'pending' && !items.length" class="py-10 flex justify-center text-gray-500")
-      u-icon(name="i-heroicons-arrow-path" class="animate-spin w-8 h-8")
+      u-icon(name="i-heroicons-arrow-path" class="animate-spin w-12 h-12")
 
     div(v-else-if="items.length === 0" class="py-12 text-center text-gray-500 bg-gray-50 dark:bg-gray-800 rounded-lg mt-6")
-      u-icon(name="i-heroicons-chat-bubble-left-right" class="w-12 h-12 mx-auto text-gray-400 mb-3")
+      u-icon(name="i-heroicons-chat-bubble-left-right" class="w-16 h-16 mx-auto text-gray-400 mb-3")
       p Список сообщений пуст или нет данных по выбранному фильтру.
 
     div(v-else class="mt-6 overflow-x-auto")
