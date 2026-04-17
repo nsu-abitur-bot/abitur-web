@@ -93,7 +93,9 @@ export const useRagParserStore = defineStore("ragParser", () => {
         return
       }
 
-      current.title = res.title || current.title
+      if (current.title === current.url) {
+        current.title = res.title || current.title
+      }
       current.text = res.text || ""
       current.documents = res.documents || []
       current.status = "success"
