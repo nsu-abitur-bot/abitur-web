@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia"
 
-import { previewCsvDocuments } from "~/services/rag-upload"
+import { confirmRagUpload, previewCsvDocuments } from "~/services/rag-upload"
 import { useRagParserStore } from "~/stores/rag-parser"
 
 const emit = defineEmits<{
@@ -23,6 +23,10 @@ const selectedIndicesSet = computed(() => new Set(selectedIndices.value))
 const selectedCount = computed(() => selectedIndices.value.length)
 
 const editingIndex = ref<number | null>(null)
+const isManualMode = ref(false)
+const manualTitle = ref("")
+const manualUrl = ref("")
+const manualText = ref("")
 const fileInput = useTemplateRef("fileInput")
 const toast = useToast()
 
@@ -106,6 +110,44 @@ const handleConfirmUpload = async () => {
   }, 3000)
 }
 
+const resetManualForm = () => {
+  isManualMode.value = false
+  manualTitle.value = ""
+  manualUrl.value = ""
+  manualText.value = ""
+}
+
+const handleManualUpload = async () => {
+  if (!manualTitle.value || !manualText.value) {
+    return
+  }
+
+  isUploading.value = true
+  try {
+    await confirmRagUpload({
+      title: manualTitle.value,
+      url: manualUrl.value || "",
+      text: manualText.value,
+      documents: [],
+    })
+    toast.add({
+      title: "Успех",
+      description: "Данные успешно добавлены в RAG",
+      color: "success",
+    })
+    resetManualForm()
+    emit("success")
+  } catch (err: any) {
+    toast.add({
+      title: "Ошибка",
+      description: err?.data?.detail || "Ошибка при добавлении в RAG",
+      color: "error",
+    })
+  } finally {
+    isUploading.value = false
+  }
+}
+
 const openEditor = (index: number) => {
   if (pendingItems.value[index]?.status !== "success" && pendingItems.value[index]?.status !== "error") {
     return
@@ -172,6 +214,49 @@ div(class="space-y-6")
           :disabled="!url"
           @click="handleAdd"
         ) Добавить
+
+    div(class="pt-2")
+      u-button(
+        color="neutral"
+        variant="outline"
+        icon="i-heroicons-document-plus"
+        @click="isManualMode = !isManualMode"
+      ) {{ isManualMode ? "Скрыть ручное добавление" : "Добавить текст вручную" }}
+
+    div(v-if="isManualMode" class="space-y-4 border-t pt-4 dark:border-gray-800")
+      u-form-field(label="Название" class="w-full" required)
+        u-input(
+          v-model="manualTitle"
+          class="w-full"
+          placeholder="Введите название документа..."
+        )
+
+      u-form-field(label="Ссылка на источник (опционально)" class="w-full")
+        u-input(
+          v-model="manualUrl"
+          class="w-full"
+          placeholder="https://..."
+          icon="i-heroicons-link"
+        )
+
+      u-form-field(label="Содержимое" class="w-full" required)
+        u-textarea(
+          v-model="manualText"
+          autoresize
+          :rows="8"
+          class="w-full font-mono text-sm"
+          placeholder="Скопируйте или напишите текст документа здесь..."
+        )
+
+      div(class="flex justify-end gap-3 pt-2")
+        u-button(variant="ghost" color="neutral" @click="resetManualForm") Отмена
+        u-button(
+          color="primary"
+          icon="i-heroicons-cloud-arrow-up"
+          :loading="isUploading"
+          :disabled="!manualTitle || !manualText || isUploading"
+          @click="handleManualUpload"
+        ) Добавить в базу знаний
 
     // Pending List
     div(v-if="pendingItems.length > 0" class="space-y-4 border-t pt-4 dark:border-gray-800")
