@@ -23,6 +23,7 @@ export default defineNuxtConfig({
 
   alias: {
     "#server": fileURLToPath(new URL("./server", import.meta.url)),
+    "#openapi": fileURLToPath(new URL("./types/openapi", import.meta.url)),
   },
 
   app: {
@@ -102,6 +103,7 @@ export default defineNuxtConfig({
   modules: [
     "@nuxt/icon",
     "@nuxt/ui",
+    "@pinia/nuxt",
     "nuxt-auth-utils",
     "nuxt-open-fetch",
   ],
