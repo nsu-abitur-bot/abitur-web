@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { getRagDocumentContent } from "~/services/rag-upload"
+import { getRagDocumentContent, listRagDocuments } from "~/services/rag-upload"
 
 const route = useRoute()
-const docId = decodeURIComponent(route.params.id as string)
+const docId = route.params.id as string
 
 const { data, pending, error } = useAsyncData(`rag-doc-${docId}`, async () => {
   const [content, docs] = await Promise.all([
