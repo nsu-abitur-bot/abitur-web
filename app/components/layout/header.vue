@@ -32,6 +32,11 @@ const items = computed<NavigationMenuItem[]>(() => [
     to: "/settings",
     active: route.path.startsWith("/settings"),
   },
+  {
+    label: "Тестирование",
+    to: "/testing",
+    active: route.path.startsWith("/testing"),
+  },
 ])
 
 const handleLogout = async () => {

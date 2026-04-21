@@ -868,6 +868,48 @@
         }
       }
     },
+    "/api/v1/evals/run": {
+      "post": {
+        "tags": [
+          "Evaluations"
+        ],
+        "summary": "Run Evaluation",
+        "operationId": "run_evaluation_api_v1_evals_run_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/evals/status": {
+      "get": {
+        "tags": [
+          "Evaluations"
+        ],
+        "summary": "Get Evaluation Status",
+        "operationId": "get_evaluation_status_api_v1_evals_status_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/users/count-stats": {
       "get": {
         "summary": "Get Users Count Stats",
