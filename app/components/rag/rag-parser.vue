@@ -245,6 +245,7 @@ div(class="space-y-6")
           autoresize
           :rows="8"
           class="w-full font-mono text-sm"
+          style="overflow: hidden"
           placeholder="Скопируйте или напишите текст документа здесь..."
         )
 
@@ -364,6 +365,7 @@ div(class="space-y-6")
           :maxrows="25"
           :rows="14"
           class="w-full font-mono text-xs"
+          style="overflow: hidden"
         )
 
       div(v-if="currentEditingItem?.error" class="p-3 bg-error-50 dark:bg-error-900/10 border border-error-100 dark:border-error-900/50 text-error-600 dark:text-error-400 rounded-md text-sm")
