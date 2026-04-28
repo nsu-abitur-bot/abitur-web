@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { components } from "../../../types/openapi"
+import type { components } from "#openapi"
 
 type FaqItem = components["schemas"]["FaqItem"]
 
@@ -41,13 +41,20 @@ div(class="border border-gray-200 dark:border-gray-700 rounded-lg p-5 bg-white d
           size="sm"
           @click="isEditing = true"
         )
-        u-button(
-          icon="i-heroicons-trash"
-          color="error"
-          variant="ghost"
-          size="sm"
-          @click="emit('delete')"
+        u-modal(
+          title="Удаление вопроса"
+          description="Вы уверены, что хотите удалить этот вопрос? Это действие нельзя отменить."
         )
+          u-button(
+            icon="i-heroicons-trash"
+            color="error"
+            variant="ghost"
+            size="sm"
+          )
+          template(#footer="{ close }")
+            div(class="flex justify-end gap-2 w-full")
+              u-button(color="neutral" variant="ghost" @click="close") Отмена
+              u-button(color="error" @click="emit('delete'); close()") Удалить
 
     // Aliases visually shown
     div(v-if="props.item.aliases && props.item.aliases.length > 0" class="flex flex-wrap gap-2 mt-1")

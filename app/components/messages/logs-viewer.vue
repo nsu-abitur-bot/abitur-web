@@ -3,10 +3,10 @@ const props = defineProps<{
   sessionId: string
 }>()
 
-const apiBaseUrl = useRuntimeConfig().public.apiBaseUrl
-
-const { data, status } = await useMyApi(`/api/v1/logs/session/${props.sessionId}`, {
-  baseURL: apiBaseUrl,
+const { data, status } = await useApi("/api/v1/logs/session/{session_id}", {
+  path: {
+    session_id: props.sessionId,
+  },
   query: {
     limit: 100,
   },
