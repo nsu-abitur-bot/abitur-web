@@ -172,8 +172,8 @@ div(class="space-y-4")
     p База знаний пуста. Добавьте URL выше.
 
   div(v-else class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm")
-    div(class="overflow-x-auto")
-      table(class="min-w-full divide-y divide-gray-200 dark:divide-gray-700")
+    div
+      table(class="w-full divide-y divide-gray-200 dark:divide-gray-700")
         tbody(class="divide-y divide-gray-100 dark:divide-gray-800")
           tr(
             v-for="doc in documents"
@@ -189,14 +189,14 @@ div(class="space-y-4")
               )
 
             // Content Column
-            td(class="px-4 py-4 min-w-[300px]")
+            td(class="px-4 py-4")
               div(class="flex flex-col gap-0.5")
-                div(class="flex items-center gap-2")
-                  span(class="text-sm font-semibold truncate text-gray-900 dark:text-white" :title="doc.id") {{ doc.id }}
-                  div(v-if="getDocStatusExtra(doc)" class="text-[10px] text-error-500 font-medium") — {{ getDocStatusExtra(doc) }}
-                div(class="text-[11px] text-gray-500 truncate max-w-lg")
-                  a(:href="doc.url" target="_blank" class="hover:underline hover:text-primary-600 flex items-center gap-1")
-                    u-icon(name="i-heroicons-link" size="lg")
+                div(class="flex items-start gap-2 flex-wrap")
+                  span(class="text-sm font-semibold break-all text-gray-900 dark:text-white") {{ doc.id }}
+                  div(v-if="getDocStatusExtra(doc)" class="text-[10px] text-error-500 font-medium shrink-0") — {{ getDocStatusExtra(doc) }}
+                div(class="text-[11px] text-gray-500 break-all")
+                  a(:href="doc.url" target="_blank" class="hover:underline hover:text-primary-600 flex items-start gap-1")
+                    u-icon(name="i-heroicons-link" size="lg" class="shrink-0 mt-0.5")
                     | {{ doc.id }}
                 div(v-if="doc.content_summary" class="text-[10px] text-gray-400 italic mt-1 line-clamp-1") {{ doc.content_summary }}
 

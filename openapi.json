@@ -894,8 +894,8 @@
         "tags": [
           "Evaluations"
         ],
-        "summary": "Get Evaluation Status",
-        "operationId": "get_evaluation_status_api_v1_evals_status_get",
+        "summary": "Route Get Evaluation Status",
+        "operationId": "route_get_evaluation_status_api_v1_evals_status_get",
         "responses": {
           "200": {
             "description": "Successful Response",
