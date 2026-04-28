@@ -196,6 +196,101 @@
         }
       }
     },
+    "/api/v1/logs/request-stats": {
+      "get": {
+        "tags": [
+          "Message Logs"
+        ],
+        "summary": "Статистика количества запросов",
+        "operationId": "get_request_stats_api_v1_logs_request_stats_get",
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Начало периода (ISO 8601)",
+              "title": "Start"
+            },
+            "description": "Начало периода (ISO 8601)"
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Конец периода (ISO 8601)",
+              "title": "End"
+            },
+            "description": "Конец периода (ISO 8601)"
+          },
+          {
+            "name": "group_by",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Группировка: hour, day, week, month",
+              "default": "day",
+              "title": "Group By"
+            },
+            "description": "Группировка: hour, day, week, month"
+          },
+          {
+            "name": "message_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Тип сообщения для статистики",
+              "default": "user_input",
+              "title": "Message Type"
+            },
+            "description": "Тип сообщения для статистики"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestCountStatsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/logs/": {
       "get": {
         "tags": [
@@ -1655,6 +1750,77 @@
           "results"
         ],
         "title": "RagUploadResponse"
+      },
+      "RequestCountBucket": {
+        "properties": {
+          "period": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Period"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "period",
+          "count"
+        ],
+        "title": "RequestCountBucket",
+        "description": "Элемент статистики по количеству запросов."
+      },
+      "RequestCountStatsResponse": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "group_by": {
+            "type": "string",
+            "title": "Group By"
+          },
+          "start": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start"
+          },
+          "end": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End"
+          },
+          "buckets": {
+            "items": {
+              "$ref": "#/components/schemas/RequestCountBucket"
+            },
+            "type": "array",
+            "title": "Buckets"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total",
+          "group_by",
+          "buckets"
+        ],
+        "title": "RequestCountStatsResponse",
+        "description": "Статистика количества запросов за период времени."
       },
       "UploadedDocumentResult": {
         "properties": {
