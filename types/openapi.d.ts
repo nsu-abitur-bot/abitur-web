@@ -4,6 +4,54 @@
  */
 
 export interface paths {
+  "/api/v1/abbrev": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Получить все аббревиатуры
+     * @description Возвращает словарь всех аббревиатур.
+     */
+    get: operations["get_all_api_v1_abbrev_get"]
+    put?: never
+    /**
+     * Добавить аббревиатуру
+     * @description Добавляет новую аббревиатуру в словарь.
+     */
+    post: operations["create_api_v1_abbrev_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/abbrev/{index}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /**
+     * Обновить аббревиатуру по индексу
+     * @description Обновляет существующую аббревиатуру по индексу в списке.
+     */
+    put: operations["update_api_v1_abbrev__index__put"]
+    post?: never
+    /**
+     * Удалить аббревиатуру по индексу
+     * @description Удаляет аббревиатуру по индексу.
+     */
+    delete: operations["delete_api_v1_abbrev__index__delete"]
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/faq": {
     parameters: {
       query?: never
@@ -70,6 +118,23 @@ export interface paths {
      * @description Удаляет существующий FAQ элемент по его позиции (индексу) в списке.
      */
     delete: operations["delete_faq_api_v1_faq__index__delete"]
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/logs/request-stats": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Статистика количества запросов */
+    get: operations["get_request_stats_api_v1_logs_request_stats_get"]
+    put?: never
+    post?: never
+    delete?: never
     options?: never
     head?: never
     patch?: never
@@ -371,8 +436,8 @@ export interface paths {
       path?: never
       cookie?: never
     }
-    /** Get Evaluation Status */
-    get: operations["get_evaluation_status_api_v1_evals_status_get"]
+    /** Route Get Evaluation Status */
+    get: operations["route_get_evaluation_status_api_v1_evals_status_get"]
     put?: never
     post?: never
     delete?: never
@@ -422,6 +487,27 @@ export interface paths {
 export type webhooks = Record<string, never>
 export interface components {
   schemas: {
+    /** AbbrevItem */
+    AbbrevItem: {
+      /**
+       * Short
+       * @description Аббревиатура (например, НГУ)
+       */
+      short: string
+      /**
+       * Full
+       * @description Расшифровка (например, Новосибирский государственный университет)
+       */
+      full: string
+    }
+    /** AbbrevListResponse */
+    AbbrevListResponse: {
+      /**
+       * Items
+       * @description Список аббревиатур
+       */
+      items: components["schemas"]["AbbrevItem"][]
+    }
     /** Body_preview_csv_documents_api_v1_rag_upload_csv_preview_post */
     Body_preview_csv_documents_api_v1_rag_upload_csv_preview_post: {
       /**
@@ -767,6 +853,35 @@ export interface components {
        */
       results: components["schemas"]["UploadedDocumentResult"][]
     }
+    /**
+     * RequestCountBucket
+     * @description Элемент статистики по количеству запросов.
+     */
+    RequestCountBucket: {
+      /**
+       * Period
+       * Format: date-time
+       */
+      period: string
+      /** Count */
+      count: number
+    }
+    /**
+     * RequestCountStatsResponse
+     * @description Статистика количества запросов за период времени.
+     */
+    RequestCountStatsResponse: {
+      /** Total */
+      total: number
+      /** Group By */
+      group_by: string
+      /** Start */
+      start?: string | null
+      /** End */
+      end?: string | null
+      /** Buckets */
+      buckets: components["schemas"]["RequestCountBucket"][]
+    }
     /** UploadedDocumentResult */
     UploadedDocumentResult: {
       /**
@@ -826,6 +941,123 @@ export interface components {
 }
 export type $defs = Record<string, never>
 export interface operations {
+  get_all_api_v1_abbrev_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["AbbrevListResponse"]
+        }
+      }
+    }
+  }
+  create_api_v1_abbrev_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AbbrevItem"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["AbbrevItem"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  update_api_v1_abbrev__index__put: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        index: number
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AbbrevItem"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["AbbrevItem"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  delete_api_v1_abbrev__index__delete: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        index: number
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
   get_all_faqs_api_v1_faq_get: {
     parameters: {
       query?: never
@@ -964,6 +1196,44 @@ export interface operations {
           [name: string]: unknown
         }
         content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_request_stats_api_v1_logs_request_stats_get: {
+    parameters: {
+      query?: {
+        /** @description Начало периода (ISO 8601) */
+        start?: string | null
+        /** @description Конец периода (ISO 8601) */
+        end?: string | null
+        /** @description Группировка: hour, day, week, month */
+        group_by?: string
+        /** @description Тип сообщения для статистики */
+        message_type?: string
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["RequestCountStatsResponse"]
+        }
       }
       /** @description Validation Error */
       422: {
@@ -1410,7 +1680,7 @@ export interface operations {
       }
     }
   }
-  get_evaluation_status_api_v1_evals_status_get: {
+  route_get_evaluation_status_api_v1_evals_status_get: {
     parameters: {
       query?: never
       header?: never

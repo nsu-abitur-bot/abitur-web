@@ -5,6 +5,155 @@
     "version": "0.1.0"
   },
   "paths": {
+    "/api/v1/abbrev": {
+      "get": {
+        "tags": [
+          "Abbreviations"
+        ],
+        "summary": "Получить все аббревиатуры",
+        "description": "Возвращает словарь всех аббревиатур.",
+        "operationId": "get_all_api_v1_abbrev_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AbbrevListResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Abbreviations"
+        ],
+        "summary": "Добавить аббревиатуру",
+        "description": "Добавляет новую аббревиатуру в словарь.",
+        "operationId": "create_api_v1_abbrev_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AbbrevItem"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AbbrevItem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/abbrev/{index}": {
+      "put": {
+        "tags": [
+          "Abbreviations"
+        ],
+        "summary": "Обновить аббревиатуру по индексу",
+        "description": "Обновляет существующую аббревиатуру по индексу в списке.",
+        "operationId": "update_api_v1_abbrev__index__put",
+        "parameters": [
+          {
+            "name": "index",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Index"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AbbrevItem"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AbbrevItem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Abbreviations"
+        ],
+        "summary": "Удалить аббревиатуру по индексу",
+        "description": "Удаляет аббревиатуру по индексу.",
+        "operationId": "delete_api_v1_abbrev__index__delete",
+        "parameters": [
+          {
+            "name": "index",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Index"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/faq": {
       "get": {
         "tags": [
@@ -1106,6 +1255,43 @@
   },
   "components": {
     "schemas": {
+      "AbbrevItem": {
+        "properties": {
+          "short": {
+            "type": "string",
+            "title": "Short",
+            "description": "Аббревиатура (например, НГУ)"
+          },
+          "full": {
+            "type": "string",
+            "title": "Full",
+            "description": "Расшифровка (например, Новосибирский государственный университет)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "short",
+          "full"
+        ],
+        "title": "AbbrevItem"
+      },
+      "AbbrevListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AbbrevItem"
+            },
+            "type": "array",
+            "title": "Items",
+            "description": "Список аббревиатур"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "title": "AbbrevListResponse"
+      },
       "Body_preview_csv_documents_api_v1_rag_upload_csv_preview_post": {
         "properties": {
           "file": {
