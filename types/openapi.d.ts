@@ -4,6 +4,108 @@
  */
 
 export interface paths {
+  "/api/v1/auth/login": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Login */
+    post: operations["login_api_v1_auth_login_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/auth/register": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Register */
+    post: operations["register_api_v1_auth_register_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/auth/me": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Me */
+    get: operations["get_me_api_v1_auth_me_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/auth/invite": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Create Invite */
+    post: operations["create_invite_api_v1_auth_invite_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/auth/admins": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** List Admins */
+    get: operations["list_admins_api_v1_auth_admins_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/auth/admins/{admin_id}/deactivate": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    /** Deactivate Admin */
+    patch: operations["deactivate_admin_api_v1_auth_admins__admin_id__deactivate_patch"]
+    trace?: never
+  }
   "/api/v1/abbrev": {
     parameters: {
       query?: never
@@ -90,7 +192,8 @@ export interface paths {
      * @description Загружает вопросы и ответы FAQ из CSV-файла.
      *     Ожидается CSV файл с колонками "Вопросы" и "Ответы".
      *     Пустая строка означает, что начинается новый вопрос.
-     *     Первый вопрос в блоке становится основным, остальные - альтернативными формулировками (aliases).
+     *     Первый вопрос в блоке становится основным,
+     *     остальные - альтернативными формулировками (aliases).
      */
     post: operations["upload_faq_csv_api_v1_faq_upload_post"]
     delete?: never
@@ -508,6 +611,28 @@ export interface components {
        */
       items: components["schemas"]["AbbrevItem"][]
     }
+    /** AdminResponse */
+    AdminResponse: {
+      /** Id */
+      id: string
+      /** Username */
+      username: string
+      role: components["schemas"]["AdminRole"]
+      /** Is Active */
+      is_active: boolean
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string
+      /** Created By Id */
+      created_by_id: string | null
+    }
+    /**
+     * AdminRole
+     * @enum {string}
+     */
+    AdminRole: "superadmin" | "admin" | "viewer"
     /** Body_preview_csv_documents_api_v1_rag_upload_csv_preview_post */
     Body_preview_csv_documents_api_v1_rag_upload_csv_preview_post: {
       /**
@@ -668,6 +793,28 @@ export interface components {
     HTTPValidationError: {
       /** Detail */
       detail?: components["schemas"]["ValidationError"][]
+    }
+    /** InviteCodeRequest */
+    InviteCodeRequest: {
+      /** @default admin */
+      role: components["schemas"]["AdminRole"]
+      /** Expires In Hours */
+      expires_in_hours?: number | null
+    }
+    /** InviteCodeResponse */
+    InviteCodeResponse: {
+      /** Code */
+      code: string
+      role: components["schemas"]["AdminRole"]
+      /** Expires At */
+      expires_at: string | null
+    }
+    /** LoginRequest */
+    LoginRequest: {
+      /** Username */
+      username: string
+      /** Password */
+      password: string
     }
     /**
      * MessageLogListResponse
@@ -853,6 +1000,15 @@ export interface components {
        */
       results: components["schemas"]["UploadedDocumentResult"][]
     }
+    /** RegisterRequest */
+    RegisterRequest: {
+      /** Username */
+      username: string
+      /** Password */
+      password: string
+      /** Invite Code */
+      invite_code?: string | null
+    }
     /**
      * RequestCountBucket
      * @description Элемент статистики по количеству запросов.
@@ -881,6 +1037,16 @@ export interface components {
       end?: string | null
       /** Buckets */
       buckets: components["schemas"]["RequestCountBucket"][]
+    }
+    /** TokenResponse */
+    TokenResponse: {
+      /** Access Token */
+      access_token: string
+      /**
+       * Token Type
+       * @default bearer
+       */
+      token_type: string
     }
     /** UploadedDocumentResult */
     UploadedDocumentResult: {
@@ -941,6 +1107,176 @@ export interface components {
 }
 export type $defs = Record<string, never>
 export interface operations {
+  login_api_v1_auth_login_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["LoginRequest"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["TokenResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  register_api_v1_auth_register_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RegisterRequest"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["AdminResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_me_api_v1_auth_me_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["AdminResponse"]
+        }
+      }
+    }
+  }
+  create_invite_api_v1_auth_invite_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["InviteCodeRequest"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["InviteCodeResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  list_admins_api_v1_auth_admins_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["AdminResponse"][]
+        }
+      }
+    }
+  }
+  deactivate_admin_api_v1_auth_admins__admin_id__deactivate_patch: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        admin_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["AdminResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
   get_all_api_v1_abbrev_get: {
     parameters: {
       query?: never

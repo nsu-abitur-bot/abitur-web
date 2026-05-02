@@ -104,7 +104,6 @@ export default defineNuxtConfig({
     "@nuxt/icon",
     "@nuxt/ui",
     "@pinia/nuxt",
-    "nuxt-auth-utils",
     "nuxt-open-fetch",
   ],
 
@@ -134,21 +133,6 @@ export default defineNuxtConfig({
   //
 
   runtimeConfig: {
-    serviceToken: "", // NUXT_SERVICE_TOKEN
-    database: {
-      url: "", // NUXT_DATABASE_URL
-      log: false,
-    },
-    session: {
-      name: "abitur-session",
-      // NUXT_SESSION_PASSWORD
-      // Generate with: openssl rand -hex 32
-      password: "",
-      cookie: {
-        sameSite: "lax",
-        secure: false,
-      },
-    },
     public: {
       // NUXT_PUBLIC_BASE_URL, без слеша на конце (пример: https://abitur.localhost)
       baseUrl: "",
@@ -174,9 +158,6 @@ export default defineNuxtConfig({
       public: {
         baseUrl: "https://abitur.localhost",
         apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || "http://10.5.10.190:8000",
-      },
-      database: {
-        url: "postgres://localhost/abitur_web",
       },
     },
   },

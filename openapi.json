@@ -5,6 +5,237 @@
     "version": "0.1.0"
   },
   "paths": {
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Login",
+        "operationId": "login_api_v1_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Register",
+        "operationId": "register_api_v1_auth_register_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Get Me",
+        "operationId": "get_me_api_v1_auth_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/invite": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Create Invite",
+        "operationId": "create_invite_api_v1_auth_invite_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InviteCodeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InviteCodeResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/admins": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "List Admins",
+        "operationId": "list_admins_api_v1_auth_admins_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AdminResponse"
+                  },
+                  "type": "array",
+                  "title": "Response List Admins Api V1 Auth Admins Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/admins/{admin_id}/deactivate": {
+      "patch": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Deactivate Admin",
+        "operationId": "deactivate_admin_api_v1_auth_admins__admin_id__deactivate_patch",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "admin_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Admin Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/abbrev": {
       "get": {
         "tags": [
@@ -24,7 +255,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
       },
       "post": {
         "tags": [
@@ -64,7 +300,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
       }
     },
     "/api/v1/abbrev/{index}": {
@@ -75,6 +316,11 @@
         "summary": "Обновить аббревиатуру по индексу",
         "description": "Обновляет существующую аббревиатуру по индексу в списке.",
         "operationId": "update_api_v1_abbrev__index__put",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "index",
@@ -126,6 +372,11 @@
         "summary": "Удалить аббревиатуру по индексу",
         "description": "Удаляет аббревиатуру по индексу.",
         "operationId": "delete_api_v1_abbrev__index__delete",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "index",
@@ -173,7 +424,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
       },
       "post": {
         "tags": [
@@ -213,7 +469,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
       }
     },
     "/api/v1/faq/upload": {
@@ -222,7 +483,7 @@
           "FAQ Management"
         ],
         "summary": "Загрузить FAQ из CSV",
-        "description": "Загружает вопросы и ответы FAQ из CSV-файла.\nОжидается CSV файл с колонками \"Вопросы\" и \"Ответы\".\nПустая строка означает, что начинается новый вопрос.\nПервый вопрос в блоке становится основным, остальные - альтернативными формулировками (aliases).",
+        "description": "Загружает вопросы и ответы FAQ из CSV-файла.\nОжидается CSV файл с колонками \"Вопросы\" и \"Ответы\".\nПустая строка означает, что начинается новый вопрос.\nПервый вопрос в блоке становится основным,\nостальные - альтернативными формулировками (aliases).",
         "operationId": "upload_faq_csv_api_v1_faq_upload_post",
         "requestBody": {
           "content": {
@@ -255,7 +516,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
       }
     },
     "/api/v1/faq/{index}": {
@@ -266,6 +532,11 @@
         "summary": "Обновить FAQ по индексу",
         "description": "Обновляет существующий FAQ элемент по его позиции (индексу) в списке.",
         "operationId": "update_faq_api_v1_faq__index__put",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "index",
@@ -317,6 +588,11 @@
         "summary": "Удалить FAQ по индексу",
         "description": "Удаляет существующий FAQ элемент по его позиции (индексу) в списке.",
         "operationId": "delete_faq_api_v1_faq__index__delete",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "index",
@@ -352,6 +628,11 @@
         ],
         "summary": "Статистика количества запросов",
         "operationId": "get_request_stats_api_v1_logs_request_stats_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "start",
@@ -446,8 +727,13 @@
           "Message Logs"
         ],
         "summary": "Получить логи сообщений",
-        "description": "Получает логи сообщений с фильтрацией.\n\n- **user_id**: фильтр по ID пользователя\n- **session_id**: фильтр по ID сессии  \n- **message_type**: фильтр по типу сообщения\n- **limit**: количество записей (макс. 1000)\n- **offset**: сдвиг для пагинации",
+        "description": "Получает логи сообщений с фильтрацией.\n\n- **user_id**: фильтр по ID пользователя\n- **session_id**: фильтр по ID сессии\n- **message_type**: фильтр по типу сообщения\n- **limit**: количество записей (макс. 1000)\n- **offset**: сдвиг для пагинации",
         "operationId": "get_message_logs_api_v1_logs__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "user_id",
@@ -553,6 +839,11 @@
         "summary": "Получить логи по сессии",
         "description": "Получает все логи для конкретной сессии.",
         "operationId": "get_session_logs_api_v1_logs_session__session_id__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "session_id",
@@ -619,6 +910,11 @@
         "summary": "Получить логи по пользователю",
         "description": "Получает все логи для конкретного пользователя.",
         "operationId": "get_user_logs_api_v1_logs_user__user_id__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "user_id",
@@ -685,6 +981,11 @@
         "summary": "Получить логи по типу сообщения",
         "description": "Получает логи по типу сообщения.\n\nВозможные типы:\n- `user_input` - входящие сообщения от пользователей\n- `rag_context` - контекст полученный из RAG\n- `llm_response` - ответы от LLM\n- `faq_match` - совпадения из FAQ",
         "operationId": "get_type_logs_api_v1_logs_type__message_type__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "message_type",
@@ -751,6 +1052,11 @@
         "summary": "Получить самые популярные вопросы",
         "description": "Получает самые часто задаваемые вопросы пользователей.\n\n- **limit**: максимальное количество возвращаемых вопросов",
         "operationId": "get_popular_questions_api_v1_logs_popular_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "limit",
@@ -827,7 +1133,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
       }
     },
     "/api/v1/rag/parse": {
@@ -838,6 +1149,11 @@
         "summary": "Спарсить страницу для RAG",
         "description": "Парсит страницу или PDF-документ, очищает текст через LLM и находит документы.",
         "operationId": "parse_page_for_rag_api_v1_rag_parse_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "url",
@@ -917,7 +1233,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
       }
     },
     "/api/v1/rag/docs": {
@@ -939,7 +1260,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
       }
     },
     "/api/v1/rag/docs/{doc_id}/content": {
@@ -950,6 +1276,11 @@
         "summary": "Получить полный текст документа",
         "description": "Возвращает полный исходный текст документа по его ID.",
         "operationId": "get_rag_document_content_api_v1_rag_docs__doc_id__content_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "doc_id",
@@ -993,6 +1324,11 @@
         "summary": "Удалить документ из RAG",
         "description": "Удаляет документ из базы знаний RAG.",
         "operationId": "delete_rag_document_api_v1_rag_docs__doc_id__delete",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "doc_id",
@@ -1067,7 +1403,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
       }
     },
     "/api/v1/rag/upload/csv/preview": {
@@ -1109,7 +1450,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
       }
     },
     "/api/v1/evals/run": {
@@ -1130,7 +1476,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
       }
     },
     "/api/v1/evals/status": {
@@ -1151,7 +1502,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
       }
     },
     "/api/v1/users/count-stats": {
@@ -1169,7 +1525,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
       }
     },
     "/api/v1/messages": {
@@ -1177,6 +1538,11 @@
         "summary": "Get Messages",
         "description": "Возвращает список сообщений и ответов бота.",
         "operationId": "get_messages_api_v1_messages_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "user_id",
@@ -1291,6 +1657,60 @@
           "items"
         ],
         "title": "AbbrevListResponse"
+      },
+      "AdminResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "role": {
+            "$ref": "#/components/schemas/AdminRole"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "created_by_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created By Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "username",
+          "role",
+          "is_active",
+          "created_at",
+          "created_by_id"
+        ],
+        "title": "AdminResponse"
+      },
+      "AdminRole": {
+        "type": "string",
+        "enum": [
+          "superadmin",
+          "admin",
+          "viewer"
+        ],
+        "title": "AdminRole"
       },
       "Body_preview_csv_documents_api_v1_rag_upload_csv_preview_post": {
         "properties": {
@@ -1570,6 +1990,77 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "InviteCodeRequest": {
+        "properties": {
+          "role": {
+            "$ref": "#/components/schemas/AdminRole",
+            "default": "admin"
+          },
+          "expires_in_hours": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 720,
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires In Hours"
+          }
+        },
+        "type": "object",
+        "title": "InviteCodeRequest"
+      },
+      "InviteCodeResponse": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "role": {
+            "$ref": "#/components/schemas/AdminRole"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "role",
+          "expires_at"
+        ],
+        "title": "InviteCodeResponse"
+      },
+      "LoginRequest": {
+        "properties": {
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "username",
+          "password"
+        ],
+        "title": "LoginRequest"
       },
       "MessageLogListResponse": {
         "properties": {
@@ -1937,6 +2428,38 @@
         ],
         "title": "RagUploadResponse"
       },
+      "RegisterRequest": {
+        "properties": {
+          "username": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 3,
+            "title": "Username"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "title": "Password"
+          },
+          "invite_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Invite Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "username",
+          "password"
+        ],
+        "title": "RegisterRequest"
+      },
       "RequestCountBucket": {
         "properties": {
           "period": {
@@ -2007,6 +2530,24 @@
         ],
         "title": "RequestCountStatsResponse",
         "description": "Статистика количества запросов за период времени."
+      },
+      "TokenResponse": {
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "title": "Access Token"
+          },
+          "token_type": {
+            "type": "string",
+            "title": "Token Type",
+            "default": "bearer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "access_token"
+        ],
+        "title": "TokenResponse"
       },
       "UploadedDocumentResult": {
         "properties": {
@@ -2112,6 +2653,19 @@
           "type"
         ],
         "title": "ValidationError"
+      }
+    },
+    "securitySchemes": {
+      "OAuth2PasswordBearer": {
+        "type": "oauth2",
+        "flows": {
+          "password": {
+            "scopes": {
+
+            },
+            "tokenUrl": "/api/v1/auth/login"
+          }
+        }
       }
     }
   }

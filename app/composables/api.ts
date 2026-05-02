@@ -1,10 +1,15 @@
 export const useApiBaseUrl = () => useRuntimeConfig().public.apiBaseUrl
+export const useAuthToken = () => useCookie("abitur-token")
 
-// Временный костыль пока мы не сделали авторизацию на питон бекенде.
 export const useApi: typeof useMyApi = ((path, options) => {
+  const token = useAuthToken()
   const mergedOptions = {
     ...options,
     baseURL: useApiBaseUrl(),
+    headers: {
+      ...(options as { headers?: Record<string, string> })?.headers,
+      ...(token.value ? { Authorization: `Bearer ${token.value}` } : {}),
+    },
   }
 
   return useMyApi(path as never, mergedOptions as never)
@@ -14,8 +19,13 @@ export const apiFetch = async <T>(
   path: string,
   options?: Parameters<typeof $fetch<T>>[1],
 ) => {
+  const token = useAuthToken()
   return await $fetch<T>(path, {
     ...options,
     baseURL: useApiBaseUrl(),
+    headers: {
+      ...(options as { headers?: Record<string, string> })?.headers,
+      ...(token.value ? { Authorization: `Bearer ${token.value}` } : {}),
+    },
   })
 }

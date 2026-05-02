@@ -3,7 +3,8 @@ definePageMeta({
   layout: false,
 })
 
-const { data: ratingData, refresh } = await useFetch("/api/rating")
+// TODO: подключить реальный бекенд
+const { data: ratingData, refresh } = await useFetch<any>("/api/rating")
 
 const expandedId = ref<string | null>(null)
 const toggleExpand = (id: string) => {
