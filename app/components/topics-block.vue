@@ -3,59 +3,100 @@ import type { ChartData, ChartOptions } from "chart.js"
 import { Doughnut as ChartDoughnut } from "vue-chartjs"
 
 interface TopicData {
+  id: string
   label: string
   value: number
   color: string
 }
 
-interface TabsItem {
-  label: string
-  value: string
+interface PopularQuestion {
+  question: string
+  count: number
 }
 
-const data = ref<TopicData[]>([
-  { label: "Список документов", value: 300, color: "#FF6384" },
-  { label: "Проживание в общежитии", value: 150, color: "#36A2EB" },
-  { label: "Дата подачи документов", value: 100, color: "#FFCE56" },
-  { label: "Перевод на бюджетное обучение", value: 50, color: "#4BC0C0" },
+interface PopularQuestionsResponse {
+  questions: PopularQuestion[]
+}
+
+const apiBaseUrl = useRuntimeConfig().public.apiBaseUrl
+const { topics, popularLimit } = useStatsSettings()
+const { topicMap, setTopicForQuestion } = useTopicClassification()
+
+const query = computed(() => ({
+  limit: popularLimit.value,
+}))
+
+const { data, refresh, status } = await useMyApi<PopularQuestionsResponse>("/api/v1/logs/popular", {
+  baseURL: apiBaseUrl,
+  query,
+})
+
+watch(popularLimit, () => refresh())
+
+const questions = computed(() => data.value?.questions ?? [])
+
+const palette = [
+  "#2563EB",
+  "#F97316",
+  "#22C55E",
+  "#E11D48",
+  "#A855F7",
+  "#0EA5E9",
+  "#F59E0B",
+  "#14B8A6",
+]
+
+const topicOptions = computed(() => [
+  { label: "Без темы", value: "" },
+  ...topics.value.map(topic => ({ label: topic.label, value: topic.id })),
 ])
 
-const periodTabItems = ref<TabsItem[]>([
-  {
-    label: "24 часа",
-    value: "1d",
-  },
-  {
-    label: "7 дней",
-    value: "7d",
-  },
-  {
-    label: "30 дней",
-    value: "30d",
-  },
-  {
-    label: "Все время",
-    value: "all",
-  },
-])
-const period = ref<"1d" | "7d" | "30d" | "all">("1d")
+const getTopicColor = (index: number) => palette[index % palette.length]
 
-watch(period, () => {
-  data.value = data.value.map(item => ({
-    ...item,
-    value: Math.floor(Math.random() * 300) + 50,
-  }))
+const aggregatedTopics = computed<TopicData[]>(() => {
+  const counts = new Map<string, number>()
+
+  for (const item of questions.value) {
+    const topicId = topicMap.value[item.question] || "unclassified"
+    counts.set(topicId, (counts.get(topicId) ?? 0) + item.count)
+  }
+
+  const topicEntries: TopicData[] = []
+
+  topics.value.forEach((topic, index) => {
+    const value = counts.get(topic.id) ?? 0
+    if (value > 0) {
+      topicEntries.push({
+        id: topic.id,
+        label: topic.label,
+        value,
+        color: getTopicColor(index),
+      })
+    }
+  })
+
+  const unclassifiedCount = counts.get("unclassified") ?? 0
+  if (unclassifiedCount > 0) {
+    topicEntries.push({
+      id: "unclassified",
+      label: "Без темы",
+      value: unclassifiedCount,
+      color: "#94A3B8",
+    })
+  }
+
+  return topicEntries
 })
 
 const { gridColor } = useChartColors()
 
-const chartData = computed<ChartData<"doughnut"> | null>(() => data.value
+const chartData = computed<ChartData<"doughnut"> | null>(() => aggregatedTopics.value.length
   ? {
-      labels: data.value.map(item => item.label),
+      labels: aggregatedTopics.value.map(item => item.label),
       datasets: [{
-        data: data.value.map(item => item.value),
+        data: aggregatedTopics.value.map(item => item.value),
         borderColor: gridColor.value,
-        backgroundColor: data.value.map(item => item.color),
+        backgroundColor: aggregatedTopics.value.map(item => item.color),
         hoverOffset: 4,
       }],
     }
@@ -77,11 +118,27 @@ const chartOptions = computed<ChartOptions<"doughnut">>(() => ({
 ui-box(title="Популярные темы" class="w-full")
   div(class="h-64 w-full")
     chart-doughnut(v-if="chartData" :data="chartData" :options="chartOptions")
+    div(v-else class="h-full flex items-center justify-center text-sm text-gray-500 dark:text-gray-400")
+      | Нет данных для построения графика.
 
-  div(class="mt-4 overflow-x-auto")
-    u-tabs(
-      v-model="period"
-      :items="periodTabItems"
-      class="min-w-max"
-    )
+  div(class="mt-4 space-y-3")
+    div(class="text-xs text-gray-500 dark:text-gray-400") Назначьте тему для каждого вопроса.
+
+    div(v-if="status === 'pending'" class="text-sm text-gray-500 dark:text-gray-400") Загрузка...
+    div(v-else-if="!questions.length" class="text-sm text-gray-500 dark:text-gray-400") Вопросов нет.
+    div(v-else class="space-y-3")
+      div(
+        v-for="item in questions"
+        :key="item.question"
+        class="flex flex-wrap items-center gap-3 rounded-lg border border-gray-200 dark:border-gray-800 p-3"
+      )
+        div(class="flex-1")
+          div(class="text-sm font-medium text-gray-800 dark:text-gray-200") {{ item.question }}
+          div(class="text-xs text-gray-500 dark:text-gray-400") {{ item.count }} запросов
+        u-select(
+          :items="topicOptions"
+          :model-value="topicMap[item.question] || ''"
+          class="min-w-48"
+          @update:model-value="(value) => setTopicForQuestion(item.question, value || null)"
+        )
 </template>
