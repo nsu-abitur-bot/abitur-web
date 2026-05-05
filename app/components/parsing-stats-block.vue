@@ -1,7 +1,20 @@
 <script setup lang="ts">
-import { computed } from "vue"
+import { computed, onMounted, onUnmounted } from "vue"
 
-const { data } = await useApi("/api/v1/rag/docs")
+const { data, refresh } = await useFetch("/api/stats/parsing")
+
+let interval: any = null
+onMounted(() => {
+  interval = setInterval(() => {
+    refresh()
+  }, 60000)
+})
+
+onUnmounted(() => {
+  if (interval) {
+    clearInterval(interval)
+  }
+})
 
 const lastParsedDate = computed(() => {
   const docs = Array.isArray(data.value?.documents) ? data.value.documents : []

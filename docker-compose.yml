@@ -1,4 +1,18 @@
 services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: abitur_web
+      POSTGRES_USER: abitur
+      POSTGRES_PASSWORD: abitur
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
   app:
     image: abitur-web:local
     build:
