@@ -31,8 +31,11 @@ const removeTopic = (id: string) => {
 </script>
 
 <template lang="pug">
-div(class="py-8 w-full")
-  h1(class="text-3xl font-bold mb-6 text-gray-900 dark:text-white") Настройки системы
+div(class="py-8 w-full space-y-6")
+  h1(class="text-3xl font-bold text-gray-900 dark:text-white") Настройки системы
+
+  admin-invite
+  admin-list
 
   div(class="w-full space-y-6")
     ui-box(title="Темы для классификации")

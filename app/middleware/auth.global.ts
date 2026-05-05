@@ -1,11 +1,11 @@
 export default defineNuxtRouteMiddleware((to) => {
-  const { loggedIn } = useUserSession()
+  const token = useCookie("abitur-token")
 
-  if (!loggedIn.value && to.path !== "/login") {
+  if (!token.value && to.path !== "/login" && to.path !== "/register") {
     return navigateTo("/login")
   }
 
-  if (loggedIn.value && to.path === "/login") {
+  if (token.value && (to.path === "/login" || to.path === "/register")) {
     return navigateTo("/")
   }
 })

@@ -4,6 +4,156 @@
  */
 
 export interface paths {
+  "/api/v1/auth/login": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Login */
+    post: operations["login_api_v1_auth_login_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/auth/register": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Register */
+    post: operations["register_api_v1_auth_register_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/auth/me": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Me */
+    get: operations["get_me_api_v1_auth_me_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/auth/invite": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Create Invite */
+    post: operations["create_invite_api_v1_auth_invite_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/auth/admins": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** List Admins */
+    get: operations["list_admins_api_v1_auth_admins_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/auth/admins/{admin_id}/deactivate": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    /** Deactivate Admin */
+    patch: operations["deactivate_admin_api_v1_auth_admins__admin_id__deactivate_patch"]
+    trace?: never
+  }
+  "/api/v1/abbrev": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Получить все аббревиатуры
+     * @description Возвращает словарь всех аббревиатур.
+     */
+    get: operations["get_all_api_v1_abbrev_get"]
+    put?: never
+    /**
+     * Добавить аббревиатуру
+     * @description Добавляет новую аббревиатуру в словарь.
+     */
+    post: operations["create_api_v1_abbrev_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/abbrev/{index}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /**
+     * Обновить аббревиатуру по индексу
+     * @description Обновляет существующую аббревиатуру по индексу в списке.
+     */
+    put: operations["update_api_v1_abbrev__index__put"]
+    post?: never
+    /**
+     * Удалить аббревиатуру по индексу
+     * @description Удаляет аббревиатуру по индексу.
+     */
+    delete: operations["delete_api_v1_abbrev__index__delete"]
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/faq": {
     parameters: {
       query?: never
@@ -22,6 +172,30 @@ export interface paths {
      * @description Создает новый вопрос FAQ и автоматически применяет для новых запросов к боту.
      */
     post: operations["create_faq_api_v1_faq_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/faq/upload": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Загрузить FAQ из CSV
+     * @description Загружает вопросы и ответы FAQ из CSV-файла.
+     *     Ожидается CSV файл с колонками "Вопросы" и "Ответы".
+     *     Пустая строка означает, что начинается новый вопрос.
+     *     Первый вопрос в блоке становится основным,
+     *     остальные - альтернативными формулировками (aliases).
+     */
+    post: operations["upload_faq_csv_api_v1_faq_upload_post"]
     delete?: never
     options?: never
     head?: never
@@ -47,6 +221,23 @@ export interface paths {
      * @description Удаляет существующий FAQ элемент по его позиции (индексу) в списке.
      */
     delete: operations["delete_faq_api_v1_faq__index__delete"]
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/logs/request-stats": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Статистика количества запросов */
+    get: operations["get_request_stats_api_v1_logs_request_stats_get"]
+    put?: never
+    post?: never
+    delete?: never
     options?: never
     head?: never
     patch?: never
@@ -144,6 +335,28 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/logs/popular": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Получить самые популярные вопросы
+     * @description Получает самые часто задаваемые вопросы пользователей.
+     *
+     *     - **limit**: максимальное количество возвращаемых вопросов
+     */
+    get: operations["get_popular_questions_api_v1_logs_popular_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/rag/upload": {
     parameters: {
       query?: never
@@ -172,7 +385,7 @@ export interface paths {
     put?: never
     /**
      * Спарсить страницу для RAG
-     * @description Парсит страницу, очищает текст через LLM и находит документы.
+     * @description Парсит страницу или PDF-документ, очищает текст через LLM и находит документы.
      */
     post: operations["parse_page_for_rag_api_v1_rag_parse_post"]
     delete?: never
@@ -241,6 +454,101 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/rag/docs/{doc_id}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
+    /**
+     * Удалить документ из RAG
+     * @description Удаляет документ из базы знаний RAG.
+     */
+    delete: operations["delete_rag_document_api_v1_rag_docs__doc_id__delete"]
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/rag/upload/csv": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Импорт документов по ссылкам из CSV
+     * @description Принимает CSV документ на вход и обрабатывает все документы там.
+     *     Ожидаемый формат: Название,Link,Комментарий
+     */
+    post: operations["upload_csv_documents_api_v1_rag_upload_csv_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/rag/upload/csv/preview": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Превью документов из CSV (без обработки)
+     * @description Принимает CSV документ и возвращает список найденных в нём ссылок без их обработки.
+     */
+    post: operations["preview_csv_documents_api_v1_rag_upload_csv_preview_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/evals/run": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Run Evaluation */
+    post: operations["run_evaluation_api_v1_evals_run_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/evals/status": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Route Get Evaluation Status */
+    get: operations["route_get_evaluation_status_api_v1_evals_status_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/users/count-stats": {
     parameters: {
       query?: never
@@ -282,6 +590,65 @@ export interface paths {
 export type webhooks = Record<string, never>
 export interface components {
   schemas: {
+    /** AbbrevItem */
+    AbbrevItem: {
+      /**
+       * Short
+       * @description Аббревиатура (например, НГУ)
+       */
+      short: string
+      /**
+       * Full
+       * @description Расшифровка (например, Новосибирский государственный университет)
+       */
+      full: string
+    }
+    /** AbbrevListResponse */
+    AbbrevListResponse: {
+      /**
+       * Items
+       * @description Список аббревиатур
+       */
+      items: components["schemas"]["AbbrevItem"][]
+    }
+    /** AdminResponse */
+    AdminResponse: {
+      /** Id */
+      id: string
+      /** Username */
+      username: string
+      role: components["schemas"]["AdminRole"]
+      /** Is Active */
+      is_active: boolean
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string
+      /** Created By Id */
+      created_by_id: string | null
+    }
+    /**
+     * AdminRole
+     * @enum {string}
+     */
+    AdminRole: "superadmin" | "admin" | "viewer"
+    /** Body_preview_csv_documents_api_v1_rag_upload_csv_preview_post */
+    Body_preview_csv_documents_api_v1_rag_upload_csv_preview_post: {
+      /**
+       * File
+       * @description CSV файл с полями (Название, Link, Комментарий)
+       */
+      file: string
+    }
+    /** Body_upload_csv_documents_api_v1_rag_upload_csv_post */
+    Body_upload_csv_documents_api_v1_rag_upload_csv_post: {
+      /**
+       * File
+       * @description CSV файл с полями (Название, Link, Комментарий)
+       */
+      file: string
+    }
     /** Body_upload_documents_to_rag_api_v1_rag_upload_post */
     Body_upload_documents_to_rag_api_v1_rag_upload_post: {
       /**
@@ -289,6 +656,11 @@ export interface components {
        * @description Файлы для индексации в RAG
        */
       files: string[]
+    }
+    /** Body_upload_faq_csv_api_v1_faq_upload_post */
+    Body_upload_faq_csv_api_v1_faq_upload_post: {
+      /** File */
+      file: string
     }
     /** ConfirmUploadRequest */
     ConfirmUploadRequest: {
@@ -312,6 +684,78 @@ export interface components {
        * @description Финальный список файлов для загрузки
        */
       documents: components["schemas"]["ParsedDocument"][]
+    }
+    /** CsvImportPreviewResponse */
+    CsvImportPreviewResponse: {
+      /**
+       * Total Found
+       * @description Всего найдено ссылок в CSV
+       */
+      total_found: number
+      /**
+       * Results
+       * @description Список найденных документов для превью
+       */
+      results: components["schemas"]["CsvImportPreviewResult"][]
+    }
+    /** CsvImportPreviewResult */
+    CsvImportPreviewResult: {
+      /**
+       * Title
+       * @description Название документа
+       */
+      title: string
+      /**
+       * Url
+       * @description URL документа
+       */
+      url: string
+      /**
+       * Comment
+       * @description Комментарий из CSV
+       */
+      comment?: string | null
+    }
+    /** CsvImportResponse */
+    CsvImportResponse: {
+      /**
+       * Imported Count
+       * @description Количество успешно импортированных документов
+       */
+      imported_count: number
+      /**
+       * Total Found
+       * @description Всего найдено ссылок в CSV
+       */
+      total_found: number
+      /**
+       * Results
+       * @description Результаты обработки по каждой ссылке
+       */
+      results: components["schemas"]["CsvImportResult"][]
+    }
+    /** CsvImportResult */
+    CsvImportResult: {
+      /**
+       * Title
+       * @description Название документа
+       */
+      title: string
+      /**
+       * Url
+       * @description URL документа
+       */
+      url: string
+      /**
+       * Success
+       * @description Статус обработки
+       */
+      success: boolean
+      /**
+       * Message
+       * @description Сообщение об ошибке или статус
+       */
+      message?: string | null
     }
     /**
      * FaqItem
@@ -349,6 +793,28 @@ export interface components {
     HTTPValidationError: {
       /** Detail */
       detail?: components["schemas"]["ValidationError"][]
+    }
+    /** InviteCodeRequest */
+    InviteCodeRequest: {
+      /** @default admin */
+      role: components["schemas"]["AdminRole"]
+      /** Expires In Hours */
+      expires_in_hours?: number | null
+    }
+    /** InviteCodeResponse */
+    InviteCodeResponse: {
+      /** Code */
+      code: string
+      role: components["schemas"]["AdminRole"]
+      /** Expires At */
+      expires_at: string | null
+    }
+    /** LoginRequest */
+    LoginRequest: {
+      /** Username */
+      username: string
+      /** Password */
+      password: string
     }
     /**
      * MessageLogListResponse
@@ -445,6 +911,18 @@ export interface components {
        */
       documents: components["schemas"]["ParsedDocument"][]
     }
+    /** PopularQuestion */
+    PopularQuestion: {
+      /** Question */
+      question: string
+      /** Count */
+      count: number
+    }
+    /** PopularQuestionsResponse */
+    PopularQuestionsResponse: {
+      /** Questions */
+      questions: components["schemas"]["PopularQuestion"][]
+    }
     /** RagDocument */
     RagDocument: {
       /**
@@ -452,6 +930,11 @@ export interface components {
        * @description Идентификатор документа (обычно URL или имя файла)
        */
       id: string
+      /**
+       * Url
+       * @description Оригинальный URL или путь к файлу
+       */
+      url?: string | null
       /**
        * Status
        * @description Статус обработки
@@ -517,6 +1000,54 @@ export interface components {
        */
       results: components["schemas"]["UploadedDocumentResult"][]
     }
+    /** RegisterRequest */
+    RegisterRequest: {
+      /** Username */
+      username: string
+      /** Password */
+      password: string
+      /** Invite Code */
+      invite_code?: string | null
+    }
+    /**
+     * RequestCountBucket
+     * @description Элемент статистики по количеству запросов.
+     */
+    RequestCountBucket: {
+      /**
+       * Period
+       * Format: date-time
+       */
+      period: string
+      /** Count */
+      count: number
+    }
+    /**
+     * RequestCountStatsResponse
+     * @description Статистика количества запросов за период времени.
+     */
+    RequestCountStatsResponse: {
+      /** Total */
+      total: number
+      /** Group By */
+      group_by: string
+      /** Start */
+      start?: string | null
+      /** End */
+      end?: string | null
+      /** Buckets */
+      buckets: components["schemas"]["RequestCountBucket"][]
+    }
+    /** TokenResponse */
+    TokenResponse: {
+      /** Access Token */
+      access_token: string
+      /**
+       * Token Type
+       * @default bearer
+       */
+      token_type: string
+    }
     /** UploadedDocumentResult */
     UploadedDocumentResult: {
       /**
@@ -576,6 +1107,293 @@ export interface components {
 }
 export type $defs = Record<string, never>
 export interface operations {
+  login_api_v1_auth_login_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["LoginRequest"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["TokenResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  register_api_v1_auth_register_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RegisterRequest"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["AdminResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_me_api_v1_auth_me_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["AdminResponse"]
+        }
+      }
+    }
+  }
+  create_invite_api_v1_auth_invite_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["InviteCodeRequest"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["InviteCodeResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  list_admins_api_v1_auth_admins_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["AdminResponse"][]
+        }
+      }
+    }
+  }
+  deactivate_admin_api_v1_auth_admins__admin_id__deactivate_patch: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        admin_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["AdminResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_all_api_v1_abbrev_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["AbbrevListResponse"]
+        }
+      }
+    }
+  }
+  create_api_v1_abbrev_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AbbrevItem"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["AbbrevItem"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  update_api_v1_abbrev__index__put: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        index: number
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AbbrevItem"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["AbbrevItem"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  delete_api_v1_abbrev__index__delete: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        index: number
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
   get_all_faqs_api_v1_faq_get: {
     parameters: {
       query?: never
@@ -616,6 +1434,39 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["FaqItem"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  upload_faq_csv_api_v1_faq_upload_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "multipart/form-data": components["schemas"]["Body_upload_faq_csv_api_v1_faq_upload_post"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["FaqListResponse"]
         }
       }
       /** @description Validation Error */
@@ -681,6 +1532,44 @@ export interface operations {
           [name: string]: unknown
         }
         content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_request_stats_api_v1_logs_request_stats_get: {
+    parameters: {
+      query?: {
+        /** @description Начало периода (ISO 8601) */
+        start?: string | null
+        /** @description Конец периода (ISO 8601) */
+        end?: string | null
+        /** @description Группировка: hour, day, week, month */
+        group_by?: string
+        /** @description Тип сообщения для статистики */
+        message_type?: string
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["RequestCountStatsResponse"]
+        }
       }
       /** @description Validation Error */
       422: {
@@ -817,6 +1706,37 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["MessageLogListResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_popular_questions_api_v1_logs_popular_get: {
+    parameters: {
+      query?: {
+        limit?: number
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["PopularQuestionsResponse"]
         }
       }
       /** @description Validation Error */
@@ -975,6 +1895,143 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  delete_rag_document_api_v1_rag_docs__doc_id__delete: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        doc_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": unknown
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  upload_csv_documents_api_v1_rag_upload_csv_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "multipart/form-data": components["schemas"]["Body_upload_csv_documents_api_v1_rag_upload_csv_post"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["CsvImportResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  preview_csv_documents_api_v1_rag_upload_csv_preview_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "multipart/form-data": components["schemas"]["Body_preview_csv_documents_api_v1_rag_upload_csv_preview_post"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["CsvImportPreviewResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  run_evaluation_api_v1_evals_run_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": unknown
+        }
+      }
+    }
+  }
+  route_get_evaluation_status_api_v1_evals_status_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": unknown
         }
       }
     }
