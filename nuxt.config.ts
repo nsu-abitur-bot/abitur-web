@@ -133,6 +133,21 @@ export default defineNuxtConfig({
   //
 
   runtimeConfig: {
+    serviceToken: "", // NUXT_SERVICE_TOKEN
+    database: {
+      url: "", // NUXT_DATABASE_URL
+      log: false,
+    },
+    session: {
+      name: "abitur-session",
+      // NUXT_SESSION_PASSWORD
+      // Generate with: openssl rand -hex 32
+      password: "",
+      cookie: {
+        sameSite: "lax",
+        secure: false,
+      },
+    },
     public: {
       // NUXT_PUBLIC_BASE_URL, без слеша на конце (пример: https://abitur.localhost)
       baseUrl: "",
