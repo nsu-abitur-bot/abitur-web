@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted } from "vue"
-
 const { data, refresh } = await useFetch("/api/stats/parsing")
 
 let interval: any = null
