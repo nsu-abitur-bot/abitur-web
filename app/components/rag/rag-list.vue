@@ -195,7 +195,7 @@ div(class="space-y-4")
                   span(class="text-sm font-semibold break-all text-gray-900 dark:text-white") {{ doc.id }}
                   div(v-if="getDocStatusExtra(doc)" class="text-[10px] text-error-500 font-medium shrink-0") — {{ getDocStatusExtra(doc) }}
                 div(class="text-[11px] text-gray-500 break-all")
-                  a(:href="doc.url" target="_blank" class="hover:underline hover:text-primary-600 flex items-start gap-1")
+                  a(:href="doc.url || undefined" target="_blank" class="hover:underline hover:text-primary-600 flex items-start gap-1")
                     u-icon(name="i-heroicons-link" size="lg" class="shrink-0 mt-0.5")
                     | {{ doc.id }}
                 div(v-if="doc.content_summary" class="text-[10px] text-gray-400 italic mt-1 line-clamp-1") {{ doc.content_summary }}

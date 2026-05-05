@@ -9,15 +9,6 @@ interface TopicData {
   color: string
 }
 
-interface PopularQuestion {
-  question: string
-  count: number
-}
-
-interface PopularQuestionsResponse {
-  questions: PopularQuestion[]
-}
-
 const apiBaseUrl = useRuntimeConfig().public.apiBaseUrl
 const { topics, popularLimit } = useStatsSettings()
 const { topicMap, setTopicForQuestion } = useTopicClassification()
@@ -26,7 +17,7 @@ const query = computed(() => ({
   limit: popularLimit.value,
 }))
 
-const { data, refresh, status } = await useMyApi<PopularQuestionsResponse>("/api/v1/logs/popular", {
+const { data, refresh, status } = await useMyApi("/api/v1/logs/popular", {
   baseURL: apiBaseUrl,
   query,
 })
@@ -51,7 +42,7 @@ const topicOptions = computed(() => [
   ...topics.value.map(topic => ({ label: topic.label, value: topic.id })),
 ])
 
-const getTopicColor = (index: number) => palette[index % palette.length]
+const getTopicColor = (index: number) => palette[index % palette.length] ?? palette[0]!
 
 const aggregatedTopics = computed<TopicData[]>(() => {
   const counts = new Map<string, number>()

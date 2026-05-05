@@ -4,13 +4,39 @@
  * Использует эндпоинты /api/v1/evals/run и /api/v1/evals/status.
  */
 
+interface EvaluationResult {
+  accuracy?: string | number | null
+  recall?: string | number | null
+  avg_latency?: string | number | null
+  summary?: string | null
+}
+
+interface EvaluationStatus {
+  is_running?: boolean
+  error?: string | null
+  last_result?: EvaluationResult | null
+  done?: number
+  total?: number
+}
+
+interface RunEvaluationResponse {
+  message?: string | null
+}
+
 // Получаем текущий статус оценки
-const { data: statusData, refresh: refreshStatus } = await useApi("/api/v1/evals/status")
+const { data: statusData, refresh: refreshStatus } = await useApi("/api/v1/evals/status", {
+  transform: (data): EvaluationStatus => data as EvaluationStatus,
+})
 
 const isRunning = computed(() => !!statusData.value?.is_running)
 const isError = computed(() => !!statusData.value?.error)
 const isCompleted = computed(() => !!statusData.value?.last_result && !isRunning.value)
 const isIdle = computed(() => !isRunning.value && !isCompleted.value && !isError.value)
+const completedEvaluations = computed(() => statusData.value?.done ?? 0)
+const totalEvaluations = computed(() => statusData.value?.total ?? 0)
+const progressPercent = computed(() => totalEvaluations.value > 0
+  ? Math.round((completedEvaluations.value / totalEvaluations.value) * 100)
+  : 0)
 
 const toast = useToast()
 const isStarting = ref(false)
@@ -25,7 +51,7 @@ const handleRunEvaluation = async () => {
 
   isStarting.value = true
   try {
-    const result: any = await apiFetch("/api/v1/evals/run", {
+    const result = await apiFetch<RunEvaluationResponse>("/api/v1/evals/run", {
       method: "POST",
     })
 
@@ -129,13 +155,13 @@ u-container(class="py-8 space-y-8")
 
         // Шкала прогресса (отображается только при выполнении)
         div(v-if="isRunning" class="space-y-2 animate-in fade-in duration-300")
-          div(v-if="statusData?.total" class="space-y-2")
+          div(v-if="totalEvaluations" class="space-y-2")
             div(class="flex justify-between text-xs font-medium text-gray-600 dark:text-gray-400")
               span Прогресс тестирования
-              span {{ statusData.done }} / {{ statusData.total }} ({{ Math.round((statusData.done / statusData.total) * 100) }}%)
+              span {{ completedEvaluations }} / {{ totalEvaluations }} ({{ progressPercent }}%)
             u-progress(
-              :value="statusData.done"
-              :max="statusData.total"
+              :value="completedEvaluations"
+              :max="totalEvaluations"
               color="primary"
               size="md"
             )

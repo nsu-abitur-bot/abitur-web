@@ -1,13 +1,4 @@
 <script setup lang="ts">
-interface PopularQuestion {
-  question: string
-  count: number
-}
-
-interface PopularQuestionsResponse {
-  questions: PopularQuestion[]
-}
-
 const apiBaseUrl = useRuntimeConfig().public.apiBaseUrl
 const { popularLimit } = useStatsSettings()
 
@@ -28,7 +19,7 @@ const query = computed(() => ({
   limit: popularLimit.value,
 }))
 
-const { data, refresh, status } = await useMyApi<PopularQuestionsResponse>("/api/v1/logs/popular", {
+const { data, refresh, status } = await useMyApi("/api/v1/logs/popular", {
   baseURL: apiBaseUrl,
   query,
 })
