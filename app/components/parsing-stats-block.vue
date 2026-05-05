@@ -1,26 +1,20 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted } from "vue"
+import { computed } from "vue"
 
-const { data, refresh } = await useFetch("/api/stats/parsing")
-
-let interval: any = null
-onMounted(() => {
-  interval = setInterval(() => {
-    refresh()
-  }, 60000)
-})
-
-onUnmounted(() => {
-  if (interval) {
-    clearInterval(interval)
-  }
-})
+const { data } = await useApi("/api/v1/rag/docs")
 
 const lastParsedDate = computed(() => {
-  if (!data.value?.lastParsedAt) {
+  const docs = Array.isArray(data.value) ? data.value : []
+  const dates = docs
+    .map((doc: { updated_at?: string }) => doc.updated_at)
+    .filter(Boolean)
+    .map((d: string) => new Date(d).getTime())
+
+  if (dates.length === 0) {
     return "Никогда"
   }
-  return new Date(data.value.lastParsedAt).toLocaleString("ru-RU", {
+
+  return new Date(Math.max(...dates)).toLocaleString("ru-RU", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
@@ -38,5 +32,5 @@ ui-box(title="Статистика парсинга" class="w-full")
       span(class="font-bold text-gray-700 dark:text-gray-300 mr-2") Последний раз парсили рейтинговый список:
       span(class="text-primary-500 font-semibold") {{ lastParsedDate }}
     div(class="text-sm text-gray-500 mt-2")
-      | Время последнего успешного обновления данных в базе (leaderboard).
+      | Время последнего успешного обновления данных в RAG.
 </template>

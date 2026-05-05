@@ -2,9 +2,7 @@
 import type { NavigationMenuItem } from "@nuxt/ui"
 
 const route = useRoute()
-const toast = useToast()
-const { loggedIn, fetch: fetchSession } = useUserSession()
-const isLoggingOut = ref(false)
+const token = useAuthToken()
 
 const items = computed<NavigationMenuItem[]>(() => [
   {
@@ -16,6 +14,11 @@ const items = computed<NavigationMenuItem[]>(() => [
     label: "Вопросы/Ответы",
     to: "/faq",
     active: route.path.startsWith("/faq"),
+  },
+  {
+    label: "Аббревиатуры",
+    to: "/abbrev",
+    active: route.path.startsWith("/abbrev"),
   },
   {
     label: "Статистика",
@@ -32,27 +35,16 @@ const items = computed<NavigationMenuItem[]>(() => [
     to: "/settings",
     active: route.path.startsWith("/settings"),
   },
+  {
+    label: "Тестирование",
+    to: "/testing",
+    active: route.path.startsWith("/testing"),
+  },
 ])
 
-const handleLogout = async () => {
-  isLoggingOut.value = true
-
-  try {
-    await $fetch("/api/auth/logout", {
-      method: "POST",
-    })
-    await fetchSession()
-    await navigateTo("/login")
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Не удалось выйти из системы"
-    toast.add({
-      title: "Ошибка выхода",
-      description: message,
-      color: "error",
-    })
-  } finally {
-    isLoggingOut.value = false
-  }
+const handleLogout = () => {
+  token.value = null
+  navigateTo("/login")
 }
 </script>
 
@@ -65,11 +57,10 @@ u-header
     div(class="flex items-center gap-2")
       u-color-mode-button
       u-button(
-        v-if="loggedIn"
+        v-if="token"
         color="neutral"
         variant="ghost"
         icon="i-heroicons-arrow-right-on-rectangle"
-        :loading="isLoggingOut"
         @click="handleLogout"
       ) Выйти
 </template>
