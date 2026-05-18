@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { deleteRagDocuments, listRagDocuments, rebuildRagIndices, refreshRagDocument } from "~/services/rag-upload"
+import { clearRagCache, deleteRagDocuments, listRagDocuments, rebuildRagIndices, refreshRagDocument } from "~/services/rag-upload"
 import type { RagDocument } from "~/types/rag-upload"
 
 const props = defineProps<{
@@ -99,6 +99,20 @@ const handleRebuild = async () => {
   }
 }
 
+const isClearingCache = ref(false)
+
+const handleClearCache = async () => {
+  isClearingCache.value = true
+  try {
+    await clearRagCache()
+    toast.add({ title: "Готово", description: "Кэш ответов RAG очищен", color: "success" })
+  } catch {
+    toast.add({ title: "Ошибка", description: "Не удалось очистить кэш", color: "error" })
+  } finally {
+    isClearingCache.value = false
+  }
+}
+
 // Mock extra status for demonstration (matching mockup)
 const getDocStatusExtra = (doc: RagDocument) => {
   if (doc.id.includes("document2")) {
@@ -147,7 +161,23 @@ div(class="space-y-4")
             u-button(color="neutral" variant="ghost" @click="close") Отмена
             u-button(color="error" @click="handleBatchDelete(); close()") Удалить
 
-    div
+    div(class="flex items-center gap-2")
+      u-modal(
+        title="Очистить кэш RAG"
+        description="Это удалит сохранённые ответы LLM. Агент перестанет отдавать устаревшие ответы по обновлённым данным."
+      )
+        u-button(
+          variant="outline"
+          color="neutral"
+          size="sm"
+          :loading="isClearingCache"
+        ) Очистить кэш
+
+        template(#footer="{ close }")
+          div(class="flex justify-end gap-2 w-full")
+            u-button(color="neutral" variant="ghost" @click="close") Отмена
+            u-button(color="primary" @click="handleClearCache(); close()") Очистить
+
       u-modal(
         title="Перестроить индексы"
         description="Вы уверены, что хотите полностью перестроить индексы? Это может занять время."

@@ -106,6 +106,69 @@ export interface paths {
     patch: operations["deactivate_admin_api_v1_auth_admins__admin_id__deactivate_patch"]
     trace?: never
   }
+  "/api/v1/topics/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Получить все темы
+     * @description Получить список всех активных тем.
+     */
+    get: operations["get_topics_api_v1_topics__get"]
+    put?: never
+    /**
+     * Создать новую тему
+     * @description Создает новую тему.
+     *
+     *     - **label**: уникальное название темы
+     *     - **description**: опциональное описание
+     *     - **is_active**: активна ли тема при создании (по умолчанию True)
+     */
+    post: operations["create_topic_api_v1_topics__post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/topics/{topic_id}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Получить тему по ID
+     * @description Получает тему по её ID.
+     */
+    get: operations["get_topic_api_v1_topics__topic_id__get"]
+    /**
+     * Обновить тему
+     * @description Обновляет тему по ID.
+     *
+     *     - **label**: новое название (опционально)
+     *     - **description**: новое описание (опционально)
+     *     - **is_active**: изменить статус активности (опционально)
+     */
+    put: operations["update_topic_api_v1_topics__topic_id__put"]
+    post?: never
+    /**
+     * Удалить тему
+     * @description Удаляет (деактивирует) тему по ID.
+     *
+     *     Примечание: тема не удаляется из БД, а деактивируется (is_active = False)
+     *     для сохранения целостности исторических данных.
+     */
+    delete: operations["delete_topic_api_v1_topics__topic_id__delete"]
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/abbrev": {
     parameters: {
       query?: never
@@ -515,6 +578,28 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/rag/cache/clear": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Очистить кэш ответов RAG
+     * @description Очищает кэш ответов LLM (kv_store_llm_response_cache.json)
+     *     для графа, чтобы агент перестал отдавать старые ответы по старым данным.
+     *     Очистка вызывается по нажатию кнопки администратором.
+     */
+    post: operations["clear_rag_cache_api_v1_rag_cache_clear_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/evals/run": {
     parameters: {
       query?: never
@@ -541,6 +626,86 @@ export interface paths {
     }
     /** Route Get Evaluation Status */
     get: operations["route_get_evaluation_status_api_v1_evals_status_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/stats/topics": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Get Topic Stats
+     * @description Получить статистику по темам сообщений.
+     */
+    get: operations["get_topic_stats_api_v1_stats_topics_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/system-logs/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Get System Logs
+     * @description Получает последние N строк из указанного файла логов.
+     */
+    get: operations["get_system_logs_api_v1_system_logs__get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/system-logs/files": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * List Log Files
+     * @description Возвращает список доступных файлов логов.
+     */
+    get: operations["list_log_files_api_v1_system_logs_files_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/system-logs/download": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Download System Logs
+     * @description Скачивает указанный файл логов.
+     */
+    get: operations["download_system_logs_api_v1_system_logs_download_get"]
     put?: never
     post?: never
     delete?: never
@@ -849,6 +1014,8 @@ export interface components {
       message_metadata?: {
         [key: string]: unknown
       } | null
+      /** Topic Id */
+      topic_id?: number | null
       /**
        * Created At
        * Format: date-time
@@ -863,6 +1030,8 @@ export interface components {
       user_id: number
       /** Username */
       username?: string | null
+      /** Messenger */
+      messenger?: string | null
       /** Session Id */
       session_id: string
       /** User Text */
@@ -1047,6 +1216,84 @@ export interface components {
        * @default bearer
        */
       token_type: string
+    }
+    /**
+     * TopicCreate
+     * @description Модель для создания новой темы.
+     */
+    TopicCreate: {
+      /**
+       * Label
+       * @description Название темы
+       */
+      label: string
+      /**
+       * Description
+       * @description Описание темы
+       */
+      description?: string | null
+      /**
+       * Is Active
+       * @description Активна ли тема
+       * @default true
+       */
+      is_active: boolean
+    }
+    /**
+     * TopicListResponse
+     * @description Модель ответа для списка тем.
+     */
+    TopicListResponse: {
+      /** Topics */
+      topics: components["schemas"]["TopicResponse"][]
+      /** Total */
+      total: number
+    }
+    /**
+     * TopicResponse
+     * @description Модель ответа для темы.
+     */
+    TopicResponse: {
+      /**
+       * Label
+       * @description Название темы
+       */
+      label: string
+      /**
+       * Description
+       * @description Описание темы
+       */
+      description?: string | null
+      /** Id */
+      id: number
+      /** Is Active */
+      is_active: boolean
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string
+    }
+    /**
+     * TopicUpdate
+     * @description Модель для обновления темы.
+     */
+    TopicUpdate: {
+      /**
+       * Label
+       * @description Название темы
+       */
+      label?: string | null
+      /**
+       * Description
+       * @description Описание темы
+       */
+      description?: string | null
+      /**
+       * Is Active
+       * @description Активна ли тема
+       */
+      is_active?: boolean | null
     }
     /** UploadedDocumentResult */
     UploadedDocumentResult: {
@@ -1265,6 +1512,154 @@ export interface operations {
         content: {
           "application/json": components["schemas"]["AdminResponse"]
         }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_topics_api_v1_topics__get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["TopicListResponse"]
+        }
+      }
+    }
+  }
+  create_topic_api_v1_topics__post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["TopicCreate"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["TopicResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_topic_api_v1_topics__topic_id__get: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        topic_id: number
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["TopicResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  update_topic_api_v1_topics__topic_id__put: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        topic_id: number
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["TopicUpdate"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["TopicResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  delete_topic_api_v1_topics__topic_id__delete: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        topic_id: number
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
       }
       /** @description Validation Error */
       422: {
@@ -1996,6 +2391,26 @@ export interface operations {
       }
     }
   }
+  clear_rag_cache_api_v1_rag_cache_clear_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": unknown
+        }
+      }
+    }
+  }
   run_evaluation_api_v1_evals_run_post: {
     parameters: {
       query?: never
@@ -2032,6 +2447,114 @@ export interface operations {
         }
         content: {
           "application/json": unknown
+        }
+      }
+    }
+  }
+  get_topic_stats_api_v1_stats_topics_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": {
+            [key: string]: unknown
+          }[]
+        }
+      }
+    }
+  }
+  get_system_logs_api_v1_system_logs__get: {
+    parameters: {
+      query?: {
+        /** @description Имя лог файла */
+        filename?: string
+        /** @description Количество последних строк */
+        lines?: number
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": string[]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  list_log_files_api_v1_system_logs_files_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": string[]
+        }
+      }
+    }
+  }
+  download_system_logs_api_v1_system_logs_download_get: {
+    parameters: {
+      query?: {
+        /** @description Имя лог файла */
+        filename?: string
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": unknown
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
         }
       }
     }

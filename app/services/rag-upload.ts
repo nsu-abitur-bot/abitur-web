@@ -87,13 +87,19 @@ export async function getPopularQuestions(limit = 10): Promise<PopularQuestion[]
   return data.questions ?? []
 }
 
-// --- Mocked Methods (Frontend only for now) ---
+export async function clearRagCache(): Promise<void> {
+  await apiFetch("/api/v1/rag/cache/clear", {
+    method: "POST",
+  })
+}
 
 export async function deleteRagDocuments(ids: string[]): Promise<void> {
   await Promise.all(ids.map(id => apiFetch(`/api/v1/rag/docs/${encodeURIComponent(id)}`, {
     method: "DELETE",
   })))
 }
+
+// --- Mocked Methods (Frontend only for now) ---
 
 export async function refreshRagDocument(id: string): Promise<void> {
   console.log("[Mock] Refreshing RAG document:", id)

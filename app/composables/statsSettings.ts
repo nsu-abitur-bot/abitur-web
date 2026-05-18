@@ -1,49 +1,50 @@
 import { useLocalStorage } from "@vueuse/core"
 
-export interface StatsTopic {
-  id: string
-  label: string
-}
+import type { Topic, TopicCreate, TopicUpdate } from "~/services/topics"
+import { createTopic, deleteTopic, listTopics, updateTopic } from "~/services/topics"
 
 export interface PopularQuestion {
   question: string
   count: number
 }
 
-const defaultTopics: StatsTopic[] = [
-  { id: "topic-1", label: "Общежитие" },
-  { id: "topic-2", label: "Поступление" },
-  { id: "topic-3", label: "Проходные баллы" },
-]
-
 const defaultPopularLimit = 5
 
 export function useStatsSettings() {
-  const topics = useLocalStorage<StatsTopic[]>("stats-topics", defaultTopics)
   const popularLimit = useLocalStorage<number>("stats-popular-limit", defaultPopularLimit)
 
-  return { topics, popularLimit }
+  return { popularLimit }
 }
 
-export function useTopicClassification() {
-  const topicMap = useLocalStorage<Record<string, string>>("stats-topic-map", {})
+export function useTopics() {
+  const topics = useState<Topic[]>("topics-cache", () => [])
+  const isLoading = useState<boolean>("topics-loading", () => false)
 
-  const setTopicForQuestion = (question: string, topicId: string | null) => {
-    if (!question) {
-      return
-    }
-
-    if (!topicId) {
-      delete topicMap.value[question]
-      topicMap.value = { ...topicMap.value }
-      return
-    }
-
-    topicMap.value = {
-      ...topicMap.value,
-      [question]: topicId,
+  const refresh = async () => {
+    isLoading.value = true
+    try {
+      topics.value = await listTopics()
+    } finally {
+      isLoading.value = false
     }
   }
 
-  return { topicMap, setTopicForQuestion }
+  const create = async (payload: TopicCreate): Promise<Topic> => {
+    const created = await createTopic(payload)
+    await refresh()
+    return created
+  }
+
+  const update = async (id: number, payload: TopicUpdate): Promise<Topic> => {
+    const updated = await updateTopic(id, payload)
+    await refresh()
+    return updated
+  }
+
+  const remove = async (id: number): Promise<void> => {
+    await deleteTopic(id)
+    await refresh()
+  }
+
+  return { topics, isLoading, refresh, create, update, remove }
 }
