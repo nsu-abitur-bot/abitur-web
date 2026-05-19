@@ -35,8 +35,6 @@ RUN pnpm install --frozen-lockfile --offline
 
 RUN pnpm exec nuxt build
 
-RUN pnpm prune --prod
-
 #
 # runner
 #
@@ -55,7 +53,6 @@ ENV NUXT_DATABASE_URL=
 RUN apk add --no-cache curl fontconfig ttf-dejavu
 
 COPY --from=builder /app/.output ./.output
-COPY --from=builder /app/node_modules ./node_modules
 
 EXPOSE 3000
 
