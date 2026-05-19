@@ -37,5 +37,7 @@ export async function downloadSystemLogs(filename?: string): Promise<void> {
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)
-  URL.revokeObjectURL(objectUrl)
+  setTimeout(() => {
+    URL.revokeObjectURL(objectUrl)
+  }, 1000)
 }
