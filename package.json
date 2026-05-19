@@ -2,6 +2,7 @@
   "name": "abitur",
   "type": "module",
   "private": true,
+  "packageManager": "pnpm@9.15.4",
   "scripts": {
     "prepare": "husky",
     "check": "pnpm run lint && pnpm run types",
