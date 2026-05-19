@@ -1,1 +1,3227 @@
-{ "openapi": "3.1.0", "info": { "title": "Abitur API", "version": "0.1.0" }, "paths": { "/api/v1/auth/login": { "post": { "tags": ["auth"], "summary": "Login", "operationId": "login_api_v1_auth_login_post", "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/LoginRequest" } } }, "required": true }, "responses": { "200": { "description": "Successful Response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TokenResponse" } } } }, "422": { "description": "Validation Error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } } } } } } }, "/api/v1/auth/register": { "post": { "tags": ["auth"], "summary": "Register", "operationId": "register_api_v1_auth_register_post", "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RegisterRequest" } } }, "required": true }, "responses": { "201": { "description": "Successful Response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AdminResponse" } } } }, "422": { "description": "Validation Error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } } } } } } }, "/api/v1/auth/me": { "get": { "tags": ["auth"], "summary": "Get Me", "operationId": "get_me_api_v1_auth_me_get", "responses": { "200": { "description": "Successful Response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AdminResponse" } } } } }, "security": [{ "OAuth2PasswordBearer": [] }] } }, "/api/v1/auth/invite": { "post": { "tags": ["auth"], "summary": "Create Invite", "operationId": "create_invite_api_v1_auth_invite_post", "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/InviteCodeRequest" } } }, "required": true }, "responses": { "201": { "description": "Successful Response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/InviteCodeResponse" } } } }, "422": { "description": "Validation Error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } } } } }, "security": [{ "OAuth2PasswordBearer": [] }] } }, "/api/v1/auth/admins": { "get": { "tags": ["auth"], "summary": "List Admins", "operationId": "list_admins_api_v1_auth_admins_get", "responses": { "200": { "description": "Successful Response", "content": { "application/json": { "schema": { "items": { "$ref": "#/components/schemas/AdminResponse" }, "type": "array", "title": "Response List Admins Api V1 Auth Admins Get" } } } } }, "security": [{ "OAuth2PasswordBearer": [] }] } }, "/api/v1/auth/admins/{admin_id}/deactivate": { "patch": { "tags": ["auth"], "summary": "Deactivate Admin", "operationId": "deactivate_admin_api_v1_auth_admins__admin_id__deactivate_patch", "security": [{ "OAuth2PasswordBearer": [] }], "parameters": [{ "name": "admin_id", "in": "path", "required": true, "schema": { "type": "string", "title": "Admin Id" } }], "responses": { "200": { "description": "Successful Response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AdminResponse" } } } }, "422": { "description": "Validation Error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } } } } } } }, "/api/v1/topics/": { "get": { "tags": ["topics"], "summary": "Получить все темы", "description": "Получить список всех активных тем.", "operationId": "get_topics_api_v1_topics__get", "responses": { "200": { "description": "Successful Response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TopicListResponse" } } } } } }, "post": { "tags": ["topics"], "summary": "Создать новую тему", "description": "Создает новую тему.\n\n- **label**: уникальное название темы\n- **description**: опциональное описание\n- **is_active**: активна ли тема при создании (по умолчанию True)", "operationId": "create_topic_api_v1_topics__post", "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TopicCreate" } } }, "required": true }, "responses": { "201": { "description": "Successful Response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TopicResponse" } } } }, "422": { "description": "Validation Error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } } } } } } }, "/api/v1/topics/{topic_id}": { "get": { "tags": ["topics"], "summary": "Получить тему по ID", "description": "Получает тему по её ID.", "operationId": "get_topic_api_v1_topics__topic_id__get", "parameters": [{ "name": "topic_id", "in": "path", "required": true, "schema": { "type": "integer", "title": "Topic Id" } }], "responses": { "200": { "description": "Successful Response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TopicResponse" } } } }, "422": { "description": "Validation Error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } } } } } }, "put": { "tags": ["topics"], "summary": "Обновить тему", "description": "Обновляет тему по ID.\n\n- **label**: новое название (опционально)\n- **description**: новое описание (опционально)\n- **is_active**: изменить статус активности (опционально)", "operationId": "update_topic_api_v1_topics__topic_id__put", "parameters": [{ "name": "topic_id", "in": "path", "required": true, "schema": { "type": "integer", "title": "Topic Id" } }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TopicUpdate" } } } }, "responses": { "200": { "description": "Successful Response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TopicResponse" } } } }, "422": { "description": "Validation Error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } } } } } }, "delete": { "tags": ["topics"], "summary": "Удалить тему", "description": "Удаляет (деактивирует) тему по ID.\n\nПримечание: тема не удаляется из БД, а деактивируется (is_active = False)\nдля сохранения целостности исторических данных.", "operationId": "delete_topic_api_v1_topics__topic_id__delete", "parameters": [{ "name": "topic_id", "in": "path", "required": true, "schema": { "type": "integer", "title": "Topic Id" } }], "responses": { "204": { "description": "Successful Response" }, "422": { "description": "Validation Error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } } } } } } }, "/api/v1/abbrev": { "get": { "tags": ["Abbreviations"], "summary": "Получить все аббревиатуры", "description": "Возвращает словарь всех аббревиатур.", "operationId": "get_all_api_v1_abbrev_get", "responses": { "200": { "description": "Successful Response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AbbrevListResponse" } } } } }, "security": [{ "OAuth2PasswordBearer": [] }] }, "post": { "tags": ["Abbreviations"], "summary": "Добавить аббревиатуру", "description": "Добавляет новую аббревиатуру в словарь.", "operationId": "create_api_v1_abbrev_post", "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AbbrevItem" } } }, "required": true }, "responses": { "201": { "description": "Successful Response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AbbrevItem" } } } }, "422": { "description": "Validation Error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } } } } }, "security": [{ "OAuth2PasswordBearer": [] }] } }, "/api/v1/abbrev/{index}": { "put": { "tags": ["Abbreviations"], "summary": "Обновить аббревиатуру по индексу", "description": "Обновляет существующую аббревиатуру по индексу в списке.", "operationId": "update_api_v1_abbrev__index__put", "security": [{ "OAuth2PasswordBearer": [] }], "parameters": [{ "name": "index", "in": "path", "required": true, "schema": { "type": "integer", "title": "Index" } }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AbbrevItem" } } } }, "responses": { "200": { "description": "Successful Response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AbbrevItem" } } } }, "422": { "description": "Validation Error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } } } } } }, "delete": { "tags": ["Abbreviations"], "summary": "Удалить аббревиатуру по индексу", "description": "Удаляет аббревиатуру по индексу.", "operationId": "delete_api_v1_abbrev__index__delete", "security": [{ "OAuth2PasswordBearer": [] }], "parameters": [{ "name": "index", "in": "path", "required": true, "schema": { "type": "integer", "title": "Index" } }], "responses": { "204": { "description": "Successful Response" }, "422": { "description": "Validation Error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } } } } } } }, "/api/v1/faq": { "get": { "tags": ["FAQ Management"], "summary": "Получить все FAQ", "description": "Возвращает список всех вопросов и ответов FAQ, которые использует бот.", "operationId": "get_all_faqs_api_v1_faq_get", "responses": { "200": { "description": "Successful Response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/FaqListResponse" } } } } }, "security": [{ "OAuth2PasswordBearer": [] }] }, "post": { "tags": ["FAQ Management"], "summary": "Создать FAQ", "description": "Создает новый вопрос FAQ и автоматически применяет для новых запросов к боту.", "operationId": "create_faq_api_v1_faq_post", "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/FaqItem" } } }, "required": true }, "responses": { "201": { "description": "Successful Response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/FaqItem" } } } }, "422": { "description": "Validation Error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } } } } }, "security": [{ "OAuth2PasswordBearer": [] }] } }, "/api/v1/faq/upload": { "post": { "tags": ["FAQ Management"], "summary": "Загрузить FAQ из CSV", "description": "Загружает вопросы и ответы FAQ из CSV-файла.\nОжидается CSV файл с колонками \"Вопросы\" и \"Ответы\".\nПустая строка означает, что начинается новый вопрос.\nПервый вопрос в блоке становится основным,\nостальные - альтернативными формулировками (aliases).", "operationId": "upload_faq_csv_api_v1_faq_upload_post", "requestBody": { "content": { "multipart/form-data": { "schema": { "$ref": "#/components/schemas/Body_upload_faq_csv_api_v1_faq_upload_post" } } }, "required": true }, "responses": { "201": { "description": "Successful Response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/FaqListResponse" } } } }, "422": { "description": "Validation Error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } } } } }, "security": [{ "OAuth2PasswordBearer": [] }] } }, "/api/v1/faq/{index}": { "put": { "tags": ["FAQ Management"], "summary": "Обновить FAQ по индексу", "description": "Обновляет существующий FAQ элемент по его позиции (индексу) в списке.", "operationId": "update_faq_api_v1_faq__index__put", "security": [{ "OAuth2PasswordBearer": [] }], "parameters": [{ "name": "index", "in": "path", "required": true, "schema": { "type": "integer", "title": "Index" } }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/FaqItem" } } } }, "responses": { "200": { "description": "Successful Response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/FaqItem" } } } }, "422": { "description": "Validation Error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } } } } } }, "delete": { "tags": ["FAQ Management"], "summary": "Удалить FAQ по индексу", "description": "Удаляет существующий FAQ элемент по его позиции (индексу) в списке.", "operationId": "delete_faq_api_v1_faq__index__delete", "security": [{ "OAuth2PasswordBearer": [] }], "parameters": [{ "name": "index", "in": "path", "required": true, "schema": { "type": "integer", "title": "Index" } }], "responses": { "204": { "description": "Successful Response" }, "422": { "description": "Validation Error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } } } } } } }, "/api/v1/logs/request-stats": { "get": { "tags": ["Message Logs"], "summary": "Статистика количества запросов", "operationId": "get_request_stats_api_v1_logs_request_stats_get", "security": [{ "OAuth2PasswordBearer": [] }], "parameters": [{ "name": "start", "in": "query", "required": false, "schema": { "anyOf": [{ "type": "string", "format": "date-time" }, { "type": "null" }], "description": "Начало периода (ISO 8601)", "title": "Start" }, "description": "Начало периода (ISO 8601)" }, { "name": "end", "in": "query", "required": false, "schema": { "anyOf": [{ "type": "string", "format": "date-time" }, { "type": "null" }], "description": "Конец периода (ISO 8601)", "title": "End" }, "description": "Конец периода (ISO 8601)" }, { "name": "group_by", "in": "query", "required": false, "schema": { "type": "string", "description": "Группировка: hour, day, week, month", "default": "day", "title": "Group By" }, "description": "Группировка: hour, day, week, month" }, { "name": "message_type", "in": "query", "required": false, "schema": { "type": "string", "description": "Тип сообщения для статистики", "default": "user_input", "title": "Message Type" }, "description": "Тип сообщения для статистики" }], "responses": { "200": { "description": "Successful Response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RequestCountStatsResponse" } } } }, "422": { "description": "Validation Error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } } } } } } }, "/api/v1/logs/": { "get": { "tags": ["Message Logs"], "summary": "Получить логи сообщений", "description": "Получает логи сообщений с фильтрацией.\n\n- **user_id**: фильтр по ID пользователя\n- **session_id**: фильтр по ID сессии\n- **message_type**: фильтр по типу сообщения\n- **limit**: количество записей (макс. 1000)\n- **offset**: сдвиг для пагинации", "operationId": "get_message_logs_api_v1_logs__get", "security": [{ "OAuth2PasswordBearer": [] }], "parameters": [{ "name": "user_id", "in": "query", "required": false, "schema": { "anyOf": [{ "type": "integer" }, { "type": "null" }], "title": "User Id" } }, { "name": "session_id", "in": "query", "required": false, "schema": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Session Id" } }, { "name": "message_type", "in": "query", "required": false, "schema": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Message Type" } }, { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "maximum": 1000, "minimum": 1, "default": 50, "title": "Limit" } }, { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "minimum": 0, "default": 0, "title": "Offset" } }], "responses": { "200": { "description": "Successful Response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/MessageLogListResponse" } } } }, "422": { "description": "Validation Error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } } } } } } }, "/api/v1/logs/session/{session_id}": { "get": { "tags": ["Message Logs"], "summary": "Получить логи по сессии", "description": "Получает все логи для конкретной сессии.", "operationId": "get_session_logs_api_v1_logs_session__session_id__get", "security": [{ "OAuth2PasswordBearer": [] }], "parameters": [{ "name": "session_id", "in": "path", "required": true, "schema": { "type": "string", "title": "Session Id" } }, { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "maximum": 1000, "minimum": 1, "default": 50, "title": "Limit" } }, { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "minimum": 0, "default": 0, "title": "Offset" } }], "responses": { "200": { "description": "Successful Response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/MessageLogListResponse" } } } }, "422": { "description": "Validation Error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } } } } } } }, "/api/v1/logs/user/{user_id}": { "get": { "tags": ["Message Logs"], "summary": "Получить логи по пользователю", "description": "Получает все логи для конкретного пользователя.", "operationId": "get_user_logs_api_v1_logs_user__user_id__get", "security": [{ "OAuth2PasswordBearer": [] }], "parameters": [{ "name": "user_id", "in": "path", "required": true, "schema": { "type": "integer", "title": "User Id" } }, { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "maximum": 1000, "minimum": 1, "default": 50, "title": "Limit" } }, { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "minimum": 0, "default": 0, "title": "Offset" } }], "responses": { "200": { "description": "Successful Response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/MessageLogListResponse" } } } }, "422": { "description": "Validation Error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } } } } } } }, "/api/v1/logs/type/{message_type}": { "get": { "tags": ["Message Logs"], "summary": "Получить логи по типу сообщения", "description": "Получает логи по типу сообщения.\n\nВозможные типы:\n- `user_input` - входящие сообщения от пользователей\n- `rag_context` - контекст полученный из RAG\n- `llm_response` - ответы от LLM\n- `faq_match` - совпадения из FAQ", "operationId": "get_type_logs_api_v1_logs_type__message_type__get", "security": [{ "OAuth2PasswordBearer": [] }], "parameters": [{ "name": "message_type", "in": "path", "required": true, "schema": { "type": "string", "title": "Message Type" } }, { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "maximum": 1000, "minimum": 1, "default": 50, "title": "Limit" } }, { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "minimum": 0, "default": 0, "title": "Offset" } }], "responses": { "200": { "description": "Successful Response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/MessageLogListResponse" } } } }, "422": { "description": "Validation Error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } } } } } } }, "/api/v1/logs/popular": { "get": { "tags": ["Message Logs"], "summary": "Получить самые популярные вопросы", "description": "Получает самые часто задаваемые вопросы пользователей.\n\n- **limit**: максимальное количество возвращаемых вопросов", "operationId": "get_popular_questions_api_v1_logs_popular_get", "security": [{ "OAuth2PasswordBearer": [] }], "parameters": [{ "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "maximum": 100, "minimum": 1, "default": 10, "title": "Limit" } }], "responses": { "200": { "description": "Successful Response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PopularQuestionsResponse" } } } }, "422": { "description": "Validation Error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } } } } } } }, "/api/v1/rag/upload": { "post": { "tags": ["RAG Management"], "summary": "Загрузить документы в RAG", "operationId": "upload_documents_to_rag_api_v1_rag_upload_post", "requestBody": { "content": { "multipart/form-data": { "schema": { "$ref": "#/components/schemas/Body_upload_documents_to_rag_api_v1_rag_upload_post" } } }, "required": true }, "responses": { "200": { "description": "Successful Response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RagUploadResponse" } } } }, "422": { "description": "Validation Error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } } } } }, "security": [{ "OAuth2PasswordBearer": [] }] } }, "/api/v1/rag/parse": { "post": { "tags": ["RAG Management"], "summary": "Спарсить страницу для RAG", "description": "Парсит страницу или PDF-документ, очищает текст через LLM и находит документы.", "operationId": "parse_page_for_rag_api_v1_rag_parse_post", "security": [{ "OAuth2PasswordBearer": [] }], "parameters": [{ "name": "url", "in": "query", "required": true, "schema": { "type": "string", "format": "uri", "minLength": 1, "maxLength": 2083, "description": "URL страницы", "title": "Url" }, "description": "URL страницы" }], "responses": { "200": { "description": "Successful Response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ParsedPageResult" } } } }, "422": { "description": "Validation Error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } } } } } } }, "/api/v1/rag/confirm": { "post": { "tags": ["RAG Management"], "summary": "Подтвердить загрузку в RAG", "description": "Загружает отредактированный текст и выбранные документы в RAG.", "operationId": "confirm_rag_upload_api_v1_rag_confirm_post", "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ConfirmUploadRequest" } } }, "required": true }, "responses": { "201": { "description": "Successful Response", "content": { "application/json": { "schema": {} } } }, "422": { "description": "Validation Error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } } } } }, "security": [{ "OAuth2PasswordBearer": [] }] } }, "/api/v1/rag/docs": { "get": { "tags": ["RAG Management"], "summary": "Список документов в RAG", "description": "Возвращает список всех загруженных в RAG документов.", "operationId": "list_rag_documents_api_v1_rag_docs_get", "responses": { "200": { "description": "Successful Response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RagDocumentListResponse" } } } } }, "security": [{ "OAuth2PasswordBearer": [] }] } }, "/api/v1/rag/docs/{doc_id}/content": { "get": { "tags": ["RAG Management"], "summary": "Получить полный текст документа", "description": "Возвращает полный исходный текст документа по его ID.", "operationId": "get_rag_document_content_api_v1_rag_docs__doc_id__content_get", "security": [{ "OAuth2PasswordBearer": [] }], "parameters": [{ "name": "doc_id", "in": "path", "required": true, "schema": { "type": "string", "title": "Doc Id" } }], "responses": { "200": { "description": "Successful Response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RagDocumentContentResponse" } } } }, "422": { "description": "Validation Error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } } } } } } }, "/api/v1/rag/docs/{doc_id}": { "delete": { "tags": ["RAG Management"], "summary": "Удалить документ из RAG", "description": "Удаляет документ из базы знаний RAG.", "operationId": "delete_rag_document_api_v1_rag_docs__doc_id__delete", "security": [{ "OAuth2PasswordBearer": [] }], "parameters": [{ "name": "doc_id", "in": "path", "required": true, "schema": { "type": "string", "title": "Doc Id" } }], "responses": { "200": { "description": "Successful Response", "content": { "application/json": { "schema": {} } } }, "422": { "description": "Validation Error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } } } } } } }, "/api/v1/rag/upload/csv": { "post": { "tags": ["RAG Management"], "summary": "Импорт документов по ссылкам из CSV", "description": "Принимает CSV документ на вход и обрабатывает все документы там.\nОжидаемый формат: Название,Link,Комментарий", "operationId": "upload_csv_documents_api_v1_rag_upload_csv_post", "requestBody": { "content": { "multipart/form-data": { "schema": { "$ref": "#/components/schemas/Body_upload_csv_documents_api_v1_rag_upload_csv_post" } } }, "required": true }, "responses": { "200": { "description": "Successful Response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CsvImportResponse" } } } }, "422": { "description": "Validation Error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } } } } }, "security": [{ "OAuth2PasswordBearer": [] }] } }, "/api/v1/rag/upload/csv/preview": { "post": { "tags": ["RAG Management"], "summary": "Превью документов из CSV (без обработки)", "description": "Принимает CSV документ и возвращает список найденных в нём ссылок без их обработки.", "operationId": "preview_csv_documents_api_v1_rag_upload_csv_preview_post", "requestBody": { "content": { "multipart/form-data": { "schema": { "$ref": "#/components/schemas/Body_preview_csv_documents_api_v1_rag_upload_csv_preview_post" } } }, "required": true }, "responses": { "200": { "description": "Successful Response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CsvImportPreviewResponse" } } } }, "422": { "description": "Validation Error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } } } } }, "security": [{ "OAuth2PasswordBearer": [] }] } }, "/api/v1/rag/cache/clear": { "post": { "tags": ["RAG Management"], "summary": "Очистить кэш ответов RAG", "description": "Очищает кэш ответов LLM (kv_store_llm_response_cache.json)\nдля графа, чтобы агент перестал отдавать старые ответы по старым данным.\nОчистка вызывается по нажатию кнопки администратором.", "operationId": "clear_rag_cache_api_v1_rag_cache_clear_post", "responses": { "200": { "description": "Successful Response", "content": { "application/json": { "schema": {} } } } }, "security": [{ "OAuth2PasswordBearer": [] }] } }, "/api/v1/evals/run": { "post": { "tags": ["Evaluations"], "summary": "Run Evaluation", "operationId": "run_evaluation_api_v1_evals_run_post", "responses": { "200": { "description": "Successful Response", "content": { "application/json": { "schema": {} } } } }, "security": [{ "OAuth2PasswordBearer": [] }] } }, "/api/v1/evals/status": { "get": { "tags": ["Evaluations"], "summary": "Route Get Evaluation Status", "operationId": "route_get_evaluation_status_api_v1_evals_status_get", "responses": { "200": { "description": "Successful Response", "content": { "application/json": { "schema": {} } } } }, "security": [{ "OAuth2PasswordBearer": [] }] } }, "/api/v1/stats/topics": { "get": { "tags": ["stats"], "summary": "Get Topic Stats", "description": "Получить статистику по темам сообщений.", "operationId": "get_topic_stats_api_v1_stats_topics_get", "responses": { "200": { "description": "Successful Response", "content": { "application/json": { "schema": { "items": { "additionalProperties": true, "type": "object" }, "type": "array", "title": "Response Get Topic Stats Api V1 Stats Topics Get" } } } } }, "security": [{ "OAuth2PasswordBearer": [] }] } }, "/api/v1/system-logs/": { "get": { "tags": ["System Logs"], "summary": "Get System Logs", "description": "Получает последние N строк из указанного файла логов.", "operationId": "get_system_logs_api_v1_system_logs__get", "security": [{ "OAuth2PasswordBearer": [] }], "parameters": [{ "name": "filename", "in": "query", "required": false, "schema": { "type": "string", "description": "Имя лог файла", "default": "abitur_bot.log", "title": "Filename" }, "description": "Имя лог файла" }, { "name": "lines", "in": "query", "required": false, "schema": { "type": "integer", "maximum": 1000, "minimum": 1, "description": "Количество последних строк", "default": 100, "title": "Lines" }, "description": "Количество последних строк" }], "responses": { "200": { "description": "Successful Response", "content": { "application/json": { "schema": { "type": "array", "items": { "type": "string" }, "title": "Response Get System Logs Api V1 System Logs  Get" } } } }, "422": { "description": "Validation Error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } } } } } } }, "/api/v1/system-logs/files": { "get": { "tags": ["System Logs"], "summary": "List Log Files", "description": "Возвращает список доступных файлов логов.", "operationId": "list_log_files_api_v1_system_logs_files_get", "responses": { "200": { "description": "Successful Response", "content": { "application/json": { "schema": { "items": { "type": "string" }, "type": "array", "title": "Response List Log Files Api V1 System Logs Files Get" } } } } }, "security": [{ "OAuth2PasswordBearer": [] }] } }, "/api/v1/system-logs/download": { "get": { "tags": ["System Logs"], "summary": "Download System Logs", "description": "Скачивает указанный файл логов.", "operationId": "download_system_logs_api_v1_system_logs_download_get", "security": [{ "OAuth2PasswordBearer": [] }], "parameters": [{ "name": "filename", "in": "query", "required": false, "schema": { "type": "string", "description": "Имя лог файла", "default": "abitur_bot.log", "title": "Filename" }, "description": "Имя лог файла" }], "responses": { "200": { "description": "Successful Response", "content": { "application/json": { "schema": {} } } }, "422": { "description": "Validation Error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } } } } } } }, "/api/v1/users/count-stats": { "get": { "summary": "Get Users Count Stats", "operationId": "get_users_count_stats_api_v1_users_count_stats_get", "responses": { "200": { "description": "Successful Response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UserCountStatsResponse" } } } } }, "security": [{ "OAuth2PasswordBearer": [] }] } }, "/api/v1/messages": { "get": { "summary": "Get Messages", "description": "Возвращает список сообщений и ответов бота.", "operationId": "get_messages_api_v1_messages_get", "security": [{ "OAuth2PasswordBearer": [] }], "parameters": [{ "name": "user_id", "in": "query", "required": false, "schema": { "anyOf": [{ "type": "integer" }, { "type": "null" }], "description": "Фильтр по user_id", "title": "User Id" }, "description": "Фильтр по user_id" }, { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "maximum": 500, "minimum": 1, "description": "Количество записей", "default": 50, "title": "Limit" }, "description": "Количество записей" }, { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "minimum": 0, "description": "Смещение", "default": 0, "title": "Offset" }, "description": "Смещение" }], "responses": { "200": { "description": "Successful Response", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/MessageResponse" }, "title": "Response Get Messages Api V1 Messages Get" } } } }, "422": { "description": "Validation Error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } } } } } } } }, "components": { "schemas": { "AbbrevItem": { "properties": { "short": { "type": "string", "title": "Short", "description": "Аббревиатура (например, НГУ)" }, "full": { "type": "string", "title": "Full", "description": "Расшифровка (например, Новосибирский государственный университет)" } }, "type": "object", "required": ["short", "full"], "title": "AbbrevItem" }, "AbbrevListResponse": { "properties": { "items": { "items": { "$ref": "#/components/schemas/AbbrevItem" }, "type": "array", "title": "Items", "description": "Список аббревиатур" } }, "type": "object", "required": ["items"], "title": "AbbrevListResponse" }, "AdminResponse": { "properties": { "id": { "type": "string", "title": "Id" }, "username": { "type": "string", "title": "Username" }, "role": { "$ref": "#/components/schemas/AdminRole" }, "is_active": { "type": "boolean", "title": "Is Active" }, "created_at": { "type": "string", "format": "date-time", "title": "Created At" }, "created_by_id": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Created By Id" } }, "type": "object", "required": ["id", "username", "role", "is_active", "created_at", "created_by_id"], "title": "AdminResponse" }, "AdminRole": { "type": "string", "enum": ["superadmin", "admin", "viewer"], "title": "AdminRole" }, "Body_preview_csv_documents_api_v1_rag_upload_csv_preview_post": { "properties": { "file": { "type": "string", "contentMediaType": "application/octet-stream", "title": "File", "description": "CSV файл с полями (Название, Link, Комментарий)" } }, "type": "object", "required": ["file"], "title": "Body_preview_csv_documents_api_v1_rag_upload_csv_preview_post" }, "Body_upload_csv_documents_api_v1_rag_upload_csv_post": { "properties": { "file": { "type": "string", "contentMediaType": "application/octet-stream", "title": "File", "description": "CSV файл с полями (Название, Link, Комментарий)" } }, "type": "object", "required": ["file"], "title": "Body_upload_csv_documents_api_v1_rag_upload_csv_post" }, "Body_upload_documents_to_rag_api_v1_rag_upload_post": { "properties": { "files": { "items": { "type": "string", "contentMediaType": "application/octet-stream" }, "type": "array", "title": "Files", "description": "Файлы для индексации в RAG" } }, "type": "object", "required": ["files"], "title": "Body_upload_documents_to_rag_api_v1_rag_upload_post" }, "Body_upload_faq_csv_api_v1_faq_upload_post": { "properties": { "file": { "type": "string", "contentMediaType": "application/octet-stream", "title": "File" } }, "type": "object", "required": ["file"], "title": "Body_upload_faq_csv_api_v1_faq_upload_post" }, "ConfirmUploadRequest": { "properties": { "title": { "type": "string", "title": "Title", "description": "Название страницы" }, "url": { "type": "string", "title": "Url", "description": "URL страницы" }, "text": { "type": "string", "title": "Text", "description": "Отредактированный текст страницы" }, "documents": { "items": { "$ref": "#/components/schemas/ParsedDocument" }, "type": "array", "title": "Documents", "description": "Финальный список файлов для загрузки" } }, "type": "object", "required": ["title", "url", "text", "documents"], "title": "ConfirmUploadRequest" }, "CsvImportPreviewResponse": { "properties": { "total_found": { "type": "integer", "title": "Total Found", "description": "Всего найдено ссылок в CSV" }, "results": { "items": { "$ref": "#/components/schemas/CsvImportPreviewResult" }, "type": "array", "title": "Results", "description": "Список найденных документов для превью" } }, "type": "object", "required": ["total_found", "results"], "title": "CsvImportPreviewResponse" }, "CsvImportPreviewResult": { "properties": { "title": { "type": "string", "title": "Title", "description": "Название документа" }, "url": { "type": "string", "title": "Url", "description": "URL документа" }, "comment": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Comment", "description": "Комментарий из CSV" } }, "type": "object", "required": ["title", "url"], "title": "CsvImportPreviewResult" }, "CsvImportResponse": { "properties": { "imported_count": { "type": "integer", "title": "Imported Count", "description": "Количество успешно импортированных документов" }, "total_found": { "type": "integer", "title": "Total Found", "description": "Всего найдено ссылок в CSV" }, "results": { "items": { "$ref": "#/components/schemas/CsvImportResult" }, "type": "array", "title": "Results", "description": "Результаты обработки по каждой ссылке" } }, "type": "object", "required": ["imported_count", "total_found", "results"], "title": "CsvImportResponse" }, "CsvImportResult": { "properties": { "title": { "type": "string", "title": "Title", "description": "Название документа" }, "url": { "type": "string", "title": "Url", "description": "URL документа" }, "success": { "type": "boolean", "title": "Success", "description": "Статус обработки" }, "message": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Message", "description": "Сообщение об ошибке или статус" } }, "type": "object", "required": ["title", "url", "success"], "title": "CsvImportResult" }, "FaqItem": { "properties": { "question": { "type": "string", "title": "Question", "description": "Основной вопрос" }, "aliases": { "items": { "type": "string" }, "type": "array", "title": "Aliases", "description": "Альтернативные формулировки (синонимы) вопроса" }, "answer": { "type": "string", "title": "Answer", "description": "Текст ответа" } }, "type": "object", "required": ["question", "answer"], "title": "FaqItem", "description": "Схема для отдельного элемента FAQ." }, "FaqListResponse": { "properties": { "items": { "items": { "$ref": "#/components/schemas/FaqItem" }, "type": "array", "title": "Items", "description": "Список вопросов-ответов" } }, "type": "object", "required": ["items"], "title": "FaqListResponse", "description": "Схема ответа для списка FAQ-вопросов." }, "HTTPValidationError": { "properties": { "detail": { "items": { "$ref": "#/components/schemas/ValidationError" }, "type": "array", "title": "Detail" } }, "type": "object", "title": "HTTPValidationError" }, "InviteCodeRequest": { "properties": { "role": { "$ref": "#/components/schemas/AdminRole", "default": "admin" }, "expires_in_hours": { "anyOf": [{ "type": "integer", "maximum": 720.0, "minimum": 1.0 }, { "type": "null" }], "title": "Expires In Hours" } }, "type": "object", "title": "InviteCodeRequest" }, "InviteCodeResponse": { "properties": { "code": { "type": "string", "title": "Code" }, "role": { "$ref": "#/components/schemas/AdminRole" }, "expires_at": { "anyOf": [{ "type": "string", "format": "date-time" }, { "type": "null" }], "title": "Expires At" } }, "type": "object", "required": ["code", "role", "expires_at"], "title": "InviteCodeResponse" }, "LoginRequest": { "properties": { "username": { "type": "string", "title": "Username" }, "password": { "type": "string", "title": "Password" } }, "type": "object", "required": ["username", "password"], "title": "LoginRequest" }, "MessageLogListResponse": { "properties": { "logs": { "items": { "$ref": "#/components/schemas/MessageLogResponse" }, "type": "array", "title": "Logs" }, "total": { "type": "integer", "title": "Total" }, "limit": { "type": "integer", "title": "Limit" }, "offset": { "type": "integer", "title": "Offset" } }, "type": "object", "required": ["logs", "total", "limit", "offset"], "title": "MessageLogListResponse", "description": "Модель ответа для списка логов." }, "MessageLogResponse": { "properties": { "id": { "type": "integer", "title": "Id" }, "user_id": { "type": "integer", "title": "User Id" }, "session_id": { "type": "string", "title": "Session Id" }, "message_type": { "type": "string", "title": "Message Type" }, "content": { "type": "string", "title": "Content" }, "message_metadata": { "anyOf": [{ "additionalProperties": true, "type": "object" }, { "type": "null" }], "title": "Message Metadata" }, "topic_id": { "anyOf": [{ "type": "integer" }, { "type": "null" }], "title": "Topic Id" }, "created_at": { "type": "string", "format": "date-time", "title": "Created At" } }, "type": "object", "required": ["id", "user_id", "session_id", "message_type", "content", "created_at"], "title": "MessageLogResponse", "description": "Модель ответа для лога сообщения." }, "MessageResponse": { "properties": { "id": { "type": "string", "title": "Id" }, "user_id": { "type": "integer", "title": "User Id" }, "username": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Username" }, "messenger": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Messenger" }, "session_id": { "type": "string", "title": "Session Id" }, "user_text": { "type": "string", "title": "User Text" }, "bot_response": { "type": "string", "title": "Bot Response" }, "created_at": { "type": "string", "format": "date-time", "title": "Created At" } }, "type": "object", "required": ["id", "user_id", "session_id", "user_text", "bot_response", "created_at"], "title": "MessageResponse" }, "ParsedDocument": { "properties": { "title": { "type": "string", "title": "Title", "description": "Название документа" }, "url": { "type": "string", "title": "Url", "description": "URL для скачивания/ссылки на документ" } }, "type": "object", "required": ["title", "url"], "title": "ParsedDocument" }, "ParsedPageResult": { "properties": { "title": { "type": "string", "title": "Title", "description": "Название страницы" }, "url": { "type": "string", "title": "Url", "description": "URL страницы" }, "text": { "type": "string", "title": "Text", "description": "Сырой или предобработанный текст страницы" }, "documents": { "items": { "$ref": "#/components/schemas/ParsedDocument" }, "type": "array", "title": "Documents", "description": "Список найденных PDF-документов" } }, "type": "object", "required": ["title", "url", "text", "documents"], "title": "ParsedPageResult" }, "PopularQuestion": { "properties": { "question": { "type": "string", "title": "Question" }, "count": { "type": "integer", "title": "Count" } }, "type": "object", "required": ["question", "count"], "title": "PopularQuestion" }, "PopularQuestionsResponse": { "properties": { "questions": { "items": { "$ref": "#/components/schemas/PopularQuestion" }, "type": "array", "title": "Questions" } }, "type": "object", "required": ["questions"], "title": "PopularQuestionsResponse" }, "RagDocument": { "properties": { "id": { "type": "string", "title": "Id", "description": "Идентификатор документа (обычно URL или имя файла)" }, "url": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Url", "description": "Оригинальный URL или путь к файлу" }, "status": { "type": "string", "title": "Status", "description": "Статус обработки" }, "content_summary": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Content Summary", "description": "Краткое содержание" }, "content_length": { "anyOf": [{ "type": "integer" }, { "type": "null" }], "title": "Content Length", "description": "Длина контента" }, "created_at": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Created At", "description": "Дата создания" } }, "type": "object", "required": ["id", "status"], "title": "RagDocument" }, "RagDocumentContentResponse": { "properties": { "id": { "type": "string", "title": "Id", "description": "Идентификатор документа" }, "content": { "type": "string", "title": "Content", "description": "Полный текст документа" } }, "type": "object", "required": ["id", "content"], "title": "RagDocumentContentResponse" }, "RagDocumentListResponse": { "properties": { "documents": { "items": { "$ref": "#/components/schemas/RagDocument" }, "type": "array", "title": "Documents", "description": "Список документов в RAG" } }, "type": "object", "required": ["documents"], "title": "RagDocumentListResponse" }, "RagUploadResponse": { "properties": { "accepted_formats": { "items": { "type": "string" }, "type": "array", "title": "Accepted Formats", "description": "Поддерживаемые расширения файлов" }, "indexed_count": { "type": "integer", "title": "Indexed Count", "description": "Количество успешно проиндексированных файлов" }, "skipped_count": { "type": "integer", "title": "Skipped Count", "description": "Количество пропущенных файлов" }, "results": { "items": { "$ref": "#/components/schemas/UploadedDocumentResult" }, "type": "array", "title": "Results", "description": "Результаты обработки по каждому загруженному файлу" } }, "type": "object", "required": ["accepted_formats", "indexed_count", "skipped_count", "results"], "title": "RagUploadResponse" }, "RegisterRequest": { "properties": { "username": { "type": "string", "maxLength": 100, "minLength": 3, "title": "Username" }, "password": { "type": "string", "minLength": 8, "title": "Password" }, "invite_code": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Invite Code" } }, "type": "object", "required": ["username", "password"], "title": "RegisterRequest" }, "RequestCountBucket": { "properties": { "period": { "type": "string", "format": "date-time", "title": "Period" }, "count": { "type": "integer", "title": "Count" } }, "type": "object", "required": ["period", "count"], "title": "RequestCountBucket", "description": "Элемент статистики по количеству запросов." }, "RequestCountStatsResponse": { "properties": { "total": { "type": "integer", "title": "Total" }, "group_by": { "type": "string", "title": "Group By" }, "start": { "anyOf": [{ "type": "string", "format": "date-time" }, { "type": "null" }], "title": "Start" }, "end": { "anyOf": [{ "type": "string", "format": "date-time" }, { "type": "null" }], "title": "End" }, "buckets": { "items": { "$ref": "#/components/schemas/RequestCountBucket" }, "type": "array", "title": "Buckets" } }, "type": "object", "required": ["total", "group_by", "buckets"], "title": "RequestCountStatsResponse", "description": "Статистика количества запросов за период времени." }, "TokenResponse": { "properties": { "access_token": { "type": "string", "title": "Access Token" }, "token_type": { "type": "string", "title": "Token Type", "default": "bearer" } }, "type": "object", "required": ["access_token"], "title": "TokenResponse" }, "TopicCreate": { "properties": { "label": { "type": "string", "maxLength": 255, "minLength": 1, "title": "Label", "description": "Название темы" }, "description": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Description", "description": "Описание темы" }, "is_active": { "type": "boolean", "title": "Is Active", "description": "Активна ли тема", "default": true } }, "type": "object", "required": ["label"], "title": "TopicCreate", "description": "Модель для создания новой темы." }, "TopicListResponse": { "properties": { "topics": { "items": { "$ref": "#/components/schemas/TopicResponse" }, "type": "array", "title": "Topics" }, "total": { "type": "integer", "title": "Total" } }, "type": "object", "required": ["topics", "total"], "title": "TopicListResponse", "description": "Модель ответа для списка тем." }, "TopicResponse": { "properties": { "label": { "type": "string", "maxLength": 255, "minLength": 1, "title": "Label", "description": "Название темы" }, "description": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Description", "description": "Описание темы" }, "id": { "type": "integer", "title": "Id" }, "is_active": { "type": "boolean", "title": "Is Active" }, "created_at": { "type": "string", "format": "date-time", "title": "Created At" } }, "type": "object", "required": ["label", "id", "is_active", "created_at"], "title": "TopicResponse", "description": "Модель ответа для темы." }, "TopicUpdate": { "properties": { "label": { "anyOf": [{ "type": "string", "maxLength": 255, "minLength": 1 }, { "type": "null" }], "title": "Label", "description": "Название темы" }, "description": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Description", "description": "Описание темы" }, "is_active": { "anyOf": [{ "type": "boolean" }, { "type": "null" }], "title": "Is Active", "description": "Активна ли тема" } }, "type": "object", "title": "TopicUpdate", "description": "Модель для обновления темы." }, "UploadedDocumentResult": { "properties": { "filename": { "type": "string", "title": "Filename", "description": "Имя загруженного файла" }, "status": { "type": "string", "title": "Status", "description": "Статус обработки: indexed или skipped" }, "message": { "type": "string", "title": "Message", "description": "Подробности результата обработки" }, "chars": { "type": "integer", "title": "Chars", "description": "Количество символов, отправленных в RAG", "default": 0 } }, "type": "object", "required": ["filename", "status", "message"], "title": "UploadedDocumentResult" }, "UserCountStatsResponse": { "properties": { "day": { "type": "integer", "title": "Day" }, "week": { "type": "integer", "title": "Week" }, "month": { "type": "integer", "title": "Month" }, "year": { "type": "integer", "title": "Year" }, "all_time": { "type": "integer", "title": "All Time" } }, "type": "object", "required": ["day", "week", "month", "year", "all_time"], "title": "UserCountStatsResponse" }, "ValidationError": { "properties": { "loc": { "items": { "anyOf": [{ "type": "string" }, { "type": "integer" }] }, "type": "array", "title": "Location" }, "msg": { "type": "string", "title": "Message" }, "type": { "type": "string", "title": "Error Type" }, "input": { "title": "Input" }, "ctx": { "type": "object", "title": "Context" } }, "type": "object", "required": ["loc", "msg", "type"], "title": "ValidationError" } }, "securitySchemes": { "OAuth2PasswordBearer": { "type": "oauth2", "flows": { "password": { "scopes": {}, "tokenUrl": "/api/v1/auth/login" } } } } } }
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Abitur API",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Login",
+        "operationId": "login_api_v1_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Register",
+        "operationId": "register_api_v1_auth_register_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Get Me",
+        "operationId": "get_me_api_v1_auth_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/invite": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Create Invite",
+        "operationId": "create_invite_api_v1_auth_invite_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InviteCodeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InviteCodeResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/admins": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "List Admins",
+        "operationId": "list_admins_api_v1_auth_admins_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AdminResponse"
+                  },
+                  "type": "array",
+                  "title": "Response List Admins Api V1 Auth Admins Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/admins/{admin_id}/deactivate": {
+      "patch": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Deactivate Admin",
+        "operationId": "deactivate_admin_api_v1_auth_admins__admin_id__deactivate_patch",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "admin_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Admin Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/topics/": {
+      "get": {
+        "tags": [
+          "topics"
+        ],
+        "summary": "Получить все темы",
+        "description": "Получить список всех активных тем.",
+        "operationId": "get_topics_api_v1_topics__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TopicListResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "topics"
+        ],
+        "summary": "Создать новую тему",
+        "description": "Создает новую тему.\n\n- **label**: уникальное название темы\n- **description**: опциональное описание\n- **is_active**: активна ли тема при создании (по умолчанию True)",
+        "operationId": "create_topic_api_v1_topics__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TopicCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TopicResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/topics/{topic_id}": {
+      "get": {
+        "tags": [
+          "topics"
+        ],
+        "summary": "Получить тему по ID",
+        "description": "Получает тему по её ID.",
+        "operationId": "get_topic_api_v1_topics__topic_id__get",
+        "parameters": [
+          {
+            "name": "topic_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Topic Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TopicResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "topics"
+        ],
+        "summary": "Обновить тему",
+        "description": "Обновляет тему по ID.\n\n- **label**: новое название (опционально)\n- **description**: новое описание (опционально)\n- **is_active**: изменить статус активности (опционально)",
+        "operationId": "update_topic_api_v1_topics__topic_id__put",
+        "parameters": [
+          {
+            "name": "topic_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Topic Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TopicUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TopicResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "topics"
+        ],
+        "summary": "Удалить тему",
+        "description": "Удаляет (деактивирует) тему по ID.\n\nПримечание: тема не удаляется из БД, а деактивируется (is_active = False)\nдля сохранения целостности исторических данных.",
+        "operationId": "delete_topic_api_v1_topics__topic_id__delete",
+        "parameters": [
+          {
+            "name": "topic_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Topic Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/abbrev": {
+      "get": {
+        "tags": [
+          "Abbreviations"
+        ],
+        "summary": "Получить все аббревиатуры",
+        "description": "Возвращает словарь всех аббревиатур.",
+        "operationId": "get_all_api_v1_abbrev_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AbbrevListResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Abbreviations"
+        ],
+        "summary": "Добавить аббревиатуру",
+        "description": "Добавляет новую аббревиатуру в словарь.",
+        "operationId": "create_api_v1_abbrev_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AbbrevItem"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AbbrevItem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/abbrev/{index}": {
+      "put": {
+        "tags": [
+          "Abbreviations"
+        ],
+        "summary": "Обновить аббревиатуру по индексу",
+        "description": "Обновляет существующую аббревиатуру по индексу в списке.",
+        "operationId": "update_api_v1_abbrev__index__put",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "index",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Index"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AbbrevItem"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AbbrevItem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Abbreviations"
+        ],
+        "summary": "Удалить аббревиатуру по индексу",
+        "description": "Удаляет аббревиатуру по индексу.",
+        "operationId": "delete_api_v1_abbrev__index__delete",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "index",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Index"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/faq": {
+      "get": {
+        "tags": [
+          "FAQ Management"
+        ],
+        "summary": "Получить все FAQ",
+        "description": "Возвращает список всех вопросов и ответов FAQ, которые использует бот.",
+        "operationId": "get_all_faqs_api_v1_faq_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FaqListResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "FAQ Management"
+        ],
+        "summary": "Создать FAQ",
+        "description": "Создает новый вопрос FAQ и автоматически применяет для новых запросов к боту.",
+        "operationId": "create_faq_api_v1_faq_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FaqItem"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FaqItem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/faq/upload": {
+      "post": {
+        "tags": [
+          "FAQ Management"
+        ],
+        "summary": "Загрузить FAQ из CSV",
+        "description": "Загружает вопросы и ответы FAQ из CSV-файла.\nОжидается CSV файл с колонками \"Вопросы\" и \"Ответы\".\nПустая строка означает, что начинается новый вопрос.\nПервый вопрос в блоке становится основным,\nостальные - альтернативными формулировками (aliases).",
+        "operationId": "upload_faq_csv_api_v1_faq_upload_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_faq_csv_api_v1_faq_upload_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FaqListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/faq/{index}": {
+      "put": {
+        "tags": [
+          "FAQ Management"
+        ],
+        "summary": "Обновить FAQ по индексу",
+        "description": "Обновляет существующий FAQ элемент по его позиции (индексу) в списке.",
+        "operationId": "update_faq_api_v1_faq__index__put",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "index",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Index"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FaqItem"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FaqItem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "FAQ Management"
+        ],
+        "summary": "Удалить FAQ по индексу",
+        "description": "Удаляет существующий FAQ элемент по его позиции (индексу) в списке.",
+        "operationId": "delete_faq_api_v1_faq__index__delete",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "index",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Index"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/logs/request-stats": {
+      "get": {
+        "tags": [
+          "Message Logs"
+        ],
+        "summary": "Статистика количества запросов",
+        "operationId": "get_request_stats_api_v1_logs_request_stats_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Начало периода (ISO 8601)",
+              "title": "Start"
+            },
+            "description": "Начало периода (ISO 8601)"
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Конец периода (ISO 8601)",
+              "title": "End"
+            },
+            "description": "Конец периода (ISO 8601)"
+          },
+          {
+            "name": "group_by",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Группировка: hour, day, week, month",
+              "default": "day",
+              "title": "Group By"
+            },
+            "description": "Группировка: hour, day, week, month"
+          },
+          {
+            "name": "message_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Тип сообщения для статистики",
+              "default": "user_input",
+              "title": "Message Type"
+            },
+            "description": "Тип сообщения для статистики"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestCountStatsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/logs/": {
+      "get": {
+        "tags": [
+          "Message Logs"
+        ],
+        "summary": "Получить логи сообщений",
+        "description": "Получает логи сообщений с фильтрацией.\n\n- **user_id**: фильтр по ID пользователя\n- **session_id**: фильтр по ID сессии\n- **message_type**: фильтр по типу сообщения\n- **limit**: количество записей (макс. 1000)\n- **offset**: сдвиг для пагинации",
+        "operationId": "get_message_logs_api_v1_logs__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "User Id"
+            }
+          },
+          {
+            "name": "session_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Session Id"
+            }
+          },
+          {
+            "name": "message_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Message Type"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 1000,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageLogListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/logs/session/{session_id}": {
+      "get": {
+        "tags": [
+          "Message Logs"
+        ],
+        "summary": "Получить логи по сессии",
+        "description": "Получает все логи для конкретной сессии.",
+        "operationId": "get_session_logs_api_v1_logs_session__session_id__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Session Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 1000,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageLogListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/logs/user/{user_id}": {
+      "get": {
+        "tags": [
+          "Message Logs"
+        ],
+        "summary": "Получить логи по пользователю",
+        "description": "Получает все логи для конкретного пользователя.",
+        "operationId": "get_user_logs_api_v1_logs_user__user_id__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "User Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 1000,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageLogListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/logs/type/{message_type}": {
+      "get": {
+        "tags": [
+          "Message Logs"
+        ],
+        "summary": "Получить логи по типу сообщения",
+        "description": "Получает логи по типу сообщения.\n\nВозможные типы:\n- `user_input` - входящие сообщения от пользователей\n- `rag_context` - контекст полученный из RAG\n- `llm_response` - ответы от LLM\n- `faq_match` - совпадения из FAQ",
+        "operationId": "get_type_logs_api_v1_logs_type__message_type__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "message_type",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Message Type"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 1000,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageLogListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/logs/popular": {
+      "get": {
+        "tags": [
+          "Message Logs"
+        ],
+        "summary": "Получить самые популярные вопросы",
+        "description": "Получает самые часто задаваемые вопросы пользователей.\n\n- **limit**: максимальное количество возвращаемых вопросов",
+        "operationId": "get_popular_questions_api_v1_logs_popular_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 10,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PopularQuestionsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/rag/upload": {
+      "post": {
+        "tags": [
+          "RAG Management"
+        ],
+        "summary": "Загрузить документы в RAG",
+        "operationId": "upload_documents_to_rag_api_v1_rag_upload_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_documents_to_rag_api_v1_rag_upload_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RagUploadResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/rag/parse": {
+      "post": {
+        "tags": [
+          "RAG Management"
+        ],
+        "summary": "Спарсить страницу для RAG",
+        "description": "Парсит страницу или PDF-документ, очищает текст через LLM и находит документы.",
+        "operationId": "parse_page_for_rag_api_v1_rag_parse_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "url",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uri",
+              "minLength": 1,
+              "maxLength": 2083,
+              "description": "URL страницы",
+              "title": "Url"
+            },
+            "description": "URL страницы"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ParsedPageResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/rag/confirm": {
+      "post": {
+        "tags": [
+          "RAG Management"
+        ],
+        "summary": "Подтвердить загрузку в RAG",
+        "description": "Загружает отредактированный текст и выбранные документы в RAG.",
+        "operationId": "confirm_rag_upload_api_v1_rag_confirm_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmUploadRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/rag/docs": {
+      "get": {
+        "tags": [
+          "RAG Management"
+        ],
+        "summary": "Список документов в RAG",
+        "description": "Возвращает список всех загруженных в RAG документов.",
+        "operationId": "list_rag_documents_api_v1_rag_docs_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RagDocumentListResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/rag/docs/{doc_id}/content": {
+      "get": {
+        "tags": [
+          "RAG Management"
+        ],
+        "summary": "Получить полный текст документа",
+        "description": "Возвращает полный исходный текст документа по его ID.",
+        "operationId": "get_rag_document_content_api_v1_rag_docs__doc_id__content_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "doc_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Doc Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RagDocumentContentResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/rag/docs/{doc_id}": {
+      "delete": {
+        "tags": [
+          "RAG Management"
+        ],
+        "summary": "Удалить документ из RAG",
+        "description": "Удаляет документ из базы знаний RAG.",
+        "operationId": "delete_rag_document_api_v1_rag_docs__doc_id__delete",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "doc_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Doc Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/rag/upload/csv": {
+      "post": {
+        "tags": [
+          "RAG Management"
+        ],
+        "summary": "Импорт документов по ссылкам из CSV",
+        "description": "Принимает CSV документ на вход и обрабатывает все документы там.\nОжидаемый формат: Название,Link,Комментарий",
+        "operationId": "upload_csv_documents_api_v1_rag_upload_csv_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_csv_documents_api_v1_rag_upload_csv_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CsvImportResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/rag/upload/csv/preview": {
+      "post": {
+        "tags": [
+          "RAG Management"
+        ],
+        "summary": "Превью документов из CSV (без обработки)",
+        "description": "Принимает CSV документ и возвращает список найденных в нём ссылок без их обработки.",
+        "operationId": "preview_csv_documents_api_v1_rag_upload_csv_preview_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_preview_csv_documents_api_v1_rag_upload_csv_preview_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CsvImportPreviewResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/rag/cache/clear": {
+      "post": {
+        "tags": [
+          "RAG Management"
+        ],
+        "summary": "Очистить кэш ответов RAG",
+        "description": "Очищает кэш ответов LLM (kv_store_llm_response_cache.json)\nдля графа, чтобы агент перестал отдавать старые ответы по старым данным.\nОчистка вызывается по нажатию кнопки администратором.",
+        "operationId": "clear_rag_cache_api_v1_rag_cache_clear_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/evals/run": {
+      "post": {
+        "tags": [
+          "Evaluations"
+        ],
+        "summary": "Run Evaluation",
+        "operationId": "run_evaluation_api_v1_evals_run_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/evals/status": {
+      "get": {
+        "tags": [
+          "Evaluations"
+        ],
+        "summary": "Route Get Evaluation Status",
+        "operationId": "route_get_evaluation_status_api_v1_evals_status_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/stats/topics": {
+      "get": {
+        "tags": [
+          "stats"
+        ],
+        "summary": "Get Topic Stats",
+        "description": "Получить статистику по темам сообщений.",
+        "operationId": "get_topic_stats_api_v1_stats_topics_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  "type": "array",
+                  "title": "Response Get Topic Stats Api V1 Stats Topics Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/system-logs/": {
+      "get": {
+        "tags": [
+          "System Logs"
+        ],
+        "summary": "Get System Logs",
+        "description": "Получает последние N строк из указанного файла логов.",
+        "operationId": "get_system_logs_api_v1_system_logs__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "filename",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Имя лог файла",
+              "default": "abitur_bot.log",
+              "title": "Filename"
+            },
+            "description": "Имя лог файла"
+          },
+          {
+            "name": "lines",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 1000,
+              "minimum": 1,
+              "description": "Количество последних строк",
+              "default": 100,
+              "title": "Lines"
+            },
+            "description": "Количество последних строк"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "Response Get System Logs Api V1 System Logs  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/system-logs/files": {
+      "get": {
+        "tags": [
+          "System Logs"
+        ],
+        "summary": "List Log Files",
+        "description": "Возвращает список доступных файлов логов.",
+        "operationId": "list_log_files_api_v1_system_logs_files_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array",
+                  "title": "Response List Log Files Api V1 System Logs Files Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/system-logs/download": {
+      "get": {
+        "tags": [
+          "System Logs"
+        ],
+        "summary": "Download System Logs",
+        "description": "Скачивает указанный файл логов.",
+        "operationId": "download_system_logs_api_v1_system_logs_download_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "filename",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Имя лог файла",
+              "default": "abitur_bot.log",
+              "title": "Filename"
+            },
+            "description": "Имя лог файла"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/count-stats": {
+      "get": {
+        "summary": "Get Users Count Stats",
+        "operationId": "get_users_count_stats_api_v1_users_count_stats_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserCountStatsResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/messages": {
+      "get": {
+        "summary": "Get Messages",
+        "description": "Возвращает список сообщений и ответов бота.",
+        "operationId": "get_messages_api_v1_messages_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Фильтр по user_id",
+              "title": "User Id"
+            },
+            "description": "Фильтр по user_id"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 500,
+              "minimum": 1,
+              "description": "Количество записей",
+              "default": 50,
+              "title": "Limit"
+            },
+            "description": "Количество записей"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Смещение",
+              "default": 0,
+              "title": "Offset"
+            },
+            "description": "Смещение"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MessageResponse"
+                  },
+                  "title": "Response Get Messages Api V1 Messages Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AbbrevItem": {
+        "properties": {
+          "short": {
+            "type": "string",
+            "title": "Short",
+            "description": "Аббревиатура (например, НГУ)"
+          },
+          "full": {
+            "type": "string",
+            "title": "Full",
+            "description": "Расшифровка (например, Новосибирский государственный университет)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "short",
+          "full"
+        ],
+        "title": "AbbrevItem"
+      },
+      "AbbrevListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AbbrevItem"
+            },
+            "type": "array",
+            "title": "Items",
+            "description": "Список аббревиатур"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "title": "AbbrevListResponse"
+      },
+      "AdminResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "role": {
+            "$ref": "#/components/schemas/AdminRole"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "created_by_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created By Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "username",
+          "role",
+          "is_active",
+          "created_at",
+          "created_by_id"
+        ],
+        "title": "AdminResponse"
+      },
+      "AdminRole": {
+        "type": "string",
+        "enum": [
+          "superadmin",
+          "admin",
+          "viewer"
+        ],
+        "title": "AdminRole"
+      },
+      "Body_preview_csv_documents_api_v1_rag_upload_csv_preview_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File",
+            "description": "CSV файл с полями (Название, Link, Комментарий)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_preview_csv_documents_api_v1_rag_upload_csv_preview_post"
+      },
+      "Body_upload_csv_documents_api_v1_rag_upload_csv_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File",
+            "description": "CSV файл с полями (Название, Link, Комментарий)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_upload_csv_documents_api_v1_rag_upload_csv_post"
+      },
+      "Body_upload_documents_to_rag_api_v1_rag_upload_post": {
+        "properties": {
+          "files": {
+            "items": {
+              "type": "string",
+              "contentMediaType": "application/octet-stream"
+            },
+            "type": "array",
+            "title": "Files",
+            "description": "Файлы для индексации в RAG"
+          }
+        },
+        "type": "object",
+        "required": [
+          "files"
+        ],
+        "title": "Body_upload_documents_to_rag_api_v1_rag_upload_post"
+      },
+      "Body_upload_faq_csv_api_v1_faq_upload_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_upload_faq_csv_api_v1_faq_upload_post"
+      },
+      "ConfirmUploadRequest": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Название страницы"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url",
+            "description": "URL страницы"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text",
+            "description": "Отредактированный текст страницы"
+          },
+          "documents": {
+            "items": {
+              "$ref": "#/components/schemas/ParsedDocument"
+            },
+            "type": "array",
+            "title": "Documents",
+            "description": "Финальный список файлов для загрузки"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "url",
+          "text",
+          "documents"
+        ],
+        "title": "ConfirmUploadRequest"
+      },
+      "CsvImportPreviewResponse": {
+        "properties": {
+          "total_found": {
+            "type": "integer",
+            "title": "Total Found",
+            "description": "Всего найдено ссылок в CSV"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/CsvImportPreviewResult"
+            },
+            "type": "array",
+            "title": "Results",
+            "description": "Список найденных документов для превью"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_found",
+          "results"
+        ],
+        "title": "CsvImportPreviewResponse"
+      },
+      "CsvImportPreviewResult": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Название документа"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url",
+            "description": "URL документа"
+          },
+          "comment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment",
+            "description": "Комментарий из CSV"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "url"
+        ],
+        "title": "CsvImportPreviewResult"
+      },
+      "CsvImportResponse": {
+        "properties": {
+          "imported_count": {
+            "type": "integer",
+            "title": "Imported Count",
+            "description": "Количество успешно импортированных документов"
+          },
+          "total_found": {
+            "type": "integer",
+            "title": "Total Found",
+            "description": "Всего найдено ссылок в CSV"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/CsvImportResult"
+            },
+            "type": "array",
+            "title": "Results",
+            "description": "Результаты обработки по каждой ссылке"
+          }
+        },
+        "type": "object",
+        "required": [
+          "imported_count",
+          "total_found",
+          "results"
+        ],
+        "title": "CsvImportResponse"
+      },
+      "CsvImportResult": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Название документа"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url",
+            "description": "URL документа"
+          },
+          "success": {
+            "type": "boolean",
+            "title": "Success",
+            "description": "Статус обработки"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message",
+            "description": "Сообщение об ошибке или статус"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "url",
+          "success"
+        ],
+        "title": "CsvImportResult"
+      },
+      "FaqItem": {
+        "properties": {
+          "question": {
+            "type": "string",
+            "title": "Question",
+            "description": "Основной вопрос"
+          },
+          "aliases": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Aliases",
+            "description": "Альтернативные формулировки (синонимы) вопроса"
+          },
+          "answer": {
+            "type": "string",
+            "title": "Answer",
+            "description": "Текст ответа"
+          }
+        },
+        "type": "object",
+        "required": [
+          "question",
+          "answer"
+        ],
+        "title": "FaqItem",
+        "description": "Схема для отдельного элемента FAQ."
+      },
+      "FaqListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/FaqItem"
+            },
+            "type": "array",
+            "title": "Items",
+            "description": "Список вопросов-ответов"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "title": "FaqListResponse",
+        "description": "Схема ответа для списка FAQ-вопросов."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "InviteCodeRequest": {
+        "properties": {
+          "role": {
+            "$ref": "#/components/schemas/AdminRole",
+            "default": "admin"
+          },
+          "expires_in_hours": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 720,
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires In Hours"
+          }
+        },
+        "type": "object",
+        "title": "InviteCodeRequest"
+      },
+      "InviteCodeResponse": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "role": {
+            "$ref": "#/components/schemas/AdminRole"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "role",
+          "expires_at"
+        ],
+        "title": "InviteCodeResponse"
+      },
+      "LoginRequest": {
+        "properties": {
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "username",
+          "password"
+        ],
+        "title": "LoginRequest"
+      },
+      "MessageLogListResponse": {
+        "properties": {
+          "logs": {
+            "items": {
+              "$ref": "#/components/schemas/MessageLogResponse"
+            },
+            "type": "array",
+            "title": "Logs"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          }
+        },
+        "type": "object",
+        "required": [
+          "logs",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "MessageLogListResponse",
+        "description": "Модель ответа для списка логов."
+      },
+      "MessageLogResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "user_id": {
+            "type": "integer",
+            "title": "User Id"
+          },
+          "session_id": {
+            "type": "string",
+            "title": "Session Id"
+          },
+          "message_type": {
+            "type": "string",
+            "title": "Message Type"
+          },
+          "content": {
+            "type": "string",
+            "title": "Content"
+          },
+          "message_metadata": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message Metadata"
+          },
+          "topic_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Topic Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "user_id",
+          "session_id",
+          "message_type",
+          "content",
+          "created_at"
+        ],
+        "title": "MessageLogResponse",
+        "description": "Модель ответа для лога сообщения."
+      },
+      "MessageResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "user_id": {
+            "type": "integer",
+            "title": "User Id"
+          },
+          "username": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Username"
+          },
+          "messenger": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Messenger"
+          },
+          "session_id": {
+            "type": "string",
+            "title": "Session Id"
+          },
+          "user_text": {
+            "type": "string",
+            "title": "User Text"
+          },
+          "bot_response": {
+            "type": "string",
+            "title": "Bot Response"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "user_id",
+          "session_id",
+          "user_text",
+          "bot_response",
+          "created_at"
+        ],
+        "title": "MessageResponse"
+      },
+      "ParsedDocument": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Название документа"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url",
+            "description": "URL для скачивания/ссылки на документ"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "url"
+        ],
+        "title": "ParsedDocument"
+      },
+      "ParsedPageResult": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Название страницы"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url",
+            "description": "URL страницы"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text",
+            "description": "Сырой или предобработанный текст страницы"
+          },
+          "documents": {
+            "items": {
+              "$ref": "#/components/schemas/ParsedDocument"
+            },
+            "type": "array",
+            "title": "Documents",
+            "description": "Список найденных PDF-документов"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "url",
+          "text",
+          "documents"
+        ],
+        "title": "ParsedPageResult"
+      },
+      "PopularQuestion": {
+        "properties": {
+          "question": {
+            "type": "string",
+            "title": "Question"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "question",
+          "count"
+        ],
+        "title": "PopularQuestion"
+      },
+      "PopularQuestionsResponse": {
+        "properties": {
+          "questions": {
+            "items": {
+              "$ref": "#/components/schemas/PopularQuestion"
+            },
+            "type": "array",
+            "title": "Questions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "questions"
+        ],
+        "title": "PopularQuestionsResponse"
+      },
+      "RagDocument": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Идентификатор документа (обычно URL или имя файла)"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url",
+            "description": "Оригинальный URL или путь к файлу"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Статус обработки"
+          },
+          "content_summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content Summary",
+            "description": "Краткое содержание"
+          },
+          "content_length": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content Length",
+            "description": "Длина контента"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At",
+            "description": "Дата создания"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "status"
+        ],
+        "title": "RagDocument"
+      },
+      "RagDocumentContentResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Идентификатор документа"
+          },
+          "content": {
+            "type": "string",
+            "title": "Content",
+            "description": "Полный текст документа"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "content"
+        ],
+        "title": "RagDocumentContentResponse"
+      },
+      "RagDocumentListResponse": {
+        "properties": {
+          "documents": {
+            "items": {
+              "$ref": "#/components/schemas/RagDocument"
+            },
+            "type": "array",
+            "title": "Documents",
+            "description": "Список документов в RAG"
+          }
+        },
+        "type": "object",
+        "required": [
+          "documents"
+        ],
+        "title": "RagDocumentListResponse"
+      },
+      "RagUploadResponse": {
+        "properties": {
+          "accepted_formats": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Accepted Formats",
+            "description": "Поддерживаемые расширения файлов"
+          },
+          "indexed_count": {
+            "type": "integer",
+            "title": "Indexed Count",
+            "description": "Количество успешно проиндексированных файлов"
+          },
+          "skipped_count": {
+            "type": "integer",
+            "title": "Skipped Count",
+            "description": "Количество пропущенных файлов"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/UploadedDocumentResult"
+            },
+            "type": "array",
+            "title": "Results",
+            "description": "Результаты обработки по каждому загруженному файлу"
+          }
+        },
+        "type": "object",
+        "required": [
+          "accepted_formats",
+          "indexed_count",
+          "skipped_count",
+          "results"
+        ],
+        "title": "RagUploadResponse"
+      },
+      "RegisterRequest": {
+        "properties": {
+          "username": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 3,
+            "title": "Username"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "title": "Password"
+          },
+          "invite_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Invite Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "username",
+          "password"
+        ],
+        "title": "RegisterRequest"
+      },
+      "RequestCountBucket": {
+        "properties": {
+          "period": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Period"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "period",
+          "count"
+        ],
+        "title": "RequestCountBucket",
+        "description": "Элемент статистики по количеству запросов."
+      },
+      "RequestCountStatsResponse": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "group_by": {
+            "type": "string",
+            "title": "Group By"
+          },
+          "start": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start"
+          },
+          "end": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End"
+          },
+          "buckets": {
+            "items": {
+              "$ref": "#/components/schemas/RequestCountBucket"
+            },
+            "type": "array",
+            "title": "Buckets"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total",
+          "group_by",
+          "buckets"
+        ],
+        "title": "RequestCountStatsResponse",
+        "description": "Статистика количества запросов за период времени."
+      },
+      "TokenResponse": {
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "title": "Access Token"
+          },
+          "token_type": {
+            "type": "string",
+            "title": "Token Type",
+            "default": "bearer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "access_token"
+        ],
+        "title": "TokenResponse"
+      },
+      "TopicCreate": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Label",
+            "description": "Название темы"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "description": "Описание темы"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active",
+            "description": "Активна ли тема",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "label"
+        ],
+        "title": "TopicCreate",
+        "description": "Модель для создания новой темы."
+      },
+      "TopicListResponse": {
+        "properties": {
+          "topics": {
+            "items": {
+              "$ref": "#/components/schemas/TopicResponse"
+            },
+            "type": "array",
+            "title": "Topics"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "topics",
+          "total"
+        ],
+        "title": "TopicListResponse",
+        "description": "Модель ответа для списка тем."
+      },
+      "TopicResponse": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Label",
+            "description": "Название темы"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "description": "Описание темы"
+          },
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "label",
+          "id",
+          "is_active",
+          "created_at"
+        ],
+        "title": "TopicResponse",
+        "description": "Модель ответа для темы."
+      },
+      "TopicUpdate": {
+        "properties": {
+          "label": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label",
+            "description": "Название темы"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "description": "Описание темы"
+          },
+          "is_active": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Active",
+            "description": "Активна ли тема"
+          }
+        },
+        "type": "object",
+        "title": "TopicUpdate",
+        "description": "Модель для обновления темы."
+      },
+      "UploadedDocumentResult": {
+        "properties": {
+          "filename": {
+            "type": "string",
+            "title": "Filename",
+            "description": "Имя загруженного файла"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Статус обработки: indexed или skipped"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "Подробности результата обработки"
+          },
+          "chars": {
+            "type": "integer",
+            "title": "Chars",
+            "description": "Количество символов, отправленных в RAG",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "filename",
+          "status",
+          "message"
+        ],
+        "title": "UploadedDocumentResult"
+      },
+      "UserCountStatsResponse": {
+        "properties": {
+          "day": {
+            "type": "integer",
+            "title": "Day"
+          },
+          "week": {
+            "type": "integer",
+            "title": "Week"
+          },
+          "month": {
+            "type": "integer",
+            "title": "Month"
+          },
+          "year": {
+            "type": "integer",
+            "title": "Year"
+          },
+          "all_time": {
+            "type": "integer",
+            "title": "All Time"
+          }
+        },
+        "type": "object",
+        "required": [
+          "day",
+          "week",
+          "month",
+          "year",
+          "all_time"
+        ],
+        "title": "UserCountStatsResponse"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    },
+    "securitySchemes": {
+      "OAuth2PasswordBearer": {
+        "type": "oauth2",
+        "flows": {
+          "password": {
+            "scopes": {},
+            "tokenUrl": "/api/v1/auth/login"
+          }
+        }
+      }
+    }
+  }
+}
