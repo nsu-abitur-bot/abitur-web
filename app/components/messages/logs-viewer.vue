@@ -16,9 +16,9 @@ const logs = computed(() => data.value?.logs ?? [])
 
 const { topics, refresh: refreshTopics } = useTopics()
 
-onMounted(() => {
+onMounted(async () => {
   if (!topics.value.length) {
-    refreshTopics()
+    await refreshTopics().catch(() => {})
   }
 })
 
