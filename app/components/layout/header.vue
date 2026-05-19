@@ -40,6 +40,11 @@ const items = computed<NavigationMenuItem[]>(() => [
     to: "/testing",
     active: route.path.startsWith("/testing"),
   },
+  {
+    label: "Логи системы",
+    to: "/system-logs",
+    active: route.path.startsWith("/system-logs"),
+  },
 ])
 
 const handleLogout = () => {

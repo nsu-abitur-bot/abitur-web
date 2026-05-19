@@ -14,6 +14,22 @@ const { data, status } = await useApi("/api/v1/logs/session/{session_id}", {
 
 const logs = computed(() => data.value?.logs ?? [])
 
+const { topics, refresh: refreshTopics } = useTopics()
+
+onMounted(async () => {
+  if (!topics.value.length) {
+    await refreshTopics().catch(() => {})
+  }
+})
+
+const getTopicLabel = (topicId?: number | null): string | null => {
+  if (typeof topicId !== "number") {
+    return null
+  }
+  const topic = topics.value.find(t => t.id === topicId)
+  return topic ? topic.label : `Тема #${topicId}`
+}
+
 const getLogTypeColor = (type: string) => {
   switch (type) {
     case "user_input": return "primary"
@@ -55,9 +71,15 @@ div(class="flex flex-col h-full")
       div(v-for="log in logs" :key="log.id" class="relative pl-6 border-l-2" :class="`border-${getLogTypeColor(log.message_type)}-500` ")
         div(class="absolute -left-[9px] top-0 w-4 h-4 rounded-full border-2 bg-white dark:bg-gray-900" :class="`border-${getLogTypeColor(log.message_type)}-500` ")
 
-        div(class="flex items-center gap-2 mb-2")
+        div(class="flex items-center gap-2 mb-2 flex-wrap")
           u-badge(:color="getLogTypeColor(log.message_type)" variant="subtle" size="sm")
             | {{ getLogTypeLabel(log.message_type) }}
+          u-badge(
+            v-if="getTopicLabel(log.topic_id)"
+            color="neutral"
+            variant="outline"
+            size="sm"
+          ) {{ getTopicLabel(log.topic_id) }}
           span(class="text-xs text-gray-400 font-mono")
             | {{ formatDate(log.created_at) }}
 

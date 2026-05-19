@@ -4,7 +4,7 @@ import type { CalendarDate } from "@internationalized/date"
 import type { components } from "#openapi"
 import { getPopularQuestions } from "~/services/rag-upload"
 
-type MessageResponse = components["schemas"]["MessageResponse"] & { username?: string }
+type MessageResponse = components["schemas"]["MessageResponse"]
 
 const { data: messages, refresh, status } = await useApi("/api/v1/messages", {
   query: {
@@ -39,10 +39,31 @@ const items = computed(() => {
 const columns: any[] = [
   { id: "created_at", accessorKey: "created_at", header: "Дата и время" },
   { id: "user", accessorKey: "user_id", header: "Пользователь" },
+  { id: "messenger", accessorKey: "messenger", header: "Мессенджер" },
   { id: "user_text", accessorKey: "user_text", header: "Вопрос" },
   { id: "bot_response", accessorKey: "bot_response", header: "Ответ" },
   { id: "actions", header: "" },
 ]
+
+type BadgeColor = "primary" | "info" | "success" | "warning" | "error" | "neutral" | "secondary"
+
+const messengerMeta: Record<string, { label: string, color: BadgeColor }> = {
+  tg: { label: "Telegram", color: "info" },
+  telegram: { label: "Telegram", color: "info" },
+  vk: { label: "VK", color: "primary" },
+  whatsapp: { label: "WhatsApp", color: "success" },
+  web: { label: "Web", color: "neutral" },
+}
+
+const getMessengerMeta = (value?: string | null) => {
+  if (!value) {
+    return null
+  }
+  return messengerMeta[value.toLowerCase()] ?? { label: value, color: "neutral" as BadgeColor }
+}
+
+const getMessengerLabel = (value?: string | null) => getMessengerMeta(value)?.label ?? "—"
+const getMessengerColor = (value?: string | null) => getMessengerMeta(value)?.color ?? "neutral"
 
 const selectedSessionId = ref<string | null>(null)
 const isLogsOpen = ref(false)
@@ -72,11 +93,12 @@ const formatDate = (dateString: string) => {
 }
 
 const exportToCsv = () => {
-  const headers = ["Дата и время", "Telegram ID", "Username", "Вопрос", "Ответ"]
+  const headers = ["Дата и время", "ID пользователя", "Username", "Мессенджер", "Вопрос", "Ответ"]
   const rows = items.value.map(m => [
     formatDate(m.created_at),
     m.user_id,
     m.username || "—",
+    m.messenger || "—",
     `"${m.user_text.replace(/"/g, "\"\"")}"`,
     `"${m.bot_response.replace(/"/g, "\"\"")}"`,
   ])
@@ -184,6 +206,15 @@ div(class="space-y-6")
             span(v-if="row.original.username" class="font-medium text-gray-900 dark:text-gray-100") @{{ row.original.username }}
             span(v-else class="italic text-gray-400") Без username
             span(class="text-xs text-gray-500") ID: {{ row.original.user_id }}
+
+        template(#messenger-cell="{ row }")
+          u-badge(
+            v-if="getMessengerMeta(row.original.messenger)"
+            :color="getMessengerColor(row.original.messenger)"
+            variant="subtle"
+            size="sm"
+          ) {{ getMessengerLabel(row.original.messenger) }}
+          span(v-else class="text-xs text-gray-400") —
 
         template(#user_text-cell="{ row }")
           div(class="max-w-xs sm:max-w-sm md:max-w-md lg:max-w-xl whitespace-normal leading-relaxed")
