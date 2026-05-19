@@ -62,6 +62,9 @@ const getMessengerMeta = (value?: string | null) => {
   return messengerMeta[value.toLowerCase()] ?? { label: value, color: "neutral" as BadgeColor }
 }
 
+const getMessengerLabel = (value?: string | null) => getMessengerMeta(value)?.label ?? "—"
+const getMessengerColor = (value?: string | null) => getMessengerMeta(value)?.color ?? "neutral"
+
 const selectedSessionId = ref<string | null>(null)
 const isLogsOpen = ref(false)
 
@@ -207,10 +210,10 @@ div(class="space-y-6")
         template(#messenger-cell="{ row }")
           u-badge(
             v-if="getMessengerMeta(row.original.messenger)"
-            :color="getMessengerMeta(row.original.messenger)!.color"
+            :color="getMessengerColor(row.original.messenger)"
             variant="subtle"
             size="sm"
-          ) {{ getMessengerMeta(row.original.messenger)!.label }}
+          ) {{ getMessengerLabel(row.original.messenger) }}
           span(v-else class="text-xs text-gray-400") —
 
         template(#user_text-cell="{ row }")
