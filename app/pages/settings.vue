@@ -5,7 +5,17 @@ const newTopicLabel = ref("")
 const newTopicDescription = ref("")
 const toast = useToast()
 
-await refresh()
+try {
+  await refresh()
+} catch {
+  if (import.meta.client) {
+    toast.add({
+      title: "Ошибка",
+      description: "Не удалось загрузить темы",
+      color: "error",
+    })
+  }
+}
 
 const activeTopics = computed(() => topics.value.filter(t => t.is_active))
 const inactiveTopics = computed(() => topics.value.filter(t => !t.is_active))
