@@ -3,6 +3,8 @@ import type {
   CsvImportPreviewResponse,
   CsvImportResponse,
   ParsedPageResult,
+  PreprocessDocumentRequest,
+  PreprocessDocumentResponse,
   RagDocument,
   RagDocumentContentResponse,
   RagUploadResponse,
@@ -66,6 +68,15 @@ export async function confirmRagUpload(payload: ConfirmUploadRequest): Promise<v
   await apiFetch("/api/v1/rag/confirm", {
     method: "POST",
     body: payload,
+  })
+}
+
+export async function preprocessRagDocument(text: string): Promise<PreprocessDocumentResponse> {
+  const body: PreprocessDocumentRequest = { text }
+
+  return await apiFetch<PreprocessDocumentResponse>("/api/v1/rag/preprocess", {
+    method: "POST",
+    body,
   })
 }
 

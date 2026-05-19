@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia"
 
-import { confirmRagUpload, previewCsvDocuments } from "~/services/rag-upload"
+import { confirmRagUpload, preprocessRagDocument, previewCsvDocuments } from "~/services/rag-upload"
 import { useRagParserStore } from "~/stores/rag-parser"
 
 const emit = defineEmits<{
@@ -24,6 +24,7 @@ const selectedCount = computed(() => selectedIndices.value.length)
 
 const editingIndex = ref<number | null>(null)
 const isManualMode = ref(false)
+const isManualProcessing = ref(false)
 const manualTitle = ref("")
 const manualUrl = ref("")
 const manualText = ref("")
@@ -112,13 +113,40 @@ const handleConfirmUpload = async () => {
 
 const resetManualForm = () => {
   isManualMode.value = false
+  isManualProcessing.value = false
   manualTitle.value = ""
   manualUrl.value = ""
   manualText.value = ""
 }
 
+const handleManualPreprocess = async () => {
+  const text = manualText.value.trim()
+  if (!text) {
+    return
+  }
+
+  isManualProcessing.value = true
+  try {
+    const result = await preprocessRagDocument(text)
+    manualText.value = result.text
+    toast.add({
+      title: "Текст обработан",
+      description: `Символов после обработки: ${result.chars}`,
+      color: "success",
+    })
+  } catch (err: any) {
+    toast.add({
+      title: "Ошибка",
+      description: err?.data?.detail || "Не удалось обработать текст",
+      color: "error",
+    })
+  } finally {
+    isManualProcessing.value = false
+  }
+}
+
 const handleManualUpload = async () => {
-  if (!manualTitle.value || !manualText.value) {
+  if (!manualTitle.value || !manualText.value || isManualProcessing.value) {
     return
   }
 
@@ -249,13 +277,26 @@ div(class="space-y-6")
           placeholder="Скопируйте или напишите текст документа здесь..."
         )
 
-      div(class="flex justify-end gap-3 pt-2")
-        u-button(variant="ghost" color="neutral" @click="resetManualForm") Отмена
+      div(class="flex flex-wrap justify-end gap-3 pt-2")
+        u-button(
+          variant="ghost"
+          color="neutral"
+          :disabled="isManualProcessing"
+          @click="resetManualForm"
+        ) Отмена
+        u-button(
+          color="neutral"
+          variant="outline"
+          icon="i-heroicons-sparkles"
+          :loading="isManualProcessing"
+          :disabled="!manualText || isManualProcessing || isUploading"
+          @click="handleManualPreprocess"
+        ) Обработать текст
         u-button(
           color="primary"
           icon="i-heroicons-cloud-arrow-up"
           :loading="isUploading"
-          :disabled="!manualTitle || !manualText || isUploading"
+          :disabled="!manualTitle || !manualText || isUploading || isManualProcessing"
           @click="handleManualUpload"
         ) Добавить в базу знаний
 

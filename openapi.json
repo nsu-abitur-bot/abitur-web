@@ -1407,7 +1407,56 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/rag/preprocess": {
+      "post": {
+        "tags": [
+          "RAG Management"
+        ],
+        "summary": "Предобработать текст документа для RAG",
+        "description": "Расширяет аббревиатуры и добавляет локальный контекст смысловым блокам.",
+        "operationId": "preprocess_document_for_rag_api_v1_rag_preprocess_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PreprocessDocumentRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreprocessDocumentResponse"
+                }
               }
             }
           },
@@ -1533,7 +1582,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+
+                }
               }
             }
           },
@@ -1657,7 +1708,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+
+                }
               }
             }
           }
@@ -1681,7 +1734,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+
+                }
               }
             }
           }
@@ -1705,7 +1760,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+
+                }
               }
             }
           }
@@ -1881,7 +1938,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+
+                }
               }
             }
           },
@@ -2695,6 +2754,40 @@
         ],
         "title": "PopularQuestionsResponse"
       },
+      "PreprocessDocumentRequest": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "title": "Text",
+            "description": "Текст документа для предобработки"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "title": "PreprocessDocumentRequest"
+      },
+      "PreprocessDocumentResponse": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "title": "Text",
+            "description": "Текст после расширения аббревиатур и очистки"
+          },
+          "chars": {
+            "type": "integer",
+            "title": "Chars",
+            "description": "Количество символов в обработанном тексте"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text",
+          "chars"
+        ],
+        "title": "PreprocessDocumentResponse"
+      },
       "RagDocument": {
         "properties": {
           "id": {
@@ -3217,7 +3310,9 @@
         "type": "oauth2",
         "flows": {
           "password": {
-            "scopes": {},
+            "scopes": {
+
+            },
             "tokenUrl": "/api/v1/auth/login"
           }
         }

@@ -477,6 +477,26 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/rag/preprocess": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Предобработать текст документа для RAG
+     * @description Расширяет аббревиатуры и добавляет локальный контекст смысловым блокам.
+     */
+    post: operations["preprocess_document_for_rag_api_v1_rag_preprocess_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/rag/docs": {
     parameters: {
       query?: never
@@ -1091,6 +1111,27 @@ export interface components {
     PopularQuestionsResponse: {
       /** Questions */
       questions: components["schemas"]["PopularQuestion"][]
+    }
+    /** PreprocessDocumentRequest */
+    PreprocessDocumentRequest: {
+      /**
+       * Text
+       * @description Текст документа для предобработки
+       */
+      text: string
+    }
+    /** PreprocessDocumentResponse */
+    PreprocessDocumentResponse: {
+      /**
+       * Text
+       * @description Текст после расширения аббревиатур и очистки
+       */
+      text: string
+      /**
+       * Chars
+       * @description Количество символов в обработанном тексте
+       */
+      chars: number
     }
     /** RagDocument */
     RagDocument: {
@@ -2230,6 +2271,39 @@ export interface operations {
         }
         content: {
           "application/json": unknown
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  preprocess_document_for_rag_api_v1_rag_preprocess_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PreprocessDocumentRequest"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["PreprocessDocumentResponse"]
         }
       }
       /** @description Validation Error */
