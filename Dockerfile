@@ -27,7 +27,6 @@ FROM base AS builder
 
 # Disable husky in CI/container builds.
 ENV HUSKY=0
-ENV NODE_ENV=production
 
 COPY --from=deps /pnpm/store /pnpm/store
 COPY . .
@@ -35,6 +34,8 @@ COPY . .
 RUN pnpm install --frozen-lockfile --offline
 
 RUN pnpm exec nuxt build
+
+RUN pnpm prune --prod
 
 #
 # runner
