@@ -5,24 +5,22 @@ definePageMeta({
 
 type Discipline = {
   name: string
-  point: number
+  point: string
 }
 
 type Entrant = {
-  number: number
+  number: string
   code: string
-  priority: number
-  isMainTopPriority: "Да" | "Нет"
-  sumPointTotal: number
+  priority: string
+  isMainTopPriority: string
+  sumPointTotal: string
   consent: "Да" | "Нет"
-  recommendations: "Да" | "Нет"
-  status: "Зачислен" | "К зачислению" | "В конкурсе"
-  sumPointAchievement: number
-  without_entrance_tests?: "Да" | "Нет"
+  recommendations?: string
+  status: string
+  sumPointAchievement: string
+  without_entrance_tests?: string
   disciplines: Discipline[]
 }
-
-type EntrantProfile = Pick<Entrant, "code" | "consent" | "isMainTopPriority" | "priority" | "recommendations" | "status" | "without_entrance_tests">
 
 type RatingCategory = {
   title: string
@@ -50,172 +48,7 @@ type RatingData = {
   items: RatingCategory[]
 }
 
-const names = [
-  "Математика",
-  "Информатика",
-  "Русский язык",
-]
-
-const applicantGroups: Array<{
-  title: string
-  freePlaces: number
-  profiles: EntrantProfile[]
-}> = [
-  {
-    title: "Общий конкурс",
-    freePlaces: 48,
-    profiles: [
-      { code: "100017", priority: 1, isMainTopPriority: "Да", consent: "Да", recommendations: "Да", status: "К зачислению", without_entrance_tests: "Нет" },
-      { code: "100042", priority: 2, isMainTopPriority: "Нет", consent: "Да", recommendations: "Нет", status: "В конкурсе", without_entrance_tests: "Нет" },
-      { code: "100083", priority: 1, isMainTopPriority: "Да", consent: "Нет", recommendations: "Нет", status: "В конкурсе", without_entrance_tests: "Нет" },
-      { code: "100104", priority: 3, isMainTopPriority: "Нет", consent: "Да", recommendations: "Да", status: "К зачислению", without_entrance_tests: "Нет" },
-      { code: "100126", priority: 1, isMainTopPriority: "Да", consent: "Да", recommendations: "Да", status: "Зачислен", without_entrance_tests: "Нет" },
-      { code: "100205", priority: 4, isMainTopPriority: "Нет", consent: "Нет", recommendations: "Нет", status: "В конкурсе", without_entrance_tests: "Нет" },
-      { code: "100231", priority: 2, isMainTopPriority: "Да", consent: "Да", recommendations: "Да", status: "К зачислению", without_entrance_tests: "Нет" },
-      { code: "100277", priority: 1, isMainTopPriority: "Да", consent: "Нет", recommendations: "Нет", status: "В конкурсе", without_entrance_tests: "Нет" },
-      { code: "100318", priority: 5, isMainTopPriority: "Нет", consent: "Да", recommendations: "Нет", status: "В конкурсе", without_entrance_tests: "Нет" },
-      { code: "100344", priority: 2, isMainTopPriority: "Нет", consent: "Да", recommendations: "Да", status: "К зачислению", without_entrance_tests: "Нет" },
-      { code: "100390", priority: 1, isMainTopPriority: "Да", consent: "Да", recommendations: "Да", status: "Зачислен", without_entrance_tests: "Нет" },
-      { code: "100417", priority: 3, isMainTopPriority: "Нет", consent: "Нет", recommendations: "Нет", status: "В конкурсе", without_entrance_tests: "Нет" },
-      { code: "100468", priority: 2, isMainTopPriority: "Да", consent: "Да", recommendations: "Да", status: "К зачислению", without_entrance_tests: "Нет" },
-      { code: "100509", priority: 1, isMainTopPriority: "Да", consent: "Да", recommendations: "Нет", status: "В конкурсе", without_entrance_tests: "Нет" },
-      { code: "100552", priority: 4, isMainTopPriority: "Нет", consent: "Нет", recommendations: "Нет", status: "В конкурсе", without_entrance_tests: "Нет" },
-    ],
-  },
-  {
-    title: "Особая квота",
-    freePlaces: 6,
-    profiles: [
-      { code: "200031", priority: 1, isMainTopPriority: "Да", consent: "Да", recommendations: "Да", status: "К зачислению", without_entrance_tests: "Нет" },
-      { code: "200074", priority: 2, isMainTopPriority: "Нет", consent: "Да", recommendations: "Нет", status: "В конкурсе", without_entrance_tests: "Нет" },
-      { code: "200119", priority: 1, isMainTopPriority: "Да", consent: "Нет", recommendations: "Нет", status: "В конкурсе", without_entrance_tests: "Да" },
-      { code: "200162", priority: 3, isMainTopPriority: "Нет", consent: "Да", recommendations: "Да", status: "Зачислен", without_entrance_tests: "Нет" },
-    ],
-  },
-  {
-    title: "Целевая квота",
-    freePlaces: 4,
-    profiles: [
-      { code: "300028", priority: 1, isMainTopPriority: "Да", consent: "Да", recommendations: "Да", status: "К зачислению", without_entrance_tests: "Нет" },
-      { code: "300096", priority: 2, isMainTopPriority: "Нет", consent: "Нет", recommendations: "Нет", status: "В конкурсе", without_entrance_tests: "Нет" },
-      { code: "300141", priority: 1, isMainTopPriority: "Да", consent: "Да", recommendations: "Да", status: "Зачислен", without_entrance_tests: "Нет" },
-    ],
-  },
-]
-
-const createRandom = (seed: number) => {
-  let state = seed || 1
-
-  return () => {
-    state = (state * 1664525 + 1013904223) >>> 0
-    return state / 0x100000000
-  }
-}
-
-const randomInt = (random: () => number, min: number, max: number) => {
-  return min + Math.floor(random() * (max - min + 1))
-}
-
-const formatDate = (date: Date) => {
-  return new Intl.DateTimeFormat("ru-RU", {
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  }).format(date)
-}
-
-const getSeedDate = () => {
-  const now = new Date()
-  now.setMilliseconds(0)
-  now.setSeconds(Math.floor(now.getSeconds() / 30) * 30)
-  return now
-}
-
-const getSeed = (date: Date) => Math.floor(date.getTime() / 30000)
-
-const createEntrant = (
-  random: () => number,
-  profile: EntrantProfile,
-  number: number,
-): Entrant => {
-  const disciplines = names.map(name => ({
-    name,
-    point: randomInt(random, 70, 100),
-  }))
-  const achievement = randomInt(random, 0, 10)
-  const sumPointTotal = disciplines.reduce((sum, discipline) => sum + discipline.point, achievement)
-
-  return {
-    ...profile,
-    number,
-    sumPointTotal,
-    sumPointAchievement: achievement,
-    disciplines,
-  }
-}
-
-const createCategory = (
-  random: () => number,
-  title: string,
-  profiles: EntrantProfile[],
-  freePlaces: number,
-): RatingCategory => {
-  const table = profiles.map((profile, index) => createEntrant(random, profile, index + 1))
-    .sort((a, b) => b.sumPointTotal - a.sumPointTotal)
-    .map((entrant, index) => ({ ...entrant, number: index + 1 }))
-
-  return {
-    title,
-    info: {
-      freePlaces,
-    },
-    table,
-  }
-}
-
-const createRatingData = (): RatingData => {
-  const seedDate = getSeedDate()
-  const random = createRandom(getSeed(seedDate))
-  const countApplications = applicantGroups.reduce((sum, group) => sum + group.profiles.length, 0)
-  const totalPlaces = 62
-  const credited = randomInt(random, 0, 12)
-
-  return {
-    faculty: {
-      name: "Факультет информационных технологий",
-    },
-    info: {
-      countApplications,
-      date: formatDate(seedDate),
-      fields: {
-        number: "N",
-        name: "Код",
-        priority: "Приоритет",
-        isMainTopPriority: "Высший приоритет",
-        sumPointTotal: "Сумма баллов",
-        consent: "Согласие",
-        recommendations: "Рекомендации",
-        sumPointAchievement: "Индивидуальные достижения",
-      },
-      places: {
-        total: { value: totalPlaces },
-        summ: {
-          "по общему конкурсу": 48,
-          "по отдельной квоте": 4,
-          "по особой квоте": 6,
-          "по целевой квоте": 4,
-        },
-        credit: { value: credited },
-        enroll: { value: totalPlaces - credited },
-      },
-    },
-    items: applicantGroups.map(group => createCategory(random, group.title, group.profiles, group.freePlaces)),
-  }
-}
-
-const ratingData = ref(createRatingData())
+const { data: ratingData, refresh } = await useFetch<RatingData>("/api/rating")
 
 const expandedId = ref<string | null>(null)
 const toggleExpand = (id: string) => {
@@ -225,7 +58,7 @@ const toggleExpand = (id: string) => {
 let interval: ReturnType<typeof setInterval> | null = null
 onMounted(() => {
   interval = setInterval(() => {
-    ratingData.value = createRatingData()
+    refresh()
   }, 20000)
 })
 
