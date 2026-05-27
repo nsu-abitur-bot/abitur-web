@@ -22,6 +22,10 @@ const statusMeta: Record<FeedbackStatus, { label: string, color: "primary" | "su
   ignored: { label: "Игнорируется", color: "neutral" },
 }
 
+const getStatusMeta = (status: string) => {
+  return statusMeta[status as FeedbackStatus] ?? { label: status, color: "neutral" as const }
+}
+
 const { data, status, refresh } = await useAsyncData("feedback-reports", () => listFeedbackReports({
   status: statusFilter.value,
   user_id: userIdFilter.value ? Number(userIdFilter.value) : null,
@@ -133,8 +137,8 @@ u-container(class="py-8 space-y-6")
       div(v-for="report in reports" :key="report.id" class="py-4 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between")
         div(class="min-w-0 space-y-2")
           div(class="flex flex-wrap items-center gap-2")
-            u-badge(:color="statusMeta[report.status as FeedbackStatus]?.color ?? 'neutral'" variant="subtle")
-              | {{ statusMeta[report.status as FeedbackStatus]?.label ?? report.status }}
+            u-badge(:color="getStatusMeta(report.status).color" variant="subtle")
+              | {{ getStatusMeta(report.status).label }}
             span(class="text-xs text-gray-500") {{ `#${report.id}` }}
             span(class="text-xs text-gray-500") User {{ report.user_id }}
             span(class="text-xs text-gray-500") {{ formatDate(report.created_at) }}
@@ -171,8 +175,8 @@ u-container(class="py-8 space-y-6")
         u-icon(name="i-heroicons-arrow-path" class="animate-spin w-8 h-8")
       div(v-else-if="selectedReport" class="space-y-5")
         div(class="flex items-center gap-2")
-          u-badge(:color="statusMeta[selectedReport.status as FeedbackStatus]?.color ?? 'neutral'" variant="subtle")
-            | {{ statusMeta[selectedReport.status as FeedbackStatus]?.label ?? selectedReport.status }}
+          u-badge(:color="getStatusMeta(selectedReport.status).color" variant="subtle")
+            | {{ getStatusMeta(selectedReport.status).label }}
           span(class="text-sm text-gray-500") {{ `#${selectedReport.id}` }}
 
         div(class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm")
