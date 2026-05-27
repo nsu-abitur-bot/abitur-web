@@ -315,7 +315,6 @@ export interface paths {
      *
      *     - **user_id**: фильтр по ID пользователя
      *     - **session_id**: фильтр по ID сессии
-     *     - **message_type**: фильтр по типу сообщения
      *     - **limit**: количество записей (макс. 1000)
      *     - **offset**: сдвиг для пагинации
      */
@@ -360,32 +359,6 @@ export interface paths {
      * @description Получает все логи для конкретного пользователя.
      */
     get: operations["get_user_logs_api_v1_logs_user__user_id__get"]
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/logs/type/{message_type}": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
-     * Получить логи по типу сообщения
-     * @description Получает логи по типу сообщения.
-     *
-     *     Возможные типы:
-     *     - `user_input` - входящие сообщения от пользователей
-     *     - `rag_context` - контекст полученный из RAG
-     *     - `llm_response` - ответы от LLM
-     *     - `faq_match` - совпадения из FAQ
-     */
-    get: operations["get_type_logs_api_v1_logs_type__message_type__get"]
     put?: never
     post?: never
     delete?: never
@@ -2380,7 +2353,6 @@ export interface operations {
       query?: {
         user_id?: number | null
         session_id?: string | null
-        message_type?: string | null
         limit?: number
         offset?: number
       }
@@ -2453,40 +2425,6 @@ export interface operations {
       header?: never
       path: {
         user_id: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Successful Response */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["MessageLogListResponse"]
-        }
-      }
-      /** @description Validation Error */
-      422: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"]
-        }
-      }
-    }
-  }
-  get_type_logs_api_v1_logs_type__message_type__get: {
-    parameters: {
-      query?: {
-        limit?: number
-        offset?: number
-      }
-      header?: never
-      path: {
-        message_type: string
       }
       cookie?: never
     }
