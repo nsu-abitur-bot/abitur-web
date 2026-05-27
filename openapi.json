@@ -1764,6 +1764,61 @@
       }
     },
     "/api/v1/rag/docs/{doc_id}": {
+      "patch": {
+        "tags": [
+          "RAG Management"
+        ],
+        "summary": "Изменить метаданные документа",
+        "operationId": "update_rag_document_api_v1_rag_docs__doc_id__patch",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "doc_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Doc Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RagDocumentUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RagDocument"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
       "delete": {
         "tags": [
           "RAG Management"
@@ -2837,7 +2892,7 @@
           "status": {
             "type": "string",
             "title": "Status",
-            "description": "changed, unchanged, skipped, failed, updated"
+            "description": "без изменений, изменён, источник недоступен, нет ссылки, обновлён, ошибка индексации"
           },
           "content_hash": {
             "anyOf": [
@@ -3660,6 +3715,42 @@
             ],
             "title": "Last Indexed At",
             "description": "Дата последней индексации"
+          },
+          "last_checked_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Checked At",
+            "description": "Дата последней проверки"
+          },
+          "last_checked_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Checked Hash",
+            "description": "SHA-256 последней проверки"
+          },
+          "last_check_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Check Message",
+            "description": "Ошибка или пояснение последней проверки"
           }
         },
         "type": "object",
@@ -3705,6 +3796,36 @@
           "documents"
         ],
         "title": "RagDocumentListResponse"
+      },
+      "RagDocumentUpdateRequest": {
+        "properties": {
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title",
+            "description": "Новое название документа"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url",
+            "description": "Новая ссылка на источник"
+          }
+        },
+        "type": "object",
+        "title": "RagDocumentUpdateRequest"
       },
       "RagUploadResponse": {
         "properties": {

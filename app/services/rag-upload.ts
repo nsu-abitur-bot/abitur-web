@@ -10,6 +10,7 @@ import type {
   PreprocessDocumentResponse,
   RagDocument,
   RagDocumentContentResponse,
+  RagDocumentUpdateRequest,
   RagUploadResponse,
 } from "~/types/rag-upload"
 
@@ -85,6 +86,16 @@ export async function preprocessRagDocument(text: string): Promise<PreprocessDoc
 
 export async function getRagDocumentContent(docId: string): Promise<RagDocumentContentResponse> {
   return await apiFetch<RagDocumentContentResponse>(`/api/v1/rag/docs/${encodeURIComponent(docId)}/content`)
+}
+
+export async function updateRagDocument(
+  docId: string,
+  payload: RagDocumentUpdateRequest,
+): Promise<RagDocument> {
+  return await apiFetch<RagDocument>(`/api/v1/rag/docs/${encodeURIComponent(docId)}`, {
+    method: "PATCH",
+    body: payload,
+  })
 }
 
 export interface PopularQuestion {

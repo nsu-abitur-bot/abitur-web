@@ -5,6 +5,7 @@ import {
   deleteRagDocuments,
   listRagDocuments,
   updateChangedRagDocuments,
+  updateRagDocument,
 } from "~/services/rag-upload"
 import type { DocumentCheckResult, RagDocument } from "~/types/rag-upload"
 
@@ -16,9 +17,23 @@ const documents = ref<RagDocument[]>([])
 const isLoading = ref(false)
 const isChecking = ref(false)
 const isUpdating = ref(false)
+const isSavingDocument = ref(false)
 const selectedIds = ref<Set<string>>(new Set())
 const checkResults = ref<DocumentCheckResult[]>([])
 const toast = useToast()
+const editingDocument = ref<RagDocument | null>(null)
+const editForm = reactive({
+  title: "",
+  sourceUrl: "",
+})
+const isEditDocumentOpen = computed({
+  get: () => editingDocument.value !== null,
+  set: (value: boolean) => {
+    if (!value) {
+      editingDocument.value = null
+    }
+  },
+})
 
 const fetchDocuments = async () => {
   isLoading.value = true
@@ -139,25 +154,124 @@ const handleClearCache = async () => {
   }
 }
 
+const openEditDocument = (doc: RagDocument) => {
+  editingDocument.value = doc
+  editForm.title = doc.title ?? ""
+  editForm.sourceUrl = doc.url ?? ""
+}
+
+const handleUpdateDocument = async () => {
+  if (!editingDocument.value) {
+    return
+  }
+
+  isSavingDocument.value = true
+  try {
+    const updated = await updateRagDocument(editingDocument.value.id, {
+      title: editForm.title.trim() || null,
+      source_url: editForm.sourceUrl.trim() || null,
+    })
+    documents.value = documents.value.map(doc => doc.id === updated.id ? updated : doc)
+    checkResults.value = checkResults.value.filter(result => result.id !== updated.id)
+    editingDocument.value = null
+    toast.add({ title: "Сохранено", description: "Метаданные документа обновлены", color: "success" })
+  } catch {
+    toast.add({ title: "Ошибка", description: "Не удалось обновить документ", color: "error" })
+  } finally {
+    isSavingDocument.value = false
+  }
+}
+
 const getDocCheckStatus = (doc: RagDocument) => {
   return checkResults.value.find(result => result.id === doc.id)?.status ?? null
 }
 
 const getDocCheckMessage = (doc: RagDocument) => {
-  return checkResults.value.find(result => result.id === doc.id)?.message ?? null
+  return checkResults.value.find(result => result.id === doc.id)?.message ?? doc.last_check_message ?? null
+}
+
+const normalizeDocStatus = (status?: string | null) => status?.trim().toLowerCase().replaceAll(" ", "_") ?? ""
+
+const getDocStatus = (doc: RagDocument) => {
+  return normalizeDocStatus(getDocCheckStatus(doc) ?? doc.status)
+}
+
+const getDocStatusLabel = (doc: RagDocument) => {
+  switch (getDocStatus(doc)) {
+    case "indexed":
+      return "Проиндексирован"
+    case "changed":
+    case "изменён":
+    case "изменен":
+      return "Изменен"
+    case "source_unavailable":
+    case "источник_недоступен":
+      return "Источник недоступен"
+    case "no_source":
+    case "нет_ссылки":
+      return "Нет ссылки"
+    case "updated":
+    case "обновлён":
+    case "обновлен":
+      return "Обновлен"
+    case "indexing_failed":
+    case "ошибка_индексации":
+    case "failed":
+      return "Ошибка индексации"
+    case "unchanged":
+    case "без_изменений":
+      return "Без изменений"
+    default:
+      return doc.status || "Неизвестно"
+  }
+}
+
+const getDocStatusBadgeColor = (doc: RagDocument) => {
+  switch (getDocStatus(doc)) {
+    case "indexed":
+    case "updated":
+    case "обновлён":
+    case "обновлен":
+    case "unchanged":
+    case "без_изменений":
+      return "success"
+    case "changed":
+    case "изменён":
+    case "изменен":
+      return "warning"
+    case "source_unavailable":
+    case "источник_недоступен":
+    case "indexing_failed":
+    case "ошибка_индексации":
+    case "failed":
+      return "error"
+    default:
+      return "neutral"
+  }
 }
 
 const getDocCheckDisplayMessage = (doc: RagDocument) => {
+  const status = getDocStatus(doc)
   const message = getDocCheckMessage(doc)
-  if (!message) {
-    return null
+
+  switch (status) {
+    case "changed":
+      return message || "Источник изменился"
+    case "source_unavailable":
+      return message || "Источник недоступен"
+    case "no_source":
+      return message || "Ссылка на источник не указана"
+    case "updated":
+      return message || "Документ обновлен"
+    case "indexing_failed":
+      return message || "Не удалось обновить индекс"
+    case "failed":
+      break
+    default:
+      return message || null
   }
 
-  if (getDocCheckStatus(doc) !== "failed") {
-    return message
-  }
-
-  const lowerMessage = message.toLowerCase()
+  const lowerMessage = (message || "").toLowerCase()
   if (
     lowerMessage.includes("404")
     || lowerMessage.includes("not found")
@@ -171,22 +285,45 @@ const getDocCheckDisplayMessage = (doc: RagDocument) => {
 }
 
 const getDocCheckClass = (doc: RagDocument) => {
-  switch (getDocCheckStatus(doc)) {
+  switch (getDocStatus(doc)) {
     case "changed":
+    case "изменён":
+    case "изменен":
       return "bg-warning-50/70 dark:bg-warning-950/20"
+    case "source_unavailable":
+    case "источник_недоступен":
+    case "indexing_failed":
+    case "ошибка_индексации":
     case "failed":
       return "bg-error-50/70 dark:bg-error-950/20"
+    case "no_source":
+    case "нет_ссылки":
+      return "bg-gray-50 dark:bg-gray-800/50"
+    case "updated":
+    case "обновлён":
+    case "обновлен":
+      return "bg-success-50/70 dark:bg-success-950/20"
     default:
       return ""
   }
 }
 
 const getDocCheckMessageClass = (doc: RagDocument) => {
-  switch (getDocCheckStatus(doc)) {
+  switch (getDocStatus(doc)) {
+    case "source_unavailable":
+    case "источник_недоступен":
+    case "indexing_failed":
+    case "ошибка_индексации":
     case "failed":
       return "text-error-600 dark:text-error-400"
     case "changed":
+    case "изменён":
+    case "изменен":
       return "text-warning-600 dark:text-warning-400"
+    case "updated":
+    case "обновлён":
+    case "обновлен":
+      return "text-success-600 dark:text-success-400"
     default:
       return "text-gray-500 dark:text-gray-400"
   }
@@ -314,7 +451,7 @@ div(class="space-y-4")
                   span(class="text-sm font-semibold break-anywhere text-gray-900 dark:text-white min-w-0" :title="getDocTitle(doc)")
                     | {{ getDocTitle(doc) }}
                 div(
-                  v-if="getDocCheckDisplayMessage(doc) && getDocCheckStatus(doc) !== 'unchanged'"
+                  v-if="getDocCheckDisplayMessage(doc) && getDocStatus(doc) !== 'unchanged' && getDocStatus(doc) !== 'без_изменений'"
                   class="text-[11px] break-anywhere"
                   :class="getDocCheckMessageClass(doc)"
                   :title="getDocCheckMessage(doc) || undefined"
@@ -331,11 +468,10 @@ div(class="space-y-4")
               div(class="flex flex-col items-end gap-1 px-4")
                 div(class="text-[11px] font-medium text-gray-500") ({{ formatDate(doc.created_at) }})
                 u-badge(
-                  v-if="doc.status !== 'indexed'"
-                  :color="doc.status === 'success' ? 'success' : 'warning'"
+                  :color="getDocStatusBadgeColor(doc)"
                   variant="subtle"
                   size="sm"
-                ) {{ doc.status }}
+                ) {{ getDocStatusLabel(doc) }}
 
             // Actions Column
             td(class="pr-4 py-4 text-right w-20")
@@ -347,6 +483,36 @@ div(class="space-y-4")
                 :to="`/rag/document/${encodeURIComponent(doc.id)}`"
                 title="Просмотреть"
               )
+              u-button(
+                icon="i-heroicons-pencil-square"
+                variant="ghost"
+                color="neutral"
+                size="lg"
+                title="Редактировать"
+                @click="openEditDocument(doc)"
+              )
+
+  u-slideover(v-model:open="isEditDocumentOpen" title="Редактирование документа")
+    template(#body)
+      div(v-if="editingDocument" class="space-y-4")
+        u-form-field(label="Название")
+          u-input(
+            v-model="editForm.title"
+            placeholder="Название документа"
+            class="w-full"
+          )
+        u-form-field(label="Ссылка на источник")
+          u-input(
+            v-model="editForm.sourceUrl"
+            placeholder="https://example.com/document.pdf"
+            class="w-full"
+          )
+        div(class="rounded-lg bg-gray-50 dark:bg-gray-800 p-3 text-xs text-gray-500 break-anywhere")
+          | ID: {{ editingDocument.id }}
+    template(#footer)
+      div(class="flex justify-end gap-2 w-full")
+        u-button(color="neutral" variant="ghost" @click="editingDocument = null") Отмена
+        u-button(color="primary" :loading="isSavingDocument" @click="handleUpdateDocument") Сохранить
 </template>
 
 <style scoped>
@@ -359,6 +525,6 @@ div(class="space-y-4")
 }
 
 .rag-documents-table td:nth-child(4) {
-  width: 4.5rem;
+  width: 6.5rem;
 }
 </style>

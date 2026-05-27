@@ -558,7 +558,8 @@ export interface paths {
     delete: operations["delete_rag_document_api_v1_rag_docs__doc_id__delete"]
     options?: never
     head?: never
-    patch?: never
+    /** Изменить метаданные документа */
+    patch: operations["update_rag_document_api_v1_rag_docs__doc_id__patch"]
     trace?: never
   }
   "/api/v1/rag/docs/check": {
@@ -1048,7 +1049,7 @@ export interface components {
       source_url?: string | null
       /**
        * Status
-       * @description changed, unchanged, skipped, failed, updated
+       * @description без изменений, изменён, источник недоступен, нет ссылки, обновлён, ошибка индексации
        */
       status: string
       /**
@@ -1402,6 +1403,21 @@ export interface components {
        * @description Дата последней индексации
        */
       last_indexed_at?: string | null
+      /**
+       * Last Checked At
+       * @description Дата последней проверки
+       */
+      last_checked_at?: string | null
+      /**
+       * Last Checked Hash
+       * @description SHA-256 последней проверки
+       */
+      last_checked_hash?: string | null
+      /**
+       * Last Check Message
+       * @description Ошибка или пояснение последней проверки
+       */
+      last_check_message?: string | null
     }
     /** RagDocumentContentResponse */
     RagDocumentContentResponse: {
@@ -1423,6 +1439,19 @@ export interface components {
        * @description Список документов в RAG
        */
       documents: components["schemas"]["RagDocument"][]
+    }
+    /** RagDocumentUpdateRequest */
+    RagDocumentUpdateRequest: {
+      /**
+       * Title
+       * @description Новое название документа
+       */
+      title?: string | null
+      /**
+       * Source Url
+       * @description Новая ссылка на источник
+       */
+      source_url?: string | null
     }
     /** RagUploadResponse */
     RagUploadResponse: {
@@ -2782,6 +2811,41 @@ export interface operations {
         }
         content: {
           "application/json": unknown
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  update_rag_document_api_v1_rag_docs__doc_id__patch: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        doc_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RagDocumentUpdateRequest"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["RagDocument"]
         }
       }
       /** @description Validation Error */
