@@ -911,6 +911,95 @@
         }
       }
     },
+    "/api/v1/logs/token-stats": {
+      "get": {
+        "tags": [
+          "Message Logs"
+        ],
+        "summary": "Статистика потребления токенов",
+        "description": "Возвращает суммарное потребление токенов LLM, сгруппированное по периодам.",
+        "operationId": "get_token_stats_api_v1_logs_token_stats_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Начало периода (ISO 8601)",
+              "title": "Start"
+            },
+            "description": "Начало периода (ISO 8601)"
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Конец периода (ISO 8601)",
+              "title": "End"
+            },
+            "description": "Конец периода (ISO 8601)"
+          },
+          {
+            "name": "group_by",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Группировка: hour, day, week, month",
+              "default": "day",
+              "title": "Group By"
+            },
+            "description": "Группировка: hour, day, week, month"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenUsageStatsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/logs/": {
       "get": {
         "tags": [
@@ -3033,6 +3122,77 @@
         ],
         "title": "RequestCountStatsResponse",
         "description": "Статистика количества запросов за период времени."
+      },
+      "TokenUsageBucket": {
+        "properties": {
+          "period": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Period"
+          },
+          "tokens": {
+            "type": "integer",
+            "title": "Tokens"
+          }
+        },
+        "type": "object",
+        "required": [
+          "period",
+          "tokens"
+        ],
+        "title": "TokenUsageBucket",
+        "description": "Элемент статистики по количеству потраченных токенов."
+      },
+      "TokenUsageStatsResponse": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "group_by": {
+            "type": "string",
+            "title": "Group By"
+          },
+          "start": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start"
+          },
+          "end": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End"
+          },
+          "buckets": {
+            "items": {
+              "$ref": "#/components/schemas/TokenUsageBucket"
+            },
+            "type": "array",
+            "title": "Buckets"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total",
+          "group_by",
+          "buckets"
+        ],
+        "title": "TokenUsageStatsResponse",
+        "description": "Статистика потребления токенов LLM за период времени."
       },
       "TokenResponse": {
         "properties": {

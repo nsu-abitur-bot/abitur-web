@@ -306,6 +306,26 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/logs/token-stats": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Статистика потребления токенов
+     * @description Возвращает суммарное потребление токенов LLM, сгруппированное по периодам.
+     */
+    get: operations["get_token_stats_api_v1_logs_token_stats_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/logs/": {
     parameters: {
       query?: never
@@ -1248,6 +1268,35 @@ export interface components {
       /** Buckets */
       buckets: components["schemas"]["RequestCountBucket"][]
     }
+    /**
+     * TokenUsageBucket
+     * @description Элемент статистики по количеству потраченных токенов.
+     */
+    TokenUsageBucket: {
+      /**
+       * Period
+       * Format: date-time
+       */
+      period: string
+      /** Tokens */
+      tokens: number
+    }
+    /**
+     * TokenUsageStatsResponse
+     * @description Статистика потребления токенов LLM за период времени.
+     */
+    TokenUsageStatsResponse: {
+      /** Total */
+      total: number
+      /** Group By */
+      group_by: string
+      /** Start */
+      start?: string | null
+      /** End */
+      end?: string | null
+      /** Buckets */
+      buckets: components["schemas"]["TokenUsageBucket"][]
+    }
     /** TokenResponse */
     TokenResponse: {
       /** Access Token */
@@ -2005,6 +2054,42 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["RequestCountStatsResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_token_stats_api_v1_logs_token_stats_get: {
+    parameters: {
+      query?: {
+        /** @description Начало периода (ISO 8601) */
+        start?: string | null
+        /** @description Конец периода (ISO 8601) */
+        end?: string | null
+        /** @description Группировка: hour, day, week, month */
+        group_by?: string
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["TokenUsageStatsResponse"]
         }
       }
       /** @description Validation Error */
