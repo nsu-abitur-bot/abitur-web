@@ -2344,6 +2344,76 @@
         }
       }
     },
+    "/api/v1/settings/rate-limit": {
+      "get": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Получить настройки дневных лимитов запросов",
+        "operationId": "get_rate_limit_settings_api_v1_settings_rate_limit_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitSettings"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Обновить настройки дневных лимитов запросов",
+        "operationId": "update_rate_limit_settings_api_v1_settings_rate_limit_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RateLimitSettingsUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitSettings"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
     "/api/v1/users/count-stats": {
       "get": {
         "summary": "Get Users Count Stats",
@@ -3761,6 +3831,52 @@
         ],
         "title": "RagUploadResponse"
       },
+      "RateLimitSettings": {
+        "properties": {
+          "system_requests_per_day": {
+            "type": "integer",
+            "maximum": 10000000,
+            "minimum": 1,
+            "title": "System Requests Per Day",
+            "description": "Количество запросов в день для всей системы",
+            "default": 10000
+          },
+          "user_requests_per_day": {
+            "type": "integer",
+            "maximum": 100000,
+            "minimum": 1,
+            "title": "User Requests Per Day",
+            "description": "Количество запросов в день для одного пользователя",
+            "default": 100
+          }
+        },
+        "type": "object",
+        "title": "RateLimitSettings",
+        "description": "Настройки дневных лимитов запросов."
+      },
+      "RateLimitSettingsUpdate": {
+        "properties": {
+          "system_requests_per_day": {
+            "type": "integer",
+            "maximum": 10000000,
+            "minimum": 1,
+            "title": "System Requests Per Day"
+          },
+          "user_requests_per_day": {
+            "type": "integer",
+            "maximum": 100000,
+            "minimum": 1,
+            "title": "User Requests Per Day"
+          }
+        },
+        "type": "object",
+        "required": [
+          "system_requests_per_day",
+          "user_requests_per_day"
+        ],
+        "title": "RateLimitSettingsUpdate",
+        "description": "Обновление дневных лимитов запросов."
+      },
       "RegisterRequest": {
         "properties": {
           "username": {
@@ -3864,6 +3980,24 @@
         "title": "RequestCountStatsResponse",
         "description": "Статистика количества запросов за период времени."
       },
+      "TokenResponse": {
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "title": "Access Token"
+          },
+          "token_type": {
+            "type": "string",
+            "title": "Token Type",
+            "default": "bearer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "access_token"
+        ],
+        "title": "TokenResponse"
+      },
       "TokenUsageBucket": {
         "properties": {
           "period": {
@@ -3934,24 +4068,6 @@
         ],
         "title": "TokenUsageStatsResponse",
         "description": "Статистика потребления токенов LLM за период времени."
-      },
-      "TokenResponse": {
-        "properties": {
-          "access_token": {
-            "type": "string",
-            "title": "Access Token"
-          },
-          "token_type": {
-            "type": "string",
-            "title": "Token Type",
-            "default": "bearer"
-          }
-        },
-        "type": "object",
-        "required": [
-          "access_token"
-        ],
-        "title": "TokenResponse"
       },
       "TopicCreate": {
         "properties": {
