@@ -9,10 +9,19 @@ const toast = useToast()
 
 const items = computed(() => faqRes.value?.items ?? [])
 
-const handleDelete = async (index: number) => {
-  await useApi("/api/v1/faq/{index}", {
+const handleDelete = async (itemId?: string | null) => {
+  if (!itemId) {
+    toast.add({
+      title: "Ошибка",
+      description: "У записи FAQ нет ID",
+      color: "error",
+    })
+    return
+  }
+
+  await useApi("/api/v1/faq/{item_id}", {
     method: "DELETE",
-    path: { index },
+    path: { item_id: itemId },
   })
   toast.add({
     title: "Успешно",
@@ -93,10 +102,9 @@ ui-box(title="Управление FAQ")
   div(v-else class="space-y-4 mt-6")
     faq-item(
       v-for="(item, index) in items"
-      :key="index"
+      :key="item.id ?? index"
       :item="item"
-      :index="index"
-      @delete="handleDelete(index)"
+      @delete="handleDelete(item.id)"
       @updated="refresh"
     )
 

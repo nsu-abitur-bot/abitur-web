@@ -432,7 +432,6 @@
           "Abbreviations"
         ],
         "summary": "Получить все аббревиатуры",
-        "description": "Возвращает словарь всех аббревиатур.",
         "operationId": "get_all_api_v1_abbrev_get",
         "responses": {
           "200": {
@@ -457,7 +456,6 @@
           "Abbreviations"
         ],
         "summary": "Добавить аббревиатуру",
-        "description": "Добавляет новую аббревиатуру в словарь.",
         "operationId": "create_api_v1_abbrev_post",
         "requestBody": {
           "content": {
@@ -498,14 +496,13 @@
         ]
       }
     },
-    "/api/v1/abbrev/{index}": {
+    "/api/v1/abbrev/{item_id}": {
       "put": {
         "tags": [
           "Abbreviations"
         ],
-        "summary": "Обновить аббревиатуру по индексу",
-        "description": "Обновляет существующую аббревиатуру по индексу в списке.",
-        "operationId": "update_api_v1_abbrev__index__put",
+        "summary": "Обновить аббревиатуру по ID",
+        "operationId": "update_api_v1_abbrev__item_id__put",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -513,12 +510,12 @@
         ],
         "parameters": [
           {
-            "name": "index",
+            "name": "item_id",
             "in": "path",
             "required": true,
             "schema": {
-              "type": "integer",
-              "title": "Index"
+              "type": "string",
+              "title": "Item Id"
             }
           }
         ],
@@ -559,9 +556,8 @@
         "tags": [
           "Abbreviations"
         ],
-        "summary": "Удалить аббревиатуру по индексу",
-        "description": "Удаляет аббревиатуру по индексу.",
-        "operationId": "delete_api_v1_abbrev__index__delete",
+        "summary": "Удалить аббревиатуру по ID",
+        "operationId": "delete_api_v1_abbrev__item_id__delete",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -569,12 +565,12 @@
         ],
         "parameters": [
           {
-            "name": "index",
+            "name": "item_id",
             "in": "path",
             "required": true,
             "schema": {
-              "type": "integer",
-              "title": "Index"
+              "type": "string",
+              "title": "Item Id"
             }
           }
         ],
@@ -601,7 +597,6 @@
           "FAQ Management"
         ],
         "summary": "Получить все FAQ",
-        "description": "Возвращает список всех вопросов и ответов FAQ, которые использует бот.",
         "operationId": "get_all_faqs_api_v1_faq_get",
         "responses": {
           "200": {
@@ -626,7 +621,6 @@
           "FAQ Management"
         ],
         "summary": "Создать FAQ",
-        "description": "Создает новый вопрос FAQ и автоматически применяет для новых запросов к боту.",
         "operationId": "create_faq_api_v1_faq_post",
         "requestBody": {
           "content": {
@@ -714,14 +708,13 @@
         ]
       }
     },
-    "/api/v1/faq/{index}": {
+    "/api/v1/faq/{item_id}": {
       "put": {
         "tags": [
           "FAQ Management"
         ],
-        "summary": "Обновить FAQ по индексу",
-        "description": "Обновляет существующий FAQ элемент по его позиции (индексу) в списке.",
-        "operationId": "update_faq_api_v1_faq__index__put",
+        "summary": "Обновить FAQ по ID",
+        "operationId": "update_faq_api_v1_faq__item_id__put",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -729,12 +722,12 @@
         ],
         "parameters": [
           {
-            "name": "index",
+            "name": "item_id",
             "in": "path",
             "required": true,
             "schema": {
-              "type": "integer",
-              "title": "Index"
+              "type": "string",
+              "title": "Item Id"
             }
           }
         ],
@@ -775,9 +768,8 @@
         "tags": [
           "FAQ Management"
         ],
-        "summary": "Удалить FAQ по индексу",
-        "description": "Удаляет существующий FAQ элемент по его позиции (индексу) в списке.",
-        "operationId": "delete_faq_api_v1_faq__index__delete",
+        "summary": "Удалить FAQ по ID",
+        "operationId": "delete_faq_api_v1_faq__item_id__delete",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -785,12 +777,12 @@
         ],
         "parameters": [
           {
-            "name": "index",
+            "name": "item_id",
             "in": "path",
             "required": true,
             "schema": {
-              "type": "integer",
-              "title": "Index"
+              "type": "string",
+              "title": "Item Id"
             }
           }
         ],
@@ -1285,6 +1277,222 @@
         }
       }
     },
+    "/api/v1/feedback": {
+      "get": {
+        "tags": [
+          "Feedback"
+        ],
+        "summary": "Получить обращения обратной связи",
+        "operationId": "list_feedback_reports_api_v1_feedback_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "open",
+                    "reviewed",
+                    "ignored"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "User Id"
+            }
+          },
+          {
+            "name": "session_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Session Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 1000,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedbackReportListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/feedback/{report_id}": {
+      "get": {
+        "tags": [
+          "Feedback"
+        ],
+        "summary": "Получить обращение обратной связи",
+        "operationId": "get_feedback_report_api_v1_feedback__report_id__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "report_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Report Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedbackReportResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Feedback"
+        ],
+        "summary": "Обновить статус обращения",
+        "operationId": "update_feedback_report_status_api_v1_feedback__report_id__patch",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "report_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Report Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeedbackReportStatusUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedbackReportResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/rag/upload": {
       "post": {
         "tags": [
@@ -1599,6 +1807,96 @@
             }
           }
         }
+      }
+    },
+    "/api/v1/rag/docs/check": {
+      "post": {
+        "tags": [
+          "RAG Management"
+        ],
+        "summary": "Проверить документы RAG на изменения",
+        "operationId": "check_rag_documents_api_v1_rag_docs_check_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DocumentCheckRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentCheckResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/rag/docs/update-changed": {
+      "post": {
+        "tags": [
+          "RAG Management"
+        ],
+        "summary": "Обновить измененные документы RAG",
+        "operationId": "update_changed_rag_documents_api_v1_rag_docs_update_changed_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DocumentCheckRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentUpdateResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
       }
     },
     "/api/v1/rag/upload/csv": {
@@ -2070,6 +2368,18 @@
     "schemas": {
       "AbbrevItem": {
         "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id",
+            "description": "UUID записи (заполняется при ответе)"
+          },
           "short": {
             "type": "string",
             "title": "Short",
@@ -2378,8 +2688,173 @@
         ],
         "title": "CsvImportResult"
       },
+      "DocumentCheckRequest": {
+        "properties": {
+          "document_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Document Ids",
+            "description": "ID документов для проверки; если не переданы, проверяются все"
+          }
+        },
+        "type": "object",
+        "title": "DocumentCheckRequest"
+      },
+      "DocumentCheckResponse": {
+        "properties": {
+          "checked_count": {
+            "type": "integer",
+            "title": "Checked Count",
+            "description": "Количество проверенных документов"
+          },
+          "changed_count": {
+            "type": "integer",
+            "title": "Changed Count",
+            "description": "Количество измененных документов"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/DocumentCheckResult"
+            },
+            "type": "array",
+            "title": "Results",
+            "description": "Результаты проверки"
+          }
+        },
+        "type": "object",
+        "required": [
+          "checked_count",
+          "changed_count",
+          "results"
+        ],
+        "title": "DocumentCheckResponse"
+      },
+      "DocumentCheckResult": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "ID документа"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Название документа"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url",
+            "description": "URL источника"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "changed, unchanged, skipped, failed, updated"
+          },
+          "content_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content Hash",
+            "description": "Новый SHA-256"
+          },
+          "previous_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Hash",
+            "description": "Сохраненный SHA-256"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message",
+            "description": "Ошибка или пояснение"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "status"
+        ],
+        "title": "DocumentCheckResult"
+      },
+      "DocumentUpdateResponse": {
+        "properties": {
+          "checked_count": {
+            "type": "integer",
+            "title": "Checked Count",
+            "description": "Количество проверенных документов"
+          },
+          "updated_count": {
+            "type": "integer",
+            "title": "Updated Count",
+            "description": "Количество обновленных документов"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/DocumentCheckResult"
+            },
+            "type": "array",
+            "title": "Results",
+            "description": "Результаты обновления"
+          }
+        },
+        "type": "object",
+        "required": [
+          "checked_count",
+          "updated_count",
+          "results"
+        ],
+        "title": "DocumentUpdateResponse"
+      },
       "FaqItem": {
         "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id",
+            "description": "UUID записи (заполняется при ответе)"
+          },
           "question": {
             "type": "string",
             "title": "Question",
@@ -2404,8 +2879,7 @@
           "question",
           "answer"
         ],
-        "title": "FaqItem",
-        "description": "Схема для отдельного элемента FAQ."
+        "title": "FaqItem"
       },
       "FaqListResponse": {
         "properties": {
@@ -2422,8 +2896,227 @@
         "required": [
           "items"
         ],
-        "title": "FaqListResponse",
-        "description": "Схема ответа для списка FAQ-вопросов."
+        "title": "FaqListResponse"
+      },
+      "FeedbackReportListItem": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "user_id": {
+            "type": "integer",
+            "title": "User Id"
+          },
+          "session_id": {
+            "type": "string",
+            "title": "Session Id"
+          },
+          "channel": {
+            "type": "string",
+            "title": "Channel"
+          },
+          "comment": {
+            "type": "string",
+            "title": "Comment"
+          },
+          "question": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Question"
+          },
+          "bot_response": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bot Response"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "reviewed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewed At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "user_id",
+          "session_id",
+          "channel",
+          "comment",
+          "status",
+          "created_at"
+        ],
+        "title": "FeedbackReportListItem"
+      },
+      "FeedbackReportListResponse": {
+        "properties": {
+          "reports": {
+            "items": {
+              "$ref": "#/components/schemas/FeedbackReportListItem"
+            },
+            "type": "array",
+            "title": "Reports"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reports",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "FeedbackReportListResponse"
+      },
+      "FeedbackReportResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "user_id": {
+            "type": "integer",
+            "title": "User Id"
+          },
+          "session_id": {
+            "type": "string",
+            "title": "Session Id"
+          },
+          "channel": {
+            "type": "string",
+            "title": "Channel"
+          },
+          "comment": {
+            "type": "string",
+            "title": "Comment"
+          },
+          "question": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Question"
+          },
+          "bot_response": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bot Response"
+          },
+          "logs_snapshot": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Logs Snapshot"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "reviewed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewed At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "user_id",
+          "session_id",
+          "channel",
+          "comment",
+          "status",
+          "created_at"
+        ],
+        "title": "FeedbackReportResponse"
+      },
+      "FeedbackReportStatusUpdate": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "reviewed",
+              "ignored"
+            ],
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "title": "FeedbackReportStatusUpdate"
       },
       "HTTPValidationError": {
         "properties": {
@@ -2795,6 +3488,18 @@
             "title": "Id",
             "description": "Идентификатор документа (обычно URL или имя файла)"
           },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title",
+            "description": "Название документа"
+          },
           "url": {
             "anyOf": [
               {
@@ -2811,6 +3516,18 @@
             "type": "string",
             "title": "Status",
             "description": "Статус обработки"
+          },
+          "content_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content Hash",
+            "description": "SHA-256 сырого контента"
           },
           "content_summary": {
             "anyOf": [
@@ -2847,6 +3564,30 @@
             ],
             "title": "Created At",
             "description": "Дата создания"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At",
+            "description": "Дата обновления"
+          },
+          "last_indexed_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Indexed At",
+            "description": "Дата последней индексации"
           }
         },
         "type": "object",

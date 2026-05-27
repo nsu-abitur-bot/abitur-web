@@ -31,6 +31,11 @@ const items = computed<NavigationMenuItem[]>(() => [
     active: route.path.startsWith("/messages"),
   },
   {
+    label: "Обратная связь",
+    to: "/feedback",
+    active: route.path.startsWith("/feedback"),
+  },
+  {
     label: "Настройки",
     to: "/settings",
     active: route.path.startsWith("/settings"),

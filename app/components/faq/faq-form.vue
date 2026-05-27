@@ -5,7 +5,6 @@ type FaqItem = components["schemas"]["FaqItem"]
 
 const props = defineProps<{
   initialData?: FaqItem
-  index?: number
 }>()
 
 const emit = defineEmits<{
@@ -13,7 +12,8 @@ const emit = defineEmits<{
   (e: "cancel"): void
 }>()
 
-const isEditMode = computed(() => props.initialData !== undefined && props.index !== undefined)
+const itemId = computed(() => props.initialData?.id)
+const isEditMode = computed(() => props.initialData !== undefined && !!itemId.value)
 
 // Component state for aliases
 const newAlias = ref("")
@@ -42,10 +42,10 @@ const removeAlias = (aliasToRemove: string) => {
 const onSubmit = async () => {
   isLoading.value = true
   try {
-    if (isEditMode.value && props.index !== undefined) {
-      await useApi("/api/v1/faq/{index}", {
+    if (isEditMode.value) {
+      await useApi("/api/v1/faq/{item_id}", {
         method: "PUT",
-        path: { index: props.index },
+        path: { item_id: itemId.value! },
         body: state,
       })
     } else {

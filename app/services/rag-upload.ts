@@ -2,6 +2,9 @@ import type {
   ConfirmUploadRequest,
   CsvImportPreviewResponse,
   CsvImportResponse,
+  DocumentCheckRequest,
+  DocumentCheckResponse,
+  DocumentUpdateResponse,
   ParsedPageResult,
   PreprocessDocumentRequest,
   PreprocessDocumentResponse,
@@ -110,14 +113,20 @@ export async function deleteRagDocuments(ids: string[]): Promise<void> {
   })))
 }
 
-// --- Mocked Methods (Frontend only for now) ---
-
-export async function refreshRagDocument(id: string): Promise<void> {
-  console.log("[Mock] Refreshing RAG document:", id)
-  return new Promise(resolve => setTimeout(resolve, 500))
+function buildDocumentCheckBody(ids?: string[]): DocumentCheckRequest {
+  return ids?.length ? { document_ids: ids } : {}
 }
 
-export async function rebuildRagIndices(): Promise<void> {
-  console.log("[Mock] Rebuilding RAG indices")
-  return new Promise(resolve => setTimeout(resolve, 1000))
+export async function checkRagDocuments(ids?: string[]): Promise<DocumentCheckResponse> {
+  return await apiFetch<DocumentCheckResponse>("/api/v1/rag/docs/check", {
+    method: "POST",
+    body: buildDocumentCheckBody(ids),
+  })
+}
+
+export async function updateChangedRagDocuments(ids?: string[]): Promise<DocumentUpdateResponse> {
+  return await apiFetch<DocumentUpdateResponse>("/api/v1/rag/docs/update-changed", {
+    method: "POST",
+    body: buildDocumentCheckBody(ids),
+  })
 }

@@ -4,6 +4,28 @@ import { getRagDocumentContent, listRagDocuments } from "~/services/rag-upload"
 const route = useRoute()
 const docId = route.params.id as string
 
+const decodeUrlPart = (value: string) => {
+  try {
+    return decodeURIComponent(value)
+  } catch {
+    return value
+  }
+}
+
+const getUrlLabel = (value?: string | null) => {
+  if (!value) {
+    return ""
+  }
+
+  try {
+    const url = new URL(value)
+    const filename = decodeUrlPart(url.pathname.split("/").filter(Boolean).at(-1) || "")
+    return filename ? `${url.hostname}/${filename}` : url.hostname
+  } catch {
+    return decodeUrlPart(value)
+  }
+}
+
 const { data, pending, error } = useAsyncData(`rag-doc-${docId}`, async () => {
   const [content, docs] = await Promise.all([
     getRagDocumentContent(docId),
@@ -12,6 +34,7 @@ const { data, pending, error } = useAsyncData(`rag-doc-${docId}`, async () => {
   const doc = docs.find(d => d.id === docId)
   return {
     ...content,
+    title: doc?.title,
     url: doc?.url,
   }
 })
@@ -27,7 +50,8 @@ u-container(class="py-8 min-h-screen")
         color="neutral"
         to="/"
       ) Назад
-      h1(class="text-2xl font-bold truncate text-gray-900 dark:text-white" :title="docId") {{ docId }}
+      h1(class="text-2xl font-bold truncate text-gray-900 dark:text-white" :title="data?.title || docId")
+        | {{ data?.title || docId }}
 
   div(v-if="pending" class="py-32 flex flex-col items-center justify-center text-gray-500")
     u-icon(name="i-heroicons-arrow-path" size="lg" class="animate-spin mb-4 text-primary")
@@ -47,7 +71,7 @@ u-container(class="py-8 min-h-screen")
   div(v-else-if="data" class="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-6")
     ui-box(v-if="data.url" title="Источник документа")
       div(class="flex items-center gap-2")
-        u-input(:model-value="data.url" disabled class="flex-1")
+        u-input(:model-value="getUrlLabel(data.url)" disabled class="flex-1" :title="data.url")
         u-button(
           icon="i-heroicons-link"
           variant="outline"

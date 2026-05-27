@@ -3,7 +3,6 @@ import type { AbbrevItem } from "~/types/abbrev"
 
 const props = defineProps<{
   item: AbbrevItem
-  index: number
 }>()
 
 const emit = defineEmits<{
@@ -22,7 +21,7 @@ const handleUpdated = () => {
 <template lang="pug">
 div(class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-900 transition-colors hover:border-primary-500/50")
   div(v-if="isEditing")
-    abbrev-form(:initial-data="item" :index="index" @submit="handleUpdated" @cancel="isEditing = false")
+    abbrev-form(:initial-data="item" @submit="handleUpdated" @cancel="isEditing = false")
 
   div(v-else class="flex items-center gap-4")
     div(class="shrink-0")

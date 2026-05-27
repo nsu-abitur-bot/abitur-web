@@ -3,7 +3,6 @@ import type { AbbrevItem } from "~/types/abbrev"
 
 const props = defineProps<{
   initialData?: AbbrevItem
-  index?: number
 }>()
 
 const emit = defineEmits<{
@@ -11,7 +10,8 @@ const emit = defineEmits<{
   (e: "cancel"): void
 }>()
 
-const isEditMode = computed(() => props.initialData !== undefined && props.index !== undefined)
+const itemId = computed(() => props.initialData?.id)
+const isEditMode = computed(() => props.initialData !== undefined && !!itemId.value)
 
 const state = reactive<AbbrevItem>({
   short: props.initialData?.short ?? "",
@@ -24,10 +24,10 @@ const toast = useToast()
 const onSubmit = async () => {
   isLoading.value = true
   try {
-    if (isEditMode.value && props.index !== undefined) {
-      await useApi("/api/v1/abbrev/{index}", {
+    if (isEditMode.value) {
+      await useApi("/api/v1/abbrev/{item_id}", {
         method: "PUT",
-        path: { index: props.index },
+        path: { item_id: itemId.value! },
         body: state,
       })
     } else {

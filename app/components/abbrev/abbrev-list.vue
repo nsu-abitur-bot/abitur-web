@@ -6,10 +6,19 @@ const toast = useToast()
 
 const items = computed(() => abbrevRes.value?.items ?? [])
 
-const handleDelete = async (index: number) => {
-  await useApi("/api/v1/abbrev/{index}", {
+const handleDelete = async (itemId?: string | null) => {
+  if (!itemId) {
+    toast.add({
+      title: "Ошибка",
+      description: "У аббревиатуры нет ID",
+      color: "error",
+    })
+    return
+  }
+
+  await useApi("/api/v1/abbrev/{item_id}", {
     method: "DELETE",
-    path: { index },
+    path: { item_id: itemId },
   })
   toast.add({
     title: "Успешно",
@@ -40,10 +49,9 @@ ui-box(title="Управление аббревиатурами")
   div(v-else class="space-y-2 mt-6")
     abbrev-item(
       v-for="(item, index) in items"
-      :key="index"
+      :key="item.id ?? index"
       :item="item"
-      :index="index"
-      @delete="handleDelete(index)"
+      @delete="handleDelete(item.id)"
       @updated="refresh"
     )
 

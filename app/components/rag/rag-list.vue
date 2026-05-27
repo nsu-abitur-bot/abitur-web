@@ -1,6 +1,12 @@
 <script setup lang="ts">
-import { clearRagCache, deleteRagDocuments, listRagDocuments, rebuildRagIndices, refreshRagDocument } from "~/services/rag-upload"
-import type { RagDocument } from "~/types/rag-upload"
+import {
+  checkRagDocuments,
+  clearRagCache,
+  deleteRagDocuments,
+  listRagDocuments,
+  updateChangedRagDocuments,
+} from "~/services/rag-upload"
+import type { DocumentCheckResult, RagDocument } from "~/types/rag-upload"
 
 const props = defineProps<{
   refreshTrigger?: number
@@ -8,7 +14,10 @@ const props = defineProps<{
 
 const documents = ref<RagDocument[]>([])
 const isLoading = ref(false)
+const isChecking = ref(false)
+const isUpdating = ref(false)
 const selectedIds = ref<Set<string>>(new Set())
+const checkResults = ref<DocumentCheckResult[]>([])
 const toast = useToast()
 
 const fetchDocuments = async () => {
@@ -78,24 +87,41 @@ const handleBatchDelete = async () => {
   }
 }
 
-const handleBatchRefresh = async () => {
-  if (selectedIds.value.size === 0) {
-    return
-  }
-  toast.add({ title: "Обновление", description: "Запрос на обновление отправлен", color: "neutral" })
-  // In reality, this might open an editor for each or just trigger background refresh
-  for (const id of selectedIds.value) {
-    await refreshRagDocument(id)
+const selectedIdsList = computed(() => [...selectedIds.value])
+const selectedIdsForRequest = computed(() => selectedIdsList.value.length ? selectedIdsList.value : undefined)
+
+const handleCheckDocuments = async () => {
+  isChecking.value = true
+  try {
+    const result = await checkRagDocuments(selectedIdsForRequest.value)
+    checkResults.value = result.results
+    toast.add({
+      title: "Проверка завершена",
+      description: `Проверено: ${result.checked_count}. Изменено: ${result.changed_count}.`,
+      color: result.changed_count > 0 ? "warning" : "success",
+    })
+  } catch {
+    toast.add({ title: "Ошибка", description: "Не удалось проверить документы", color: "error" })
+  } finally {
+    isChecking.value = false
   }
 }
 
-const handleRebuild = async () => {
-  isLoading.value = true
+const handleUpdateChanged = async () => {
+  isUpdating.value = true
   try {
-    await rebuildRagIndices()
-    toast.add({ title: "Запущено", description: "Перестройка индексов началась", color: "success" })
+    const result = await updateChangedRagDocuments(selectedIdsForRequest.value)
+    checkResults.value = result.results
+    toast.add({
+      title: "Обновление завершено",
+      description: `Проверено: ${result.checked_count}. Обновлено: ${result.updated_count}.`,
+      color: "success",
+    })
+    await fetchDocuments()
+  } catch {
+    toast.add({ title: "Ошибка", description: "Не удалось обновить документы", color: "error" })
   } finally {
-    isLoading.value = false
+    isUpdating.value = false
   }
 }
 
@@ -113,15 +139,85 @@ const handleClearCache = async () => {
   }
 }
 
-// Mock extra status for demonstration (matching mockup)
-const getDocStatusExtra = (doc: RagDocument) => {
-  if (doc.id.includes("document2")) {
-    return "удален"
+const getDocCheckStatus = (doc: RagDocument) => {
+  return checkResults.value.find(result => result.id === doc.id)?.status ?? null
+}
+
+const getDocCheckMessage = (doc: RagDocument) => {
+  return checkResults.value.find(result => result.id === doc.id)?.message ?? null
+}
+
+const getDocCheckDisplayMessage = (doc: RagDocument) => {
+  const message = getDocCheckMessage(doc)
+  if (!message) {
+    return null
   }
-  if (doc.id.includes("document1")) {
-    return "устарел (26.04.24)"
+
+  if (getDocCheckStatus(doc) !== "failed") {
+    return message
   }
-  return null
+
+  const lowerMessage = message.toLowerCase()
+  if (
+    lowerMessage.includes("404")
+    || lowerMessage.includes("not found")
+    || lowerMessage.includes("не найден")
+    || lowerMessage.includes("no such")
+  ) {
+    return "Источник не найден"
+  }
+
+  return "Не удалось проверить источник"
+}
+
+const getDocCheckClass = (doc: RagDocument) => {
+  switch (getDocCheckStatus(doc)) {
+    case "changed":
+      return "bg-warning-50/70 dark:bg-warning-950/20"
+    case "failed":
+      return "bg-error-50/70 dark:bg-error-950/20"
+    default:
+      return ""
+  }
+}
+
+const getDocCheckMessageClass = (doc: RagDocument) => {
+  switch (getDocCheckStatus(doc)) {
+    case "failed":
+      return "text-error-600 dark:text-error-400"
+    case "changed":
+      return "text-warning-600 dark:text-warning-400"
+    default:
+      return "text-gray-500 dark:text-gray-400"
+  }
+}
+
+const decodeUrlPart = (value: string) => {
+  try {
+    return decodeURIComponent(value)
+  } catch {
+    return value
+  }
+}
+
+const shortenText = (value: string, maxLength = 86) => {
+  return value.length > maxLength ? `${value.slice(0, maxLength - 1)}...` : value
+}
+
+const getDocTitle = (doc: RagDocument) => doc.title || doc.url || doc.id
+
+const getDocUrlLabel = (doc: RagDocument) => {
+  if (!doc.url) {
+    return "Ссылка не указана"
+  }
+
+  try {
+    const url = new URL(doc.url)
+    const filename = decodeUrlPart(url.pathname.split("/").filter(Boolean).at(-1) || "")
+    return filename ? `${url.hostname}/${shortenText(filename)}` : url.hostname
+  } catch {
+    return shortenText(decodeUrlPart(doc.url))
+  }
 }
 </script>
 
@@ -141,9 +237,17 @@ div(class="space-y-4")
         variant="outline"
         color="neutral"
         size="sm"
-        :disabled="selectedIds.size === 0"
-        @click="handleBatchRefresh"
-      ) Обновить
+        :loading="isChecking"
+        @click="handleCheckDocuments"
+      ) Проверить
+
+      u-button(
+        variant="outline"
+        color="neutral"
+        size="sm"
+        :loading="isUpdating"
+        @click="handleUpdateChanged"
+      ) Обновить измененные
 
       u-modal(
         title="Удалить документы"
@@ -178,21 +282,6 @@ div(class="space-y-4")
             u-button(color="neutral" variant="ghost" @click="close") Отмена
             u-button(color="primary" @click="handleClearCache(); close()") Очистить
 
-      u-modal(
-        title="Перестроить индексы"
-        description="Вы уверены, что хотите полностью перестроить индексы? Это может занять время."
-      )
-        u-button(
-          variant="solid"
-          color="neutral"
-          size="sm"
-        ) Перестроить индексы
-
-        template(#footer="{ close }")
-          div(class="flex justify-end gap-2 w-full")
-            u-button(color="neutral" variant="ghost" @click="close") Отмена
-            u-button(color="primary" @click="handleRebuild(); close()") Начать перестройку
-
   // Table
   div(v-if="isLoading && documents.length === 0" class="py-10 flex justify-center text-gray-500")
     u-icon(name="i-heroicons-arrow-path" class="animate-spin w-8 h-8")
@@ -209,7 +298,7 @@ div(class="space-y-4")
             v-for="doc in documents"
             :key="doc.id"
             class="group hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
-            :class="{ 'bg-primary-50/30 dark:bg-primary-900/5': selectedIds.has(doc.id) }"
+            :class="[getDocCheckClass(doc), { 'bg-primary-50/30 dark:bg-primary-900/5': selectedIds.has(doc.id) }]"
           )
             // Checkbox Column
             td(class="pl-4 py-4 w-10")
@@ -220,14 +309,21 @@ div(class="space-y-4")
 
             // Content Column
             td(class="px-4 py-4")
-              div(class="flex flex-col gap-0.5")
+              div(class="flex flex-col gap-1 min-w-0")
                 div(class="flex items-start gap-2 flex-wrap")
-                  span(class="text-sm font-semibold break-all text-gray-900 dark:text-white") {{ doc.id }}
-                  div(v-if="getDocStatusExtra(doc)" class="text-[10px] text-error-500 font-medium shrink-0") — {{ getDocStatusExtra(doc) }}
-                div(class="text-[11px] text-gray-500 break-all")
+                  span(class="text-sm font-semibold break-words text-gray-900 dark:text-white" :title="getDocTitle(doc)")
+                    | {{ getDocTitle(doc) }}
+                div(
+                  v-if="getDocCheckDisplayMessage(doc) && getDocCheckStatus(doc) !== 'unchanged'"
+                  class="text-[11px] truncate"
+                  :class="getDocCheckMessageClass(doc)"
+                  :title="getDocCheckMessage(doc) || undefined"
+                )
+                  | {{ getDocCheckDisplayMessage(doc) }}
+                div(class="text-[11px] text-gray-500 min-w-0")
                   a(:href="doc.url || undefined" target="_blank" class="hover:underline hover:text-primary-600 flex items-start gap-1")
                     u-icon(name="i-heroicons-link" size="lg" class="shrink-0 mt-0.5")
-                    | {{ doc.id }}
+                    span(class="truncate" :title="doc.url || undefined") {{ getDocUrlLabel(doc) }}
                 div(v-if="doc.content_summary" class="text-[10px] text-gray-400 italic mt-1 line-clamp-1") {{ doc.content_summary }}
 
             // Meta/Status Column

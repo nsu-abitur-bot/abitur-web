@@ -176,16 +176,10 @@ export interface paths {
       path?: never
       cookie?: never
     }
-    /**
-     * Получить все аббревиатуры
-     * @description Возвращает словарь всех аббревиатур.
-     */
+    /** Получить все аббревиатуры */
     get: operations["get_all_api_v1_abbrev_get"]
     put?: never
-    /**
-     * Добавить аббревиатуру
-     * @description Добавляет новую аббревиатуру в словарь.
-     */
+    /** Добавить аббревиатуру */
     post: operations["create_api_v1_abbrev_post"]
     delete?: never
     options?: never
@@ -193,7 +187,7 @@ export interface paths {
     patch?: never
     trace?: never
   }
-  "/api/v1/abbrev/{index}": {
+  "/api/v1/abbrev/{item_id}": {
     parameters: {
       query?: never
       header?: never
@@ -201,17 +195,11 @@ export interface paths {
       cookie?: never
     }
     get?: never
-    /**
-     * Обновить аббревиатуру по индексу
-     * @description Обновляет существующую аббревиатуру по индексу в списке.
-     */
-    put: operations["update_api_v1_abbrev__index__put"]
+    /** Обновить аббревиатуру по ID */
+    put: operations["update_api_v1_abbrev__item_id__put"]
     post?: never
-    /**
-     * Удалить аббревиатуру по индексу
-     * @description Удаляет аббревиатуру по индексу.
-     */
-    delete: operations["delete_api_v1_abbrev__index__delete"]
+    /** Удалить аббревиатуру по ID */
+    delete: operations["delete_api_v1_abbrev__item_id__delete"]
     options?: never
     head?: never
     patch?: never
@@ -224,16 +212,10 @@ export interface paths {
       path?: never
       cookie?: never
     }
-    /**
-     * Получить все FAQ
-     * @description Возвращает список всех вопросов и ответов FAQ, которые использует бот.
-     */
+    /** Получить все FAQ */
     get: operations["get_all_faqs_api_v1_faq_get"]
     put?: never
-    /**
-     * Создать FAQ
-     * @description Создает новый вопрос FAQ и автоматически применяет для новых запросов к боту.
-     */
+    /** Создать FAQ */
     post: operations["create_faq_api_v1_faq_post"]
     delete?: never
     options?: never
@@ -265,7 +247,7 @@ export interface paths {
     patch?: never
     trace?: never
   }
-  "/api/v1/faq/{index}": {
+  "/api/v1/faq/{item_id}": {
     parameters: {
       query?: never
       header?: never
@@ -273,17 +255,11 @@ export interface paths {
       cookie?: never
     }
     get?: never
-    /**
-     * Обновить FAQ по индексу
-     * @description Обновляет существующий FAQ элемент по его позиции (индексу) в списке.
-     */
-    put: operations["update_faq_api_v1_faq__index__put"]
+    /** Обновить FAQ по ID */
+    put: operations["update_faq_api_v1_faq__item_id__put"]
     post?: never
-    /**
-     * Удалить FAQ по индексу
-     * @description Удаляет существующий FAQ элемент по его позиции (индексу) в списке.
-     */
-    delete: operations["delete_faq_api_v1_faq__index__delete"]
+    /** Удалить FAQ по ID */
+    delete: operations["delete_faq_api_v1_faq__item_id__delete"]
     options?: never
     head?: never
     patch?: never
@@ -420,6 +396,41 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/feedback": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Получить обращения обратной связи */
+    get: operations["list_feedback_reports_api_v1_feedback_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/feedback/{report_id}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Получить обращение обратной связи */
+    get: operations["get_feedback_report_api_v1_feedback__report_id__get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    /** Обновить статус обращения */
+    patch: operations["update_feedback_report_status_api_v1_feedback__report_id__patch"]
+    trace?: never
+  }
   "/api/v1/rag/upload": {
     parameters: {
       query?: never
@@ -552,6 +563,40 @@ export interface paths {
      * @description Удаляет документ из базы знаний RAG.
      */
     delete: operations["delete_rag_document_api_v1_rag_docs__doc_id__delete"]
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/rag/docs/check": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Проверить документы RAG на изменения */
+    post: operations["check_rag_documents_api_v1_rag_docs_check_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/rag/docs/update-changed": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Обновить измененные документы RAG */
+    post: operations["update_changed_rag_documents_api_v1_rag_docs_update_changed_post"]
+    delete?: never
     options?: never
     head?: never
     patch?: never
@@ -778,6 +823,11 @@ export interface components {
     /** AbbrevItem */
     AbbrevItem: {
       /**
+       * Id
+       * @description UUID записи (заполняется при ответе)
+       */
+      id?: string | null
+      /**
        * Short
        * @description Аббревиатура (например, НГУ)
        */
@@ -942,11 +992,95 @@ export interface components {
        */
       message?: string | null
     }
-    /**
-     * FaqItem
-     * @description Схема для отдельного элемента FAQ.
-     */
+    /** DocumentCheckRequest */
+    DocumentCheckRequest: {
+      /**
+       * Document Ids
+       * @description ID документов для проверки; если не переданы, проверяются все
+       */
+      document_ids?: string[] | null
+    }
+    /** DocumentCheckResponse */
+    DocumentCheckResponse: {
+      /**
+       * Checked Count
+       * @description Количество проверенных документов
+       */
+      checked_count: number
+      /**
+       * Changed Count
+       * @description Количество измененных документов
+       */
+      changed_count: number
+      /**
+       * Results
+       * @description Результаты проверки
+       */
+      results: components["schemas"]["DocumentCheckResult"][]
+    }
+    /** DocumentCheckResult */
+    DocumentCheckResult: {
+      /**
+       * Id
+       * @description ID документа
+       */
+      id: string
+      /**
+       * Title
+       * @description Название документа
+       */
+      title: string
+      /**
+       * Source Url
+       * @description URL источника
+       */
+      source_url?: string | null
+      /**
+       * Status
+       * @description changed, unchanged, skipped, failed, updated
+       */
+      status: string
+      /**
+       * Content Hash
+       * @description Новый SHA-256
+       */
+      content_hash?: string | null
+      /**
+       * Previous Hash
+       * @description Сохраненный SHA-256
+       */
+      previous_hash?: string | null
+      /**
+       * Message
+       * @description Ошибка или пояснение
+       */
+      message?: string | null
+    }
+    /** DocumentUpdateResponse */
+    DocumentUpdateResponse: {
+      /**
+       * Checked Count
+       * @description Количество проверенных документов
+       */
+      checked_count: number
+      /**
+       * Updated Count
+       * @description Количество обновленных документов
+       */
+      updated_count: number
+      /**
+       * Results
+       * @description Результаты обновления
+       */
+      results: components["schemas"]["DocumentCheckResult"][]
+    }
+    /** FaqItem */
     FaqItem: {
+      /**
+       * Id
+       * @description UUID записи (заполняется при ответе)
+       */
+      id?: string | null
       /**
        * Question
        * @description Основной вопрос
@@ -963,16 +1097,88 @@ export interface components {
        */
       answer: string
     }
-    /**
-     * FaqListResponse
-     * @description Схема ответа для списка FAQ-вопросов.
-     */
+    /** FaqListResponse */
     FaqListResponse: {
       /**
        * Items
        * @description Список вопросов-ответов
        */
       items: components["schemas"]["FaqItem"][]
+    }
+    /** FeedbackReportListItem */
+    FeedbackReportListItem: {
+      /** Id */
+      id: number
+      /** User Id */
+      user_id: number
+      /** Session Id */
+      session_id: string
+      /** Channel */
+      channel: string
+      /** Comment */
+      comment: string
+      /** Question */
+      question?: string | null
+      /** Bot Response */
+      bot_response?: string | null
+      /** Status */
+      status: string
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string
+      /** Reviewed At */
+      reviewed_at?: string | null
+    }
+    /** FeedbackReportListResponse */
+    FeedbackReportListResponse: {
+      /** Reports */
+      reports: components["schemas"]["FeedbackReportListItem"][]
+      /** Total */
+      total: number
+      /** Limit */
+      limit: number
+      /** Offset */
+      offset: number
+    }
+    /** FeedbackReportResponse */
+    FeedbackReportResponse: {
+      /** Id */
+      id: number
+      /** User Id */
+      user_id: number
+      /** Session Id */
+      session_id: string
+      /** Channel */
+      channel: string
+      /** Comment */
+      comment: string
+      /** Question */
+      question?: string | null
+      /** Bot Response */
+      bot_response?: string | null
+      /** Logs Snapshot */
+      logs_snapshot?: {
+        [key: string]: unknown
+      }[] | null
+      /** Status */
+      status: string
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string
+      /** Reviewed At */
+      reviewed_at?: string | null
+    }
+    /** FeedbackReportStatusUpdate */
+    FeedbackReportStatusUpdate: {
+      /**
+       * Status
+       * @enum {string}
+       */
+      status: "open" | "reviewed" | "ignored"
     }
     /** HTTPValidationError */
     HTTPValidationError: {
@@ -1141,6 +1347,11 @@ export interface components {
        */
       id: string
       /**
+       * Title
+       * @description Название документа
+       */
+      title?: string | null
+      /**
        * Url
        * @description Оригинальный URL или путь к файлу
        */
@@ -1150,6 +1361,11 @@ export interface components {
        * @description Статус обработки
        */
       status: string
+      /**
+       * Content Hash
+       * @description SHA-256 сырого контента
+       */
+      content_hash?: string | null
       /**
        * Content Summary
        * @description Краткое содержание
@@ -1165,6 +1381,16 @@ export interface components {
        * @description Дата создания
        */
       created_at?: string | null
+      /**
+       * Updated At
+       * @description Дата обновления
+       */
+      updated_at?: string | null
+      /**
+       * Last Indexed At
+       * @description Дата последней индексации
+       */
+      last_indexed_at?: string | null
     }
     /** RagDocumentContentResponse */
     RagDocumentContentResponse: {
@@ -1766,12 +1992,12 @@ export interface operations {
       }
     }
   }
-  update_api_v1_abbrev__index__put: {
+  update_api_v1_abbrev__item_id__put: {
     parameters: {
       query?: never
       header?: never
       path: {
-        index: number
+        item_id: string
       }
       cookie?: never
     }
@@ -1801,12 +2027,12 @@ export interface operations {
       }
     }
   }
-  delete_api_v1_abbrev__index__delete: {
+  delete_api_v1_abbrev__item_id__delete: {
     parameters: {
       query?: never
       header?: never
       path: {
-        index: number
+        item_id: string
       }
       cookie?: never
     }
@@ -1916,12 +2142,12 @@ export interface operations {
       }
     }
   }
-  update_faq_api_v1_faq__index__put: {
+  update_faq_api_v1_faq__item_id__put: {
     parameters: {
       query?: never
       header?: never
       path: {
-        index: number
+        item_id: string
       }
       cookie?: never
     }
@@ -1951,12 +2177,12 @@ export interface operations {
       }
     }
   }
-  delete_faq_api_v1_faq__index__delete: {
+  delete_faq_api_v1_faq__item_id__delete: {
     parameters: {
       query?: never
       header?: never
       path: {
-        index: number
+        item_id: string
       }
       cookie?: never
     }
@@ -2186,6 +2412,107 @@ export interface operations {
       }
     }
   }
+  list_feedback_reports_api_v1_feedback_get: {
+    parameters: {
+      query?: {
+        status?: ("open" | "reviewed" | "ignored") | null
+        user_id?: number | null
+        session_id?: string | null
+        limit?: number
+        offset?: number
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["FeedbackReportListResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_feedback_report_api_v1_feedback__report_id__get: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        report_id: number
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["FeedbackReportResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  update_feedback_report_status_api_v1_feedback__report_id__patch: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        report_id: number
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["FeedbackReportStatusUpdate"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["FeedbackReportResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
   upload_documents_to_rag_api_v1_rag_upload_post: {
     parameters: {
       query?: never
@@ -2386,6 +2713,72 @@ export interface operations {
         }
         content: {
           "application/json": unknown
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  check_rag_documents_api_v1_rag_docs_check_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["DocumentCheckRequest"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["DocumentCheckResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  update_changed_rag_documents_api_v1_rag_docs_update_changed_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["DocumentCheckRequest"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["DocumentUpdateResponse"]
         }
       }
       /** @description Validation Error */
