@@ -290,9 +290,9 @@ div(class="space-y-4")
     u-icon(name="i-heroicons-document-duplicate" class="w-12 h-12 mx-auto text-gray-400 mb-3")
     p База знаний пуста. Добавьте URL выше.
 
-  div(v-else class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm")
+  div(v-else class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm table-wrap-safe")
     div
-      table(class="w-full divide-y divide-gray-200 dark:divide-gray-700")
+      table(class="w-full divide-y divide-gray-200 dark:divide-gray-700 rag-documents-table")
         tbody(class="divide-y divide-gray-100 dark:divide-gray-800")
           tr(
             v-for="doc in documents"
@@ -311,23 +311,23 @@ div(class="space-y-4")
             td(class="px-4 py-4")
               div(class="flex flex-col gap-1 min-w-0")
                 div(class="flex items-start gap-2 flex-wrap")
-                  span(class="text-sm font-semibold break-words text-gray-900 dark:text-white" :title="getDocTitle(doc)")
+                  span(class="text-sm font-semibold break-anywhere text-gray-900 dark:text-white min-w-0" :title="getDocTitle(doc)")
                     | {{ getDocTitle(doc) }}
                 div(
                   v-if="getDocCheckDisplayMessage(doc) && getDocCheckStatus(doc) !== 'unchanged'"
-                  class="text-[11px] truncate"
+                  class="text-[11px] break-anywhere"
                   :class="getDocCheckMessageClass(doc)"
                   :title="getDocCheckMessage(doc) || undefined"
                 )
                   | {{ getDocCheckDisplayMessage(doc) }}
                 div(class="text-[11px] text-gray-500 min-w-0")
-                  a(:href="doc.url || undefined" target="_blank" class="hover:underline hover:text-primary-600 flex items-start gap-1")
+                  a(:href="doc.url || undefined" target="_blank" class="hover:underline hover:text-primary-600 flex items-start gap-1 min-w-0 break-anywhere")
                     u-icon(name="i-heroicons-link" size="lg" class="shrink-0 mt-0.5")
-                    span(class="truncate" :title="doc.url || undefined") {{ getDocUrlLabel(doc) }}
-                div(v-if="doc.content_summary" class="text-[10px] text-gray-400 italic mt-1 line-clamp-1") {{ doc.content_summary }}
+                    span(class="min-w-0 break-anywhere" :title="doc.url || undefined") {{ getDocUrlLabel(doc) }}
+                div(v-if="doc.content_summary" class="text-[10px] text-gray-400 italic mt-1 line-clamp-2 break-anywhere") {{ doc.content_summary }}
 
             // Meta/Status Column
-            td(class="px-4 py-4 whitespace-nowrap text-right")
+            td(class="px-4 py-4 text-right")
               div(class="flex flex-col items-end gap-1 px-4")
                 div(class="text-[11px] font-medium text-gray-500") ({{ formatDate(doc.created_at) }})
                 u-badge(
@@ -338,7 +338,7 @@ div(class="space-y-4")
                 ) {{ doc.status }}
 
             // Actions Column
-            td(class="pr-4 py-4 whitespace-nowrap text-right w-20")
+            td(class="pr-4 py-4 text-right w-20")
               u-button(
                 icon="i-heroicons-eye"
                 variant="ghost"
@@ -348,3 +348,17 @@ div(class="space-y-4")
                 title="Просмотреть"
               )
 </template>
+
+<style scoped>
+.rag-documents-table td:first-child {
+  width: 3rem;
+}
+
+.rag-documents-table td:nth-child(3) {
+  width: 8.5rem;
+}
+
+.rag-documents-table td:nth-child(4) {
+  width: 4.5rem;
+}
+</style>

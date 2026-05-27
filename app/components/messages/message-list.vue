@@ -144,7 +144,7 @@ div(class="space-y-6")
 
     ul(v-else class="divide-y divide-gray-100 dark:divide-gray-800")
       li(v-for="(item, index) in popularQuestions" :key="`${item.question}-${index}`" class="flex items-start justify-between gap-3 py-3")
-        p(class="text-sm text-gray-800 dark:text-gray-100 leading-relaxed") {{ item.question }}
+        p(class="text-sm text-gray-800 dark:text-gray-100 leading-relaxed break-anywhere min-w-0") {{ item.question }}
         u-badge(color="neutral" variant="subtle") {{ item.count }}
 
   ui-box(title="Сообщения пользователей")
@@ -196,16 +196,16 @@ div(class="space-y-6")
       u-icon(name="i-heroicons-chat-bubble-left-right" class="w-16 h-16 mx-auto text-gray-400 mb-3")
       p Список сообщений пуст или нет данных по выбранному фильтру.
 
-    div(v-else class="mt-6 overflow-x-auto")
-      u-table(:data="items" :columns="columns" class="w-full")
+    div(v-else class="mt-6 table-wrap-safe")
+      u-table(:data="items" :columns="columns" class="w-full messages-table")
         template(#created_at-cell="{ row }")
           span(class="text-sm text-gray-500 whitespace-nowrap") {{ formatDate(row.original.created_at) }}
 
         template(#user-cell="{ row }")
-          div(class="flex flex-col text-sm")
-            span(v-if="row.original.username" class="font-medium text-gray-900 dark:text-gray-100") @{{ row.original.username }}
+          div(class="flex flex-col text-sm min-w-0")
+            span(v-if="row.original.username" class="font-medium text-gray-900 dark:text-gray-100 break-anywhere") @{{ row.original.username }}
             span(v-else class="italic text-gray-400") Без username
-            span(class="text-xs text-gray-500") ID: {{ row.original.user_id }}
+            span(class="text-xs text-gray-500 break-anywhere") ID: {{ row.original.user_id }}
 
         template(#messenger-cell="{ row }")
           u-badge(
@@ -217,11 +217,11 @@ div(class="space-y-6")
           span(v-else class="text-xs text-gray-400") —
 
         template(#user_text-cell="{ row }")
-          div(class="max-w-xs sm:max-w-sm md:max-w-md lg:max-w-xl whitespace-normal leading-relaxed")
+          div(class="whitespace-normal leading-relaxed break-anywhere")
             span(class="text-gray-900 dark:text-gray-100") {{ row.original.user_text }}
 
         template(#bot_response-cell="{ row }")
-          div(class="max-w-xs sm:max-w-sm md:max-w-md lg:max-w-xl whitespace-normal leading-relaxed text-gray-600 dark:text-gray-400")
+          div(class="whitespace-normal leading-relaxed text-gray-600 dark:text-gray-400 break-anywhere")
             span {{ row.original.bot_response }}
 
         template(#actions-cell="{ row }")
@@ -238,3 +238,25 @@ div(class="space-y-6")
       template(#content)
         messages-logs-viewer(v-if="selectedSessionId" :session-id="selectedSessionId")
 </template>
+
+<style scoped>
+:deep(.messages-table th:nth-child(1)),
+:deep(.messages-table td:nth-child(1)) {
+  width: 8.5rem;
+}
+
+:deep(.messages-table th:nth-child(2)),
+:deep(.messages-table td:nth-child(2)) {
+  width: 9rem;
+}
+
+:deep(.messages-table th:nth-child(3)),
+:deep(.messages-table td:nth-child(3)) {
+  width: 7rem;
+}
+
+:deep(.messages-table th:nth-child(6)),
+:deep(.messages-table td:nth-child(6)) {
+  width: 3rem;
+}
+</style>

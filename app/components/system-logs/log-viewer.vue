@@ -100,7 +100,7 @@ div(class="space-y-4")
     p Логи не найдены или файл пуст.
 
   div(v-else class="rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 overflow-hidden")
-    pre(class="text-xs font-mono leading-relaxed text-gray-700 dark:text-gray-200 p-4 overflow-x-auto max-h-[70vh] overflow-y-auto whitespace-pre")
+    pre(class="text-xs font-mono leading-relaxed text-gray-700 dark:text-gray-200 p-4 overflow-x-hidden max-h-[70vh] overflow-y-auto pre-wrap-anywhere")
       template(v-for="(line, index) in logLines" :key="index")
         span(class="block") {{ line }}
 </template>

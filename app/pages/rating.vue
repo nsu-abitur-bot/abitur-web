@@ -333,5 +333,23 @@ onUnmounted(() => {
   pointer-events: auto !important;
 }
 
+.nsu-mock-page :deep(.entrants) {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.nsu-mock-page :deep(.entrants table) {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.nsu-mock-page :deep(.entrants th),
+.nsu-mock-page :deep(.entrants td),
+.nsu-mock-page :deep(.entrants th > div),
+.nsu-mock-page :deep(.entrants td > div) {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 /* Remove scoped overrides to rely on original styles copied from HTML */
 </style>

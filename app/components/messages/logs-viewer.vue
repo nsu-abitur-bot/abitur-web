@@ -66,7 +66,7 @@ div(class="flex flex-col h-full")
     u-icon(name="i-heroicons-information-circle" class="w-12 h-12 mb-4 text-gray-300")
     p Логов для этой сессии не найдено.
 
-  div(v-else class="flex-1 overflow-y-auto pr-2 custom-scrollbar")
+  div(v-else class="flex-1 overflow-y-auto overflow-x-hidden pr-2 custom-scrollbar min-w-0")
     div(class="space-y-6 pb-6")
       div(v-for="log in logs" :key="log.id" class="relative pl-6 border-l-2" :class="`border-${getLogTypeColor(log.message_type)}-500` ")
         div(class="absolute -left-[9px] top-0 w-4 h-4 rounded-full border-2 bg-white dark:bg-gray-900" :class="`border-${getLogTypeColor(log.message_type)}-500` ")
@@ -83,16 +83,16 @@ div(class="flex flex-col h-full")
           span(class="text-xs text-gray-400 font-mono")
             | {{ formatDate(log.created_at) }}
 
-        div(class="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4 text-sm")
-          div(class="whitespace-pre-wrap leading-relaxed text-gray-700 dark:text-gray-300 mb-3")
+        div(class="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4 text-sm min-w-0")
+          div(class="pre-wrap-anywhere leading-relaxed text-gray-700 dark:text-gray-300 mb-3")
             | {{ log.content }}
 
           div(v-if="log.message_metadata && Object.keys(log.message_metadata).length > 0" class="mt-2")
             details(class="group border-t border-gray-200 dark:border-gray-700 pt-2 mt-2")
-              summary(class="text-xs text-gray-500 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300 transition-colors list-none flex items-center gap-1")
+              summary(class="text-xs text-gray-500 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300 transition-colors list-none flex items-center gap-1 min-w-0")
                 u-icon(name="i-heroicons-chevron-right" class="w-3 h-3 transition-transform group-open:rotate-90")
                 span Метаданные
-              pre(class="mt-2 text-[10px] bg-black/5 dark:bg-black/20 p-2 rounded overflow-x-auto font-mono text-gray-600 dark:text-gray-400")
+              pre(class="mt-2 text-[10px] bg-black/5 dark:bg-black/20 p-2 rounded overflow-x-hidden font-mono text-gray-600 dark:text-gray-400 pre-wrap-anywhere")
                 | {{ JSON.stringify(log.message_metadata, null, 2) }}
 </template>
 

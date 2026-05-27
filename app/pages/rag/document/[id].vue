@@ -50,7 +50,7 @@ u-container(class="py-8 min-h-screen")
         color="neutral"
         to="/"
       ) Назад
-      h1(class="text-2xl font-bold truncate text-gray-900 dark:text-white" :title="data?.title || docId")
+      h1(class="text-2xl font-bold break-anywhere text-gray-900 dark:text-white" :title="data?.title || docId")
         | {{ data?.title || docId }}
 
   div(v-if="pending" class="py-32 flex flex-col items-center justify-center text-gray-500")
@@ -70,7 +70,7 @@ u-container(class="py-8 min-h-screen")
 
   div(v-else-if="data" class="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-6")
     ui-box(v-if="data.url" title="Источник документа")
-      div(class="flex items-center gap-2")
+      div(class="flex items-center gap-2 min-w-0")
         u-input(:model-value="getUrlLabel(data.url)" disabled class="flex-1" :title="data.url")
         u-button(
           icon="i-heroicons-link"
@@ -83,5 +83,5 @@ u-container(class="py-8 min-h-screen")
 
     ui-box(title="Полный текст документа")
       div(class="bg-white dark:bg-gray-900 rounded-xl p-8 font-sans text-base leading-relaxed text-gray-800 dark:text-gray-200 border border-gray-100 dark:border-gray-800 shadow-sm")
-        div(class="whitespace-pre-wrap select-text") {{ data.content }}
+        div(class="pre-wrap-anywhere select-text") {{ data.content }}
 </template>

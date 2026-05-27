@@ -142,8 +142,8 @@ u-container(class="py-8 space-y-6")
             span(class="text-xs text-gray-500") {{ `#${report.id}` }}
             span(class="text-xs text-gray-500") User {{ report.user_id }}
             span(class="text-xs text-gray-500") {{ formatDate(report.created_at) }}
-          p(class="text-sm text-gray-900 dark:text-gray-100 whitespace-pre-wrap") {{ report.comment }}
-          p(v-if="report.question" class="text-xs text-gray-500 line-clamp-2") Вопрос: {{ report.question }}
+          p(class="text-sm text-gray-900 dark:text-gray-100 pre-wrap-anywhere") {{ report.comment }}
+          p(v-if="report.question" class="text-xs text-gray-500 line-clamp-2 break-anywhere") Вопрос: {{ report.question }}
         div(class="flex shrink-0 gap-2")
           u-button(color="neutral" variant="soft" size="sm" @click="openDetails(report.id)") Детали
           u-button(
@@ -198,19 +198,19 @@ u-container(class="py-8 space-y-6")
 
         div
           div(class="text-xs text-gray-500 mb-1") Комментарий
-          div(class="rounded-lg bg-gray-50 dark:bg-gray-800 p-3 whitespace-pre-wrap text-sm") {{ selectedReport.comment }}
+          div(class="rounded-lg bg-gray-50 dark:bg-gray-800 p-3 pre-wrap-anywhere text-sm") {{ selectedReport.comment }}
 
         div(v-if="selectedReport.question")
           div(class="text-xs text-gray-500 mb-1") Вопрос
-          div(class="rounded-lg bg-gray-50 dark:bg-gray-800 p-3 whitespace-pre-wrap text-sm") {{ selectedReport.question }}
+          div(class="rounded-lg bg-gray-50 dark:bg-gray-800 p-3 pre-wrap-anywhere text-sm") {{ selectedReport.question }}
 
         div(v-if="selectedReport.bot_response")
           div(class="text-xs text-gray-500 mb-1") Ответ бота
-          div(class="rounded-lg bg-gray-50 dark:bg-gray-800 p-3 whitespace-pre-wrap text-sm") {{ selectedReport.bot_response }}
+          div(class="rounded-lg bg-gray-50 dark:bg-gray-800 p-3 pre-wrap-anywhere text-sm") {{ selectedReport.bot_response }}
 
         div(v-if="selectedReport.logs_snapshot?.length")
           div(class="text-xs text-gray-500 mb-1") Снимок логов
-          pre(class="rounded-lg bg-gray-950 text-gray-100 p-3 overflow-x-auto text-xs") {{ JSON.stringify(selectedReport.logs_snapshot, null, 2) }}
+          pre(class="rounded-lg bg-gray-950 text-gray-100 p-3 overflow-x-hidden text-xs pre-wrap-anywhere") {{ JSON.stringify(selectedReport.logs_snapshot, null, 2) }}
 
         div(class="flex flex-wrap gap-2 pt-2")
           u-button(color="warning" variant="soft" :loading="isUpdatingStatus" @click="updateStatus(selectedReport.id, 'open')") Открыто

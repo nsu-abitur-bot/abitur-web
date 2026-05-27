@@ -73,5 +73,5 @@ div(class="border border-gray-200 dark:border-gray-700 rounded-lg p-5 bg-white d
         name="i-heroicons-chat-bubble-bottom-center-text"
         class="absolute top-4 right-4 text-gray-300 dark:text-gray-600 w-6 h-6"
       )
-      p(class="text-gray-700 dark:text-gray-300 whitespace-pre-wrap pr-8") {{ props.item.answer }}
+      p(class="text-gray-700 dark:text-gray-300 pre-wrap-anywhere pr-8") {{ props.item.answer }}
 </template>

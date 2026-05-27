@@ -1,3 +1,27 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
 @import "./theme.css";
+
+.break-anywhere {
+  overflow-wrap: anywhere;
+}
+
+.pre-wrap-anywhere {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.table-wrap-safe {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.table-wrap-safe :where(table) {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.table-wrap-safe :where(th, td) {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
