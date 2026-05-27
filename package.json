@@ -30,6 +30,8 @@
     "vue-router": "^4.6.4"
   },
   "devDependencies": {
+    "@iconify-json/heroicons": "^1.2.3",
+    "@iconify-json/lucide": "^1.2.109",
     "@ilyasemenov/eslint-config": "1.5.0",
     "@ilyasemenov/stylelint-config": "2.1.0",
     "@types/node": "25.2.3",

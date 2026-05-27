@@ -128,6 +128,21 @@ export default defineNuxtConfig({
     fonts: false,
   },
 
+  icon: {
+    provider: "none",
+    serverBundle: false,
+    fallbackToApi: false,
+    clientBundle: {
+      scan: {
+        globInclude: [
+          "app/**/*.{vue,ts}",
+          "node_modules/@nuxt/ui/dist/**/*.{js,mjs,vue}",
+        ],
+        globExclude: ["dist", "build", "coverage", "test", "tests", ".*"],
+      },
+    },
+  },
+
   //
   // Runtime config
   //
