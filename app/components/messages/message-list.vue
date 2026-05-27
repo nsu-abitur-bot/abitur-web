@@ -205,7 +205,7 @@ div(class="space-y-6")
           div(class="flex flex-col text-sm min-w-0")
             span(v-if="row.original.username" class="font-medium text-gray-900 dark:text-gray-100 break-anywhere") @{{ row.original.username }}
             span(v-else class="italic text-gray-400") Без имени пользователя
-            span(class="text-xs text-gray-500 break-anywhere") Идентификатор: {{ row.original.user_id }}
+            span(class="text-xs text-gray-500 break-anywhere") ID: {{ row.original.user_id }}
 
         template(#messenger-cell="{ row }")
           u-badge(
