@@ -13,7 +13,7 @@ const handleDelete = async (itemId?: string | null) => {
   if (!itemId) {
     toast.add({
       title: "Ошибка",
-      description: "У записи FAQ нет ID",
+      description: "У записи с вопросом нет идентификатора",
       color: "error",
     })
     return
@@ -59,7 +59,7 @@ const handleFileUpload = async (event: Event) => {
     await uploadFaqCsv(file)
     toast.add({
       title: "Успешно",
-      description: "FAQ обновлен",
+      description: "Список вопросов обновлен",
       color: "success",
     })
     await refresh()
@@ -67,7 +67,7 @@ const handleFileUpload = async (event: Event) => {
     console.error("Upload failed", error)
     toast.add({
       title: "Ошибка",
-      description: "Не удалось обновить FAQ",
+      description: "Не удалось обновить список вопросов",
       color: "error",
     })
   } finally {
@@ -79,7 +79,7 @@ const handleFileUpload = async (event: Event) => {
 </script>
 
 <template lang="pug">
-ui-box(title="Управление FAQ")
+ui-box(title="Управление частыми вопросами")
   template(#right)
     div(class="flex items-center gap-2")
       input(ref="fileInput" type="file" accept=".csv" class="hidden" @change="handleFileUpload")
@@ -97,7 +97,7 @@ ui-box(title="Управление FAQ")
 
   div(v-else-if="items.length === 0" class="py-12 text-center text-gray-500 bg-gray-50 dark:bg-gray-800 rounded-lg")
     u-icon(name="i-heroicons-document-text" class="w-12 h-12 mx-auto text-gray-400 mb-3")
-    p Нет добавленных вопросов. Создайте первый FAQ вопрос.
+    p Нет добавленных вопросов. Создайте первый вопрос.
 
   div(v-else class="space-y-4 mt-6")
     faq-item(
@@ -109,7 +109,7 @@ ui-box(title="Управление FAQ")
     )
 
   // Modal for Creation
-  u-slideover(v-model:open="isCreateModalOpen" title="Новый вопрос FAQ")
+  u-slideover(v-model:open="isCreateModalOpen" title="Новый вопрос")
     template(#body)
       faq-form(
         @submit="handleFaqCreated"

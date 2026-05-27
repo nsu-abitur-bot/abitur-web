@@ -93,7 +93,7 @@ const formatDate = (dateString: string) => {
 }
 
 const exportToCsv = () => {
-  const headers = ["Дата и время", "ID пользователя", "Username", "Мессенджер", "Вопрос", "Ответ"]
+  const headers = ["Дата и время", "Идентификатор пользователя", "Имя пользователя", "Мессенджер", "Вопрос", "Ответ"]
   const rows = items.value.map(m => [
     formatDate(m.created_at),
     m.user_id,
@@ -161,7 +161,7 @@ div(class="space-y-6")
                 variant="link"
                 size="sm"
                 icon="i-heroicons-calendar"
-                aria-label="Select a date"
+                aria-label="Выбрать дату"
                 class="px-0"
               )
               template(#content)
@@ -175,7 +175,7 @@ div(class="space-y-6")
                 variant="link"
                 size="sm"
                 icon="i-heroicons-calendar"
-                aria-label="Select a date"
+                aria-label="Выбрать дату"
                 class="px-0"
               )
               template(#content)
@@ -204,8 +204,8 @@ div(class="space-y-6")
         template(#user-cell="{ row }")
           div(class="flex flex-col text-sm min-w-0")
             span(v-if="row.original.username" class="font-medium text-gray-900 dark:text-gray-100 break-anywhere") @{{ row.original.username }}
-            span(v-else class="italic text-gray-400") Без username
-            span(class="text-xs text-gray-500 break-anywhere") ID: {{ row.original.user_id }}
+            span(v-else class="italic text-gray-400") Без имени пользователя
+            span(class="text-xs text-gray-500 break-anywhere") Идентификатор: {{ row.original.user_id }}
 
         template(#messenger-cell="{ row }")
           u-badge(

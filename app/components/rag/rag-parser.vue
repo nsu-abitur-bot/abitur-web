@@ -101,7 +101,7 @@ const handleConfirmUpload = async () => {
 
   toast.add({
     title: "Готово",
-    description: `Успешно загружено в RAG: ${successCount} из ${totalCount}`,
+    description: `Успешно загружено в базу знаний: ${successCount} из ${totalCount}`,
     color: successCount === totalCount ? "success" : "warning",
   })
 
@@ -160,7 +160,7 @@ const handleManualUpload = async () => {
     })
     toast.add({
       title: "Успех",
-      description: "Данные успешно добавлены в RAG",
+      description: "Данные успешно добавлены в базу знаний",
       color: "success",
     })
     resetManualForm()
@@ -168,7 +168,7 @@ const handleManualUpload = async () => {
   } catch (err: any) {
     toast.add({
       title: "Ошибка",
-      description: err?.data?.detail || "Ошибка при добавлении в RAG",
+      description: err?.data?.detail || "Ошибка при добавлении в базу знаний",
       color: "error",
     })
   } finally {
@@ -224,10 +224,10 @@ div(class="space-y-6")
             @click="triggerCsvUpload"
           ) Открыть CSV
 
-      p(class="text-xs text-gray-500") Формат CSV: Название, Link, Комментарий
+      p(class="text-xs text-gray-500") Формат CSV: Название, Ссылка, Комментарий
 
     // URL Input
-    u-form-field(label="Единичный URL" class="w-full")
+    u-form-field(label="Одна ссылка" class="w-full")
       div(class="flex gap-2 w-full")
         u-input(
           v-model="url"
@@ -309,14 +309,14 @@ div(class="space-y-6")
       // Parsing Progress Bar
       div(v-if="parsingStats.done < parsingStats.total" class="space-y-1 bg-gray-50 dark:bg-gray-800/50 p-3 rounded-lg border dark:border-gray-800")
         div(class="flex justify-between text-xs font-medium text-gray-600 dark:text-gray-300")
-          span Препроцессинг LLM (идет параллельная загрузка)...
+          span Предварительная обработка моделью (идет параллельная загрузка)...
           span {{ parsingStats.done }} / {{ parsingStats.total }}
         u-progress(:value="parsingStats.done" :max="parsingStats.total" color="primary" size="sm")
 
       // Indexing Progress Bar
       div(v-if="indexingStats.total > 0 && indexingStats.done < indexingStats.total" class="space-y-1 bg-primary-50 dark:bg-primary-900/20 p-3 rounded-lg border border-primary-100 dark:border-primary-800/50")
         div(class="flex justify-between text-xs font-medium text-primary-700 dark:text-primary-300")
-          span Загрузка обработанных документов в RAG...
+          span Загрузка обработанных документов в базу знаний...
           span {{ indexingStats.done }} / {{ indexingStats.total }}
         u-progress(:value="indexingStats.done" :max="indexingStats.total" color="primary" size="sm")
 
@@ -340,14 +340,14 @@ div(class="space-y-6")
               u-icon(v-else-if="item.status === 'parsing'" name="i-heroicons-arrow-path" size="lg" class="animate-spin text-primary-500 shrink-0" title="Препроцессинг")
               u-icon(v-else-if="item.status === 'success'" name="i-heroicons-check-circle" size="lg" class="text-success-500 shrink-0" title="Готово к загрузке")
               u-icon(v-else-if="item.status === 'error'" name="i-heroicons-exclamation-circle" size="lg" class="text-error-500 shrink-0" title="Ошибка")
-              u-icon(v-else-if="item.status === 'indexing'" name="i-heroicons-arrow-path" size="lg" class="animate-spin text-warning-500 shrink-0" title="Загрузка в RAG")
-              u-icon(v-else-if="item.status === 'indexed'" name="i-heroicons-check-badge" size="lg" class="text-success-600 shrink-0" title="В базе RAG")
+              u-icon(v-else-if="item.status === 'indexing'" name="i-heroicons-arrow-path" size="lg" class="animate-spin text-warning-500 shrink-0" title="Загрузка в базу знаний")
+              u-icon(v-else-if="item.status === 'indexed'" name="i-heroicons-check-badge" size="lg" class="text-success-600 shrink-0" title="В базе знаний")
               u-icon(v-else-if="item.status === 'index_error'" name="i-heroicons-x-circle" size="lg" class="text-error-600 shrink-0" title="Ошибка загрузки")
 
               div(class="min-w-0 flex-1")
                 div(class="text-sm font-semibold truncate flex items-center gap-2")
                   | {{ item.title }}
-                  span(v-if="item.status === 'success'" class="text-[10px] px-1.5 py-0.5 rounded bg-success-100 text-success-700 dark:bg-success-900/30 dark:text-success-400 font-normal shrink-0") Ожидает RAG
+                  span(v-if="item.status === 'success'" class="text-[10px] px-1.5 py-0.5 rounded bg-success-100 text-success-700 dark:bg-success-900/30 dark:text-success-400 font-normal shrink-0") Ожидает загрузки
                   span(v-if="item.status === 'indexed'" class="text-[10px] px-1.5 py-0.5 rounded bg-success-50 text-success-600 dark:bg-success-900/10 dark:text-success-500 font-normal shrink-0") Загружено
                 div(class="text-[10px] text-gray-500 truncate" :title="item.url") {{ item.url }}
 
@@ -382,7 +382,7 @@ div(class="space-y-6")
         :loading="isUploading"
         :disabled="selectedCount === 0 || isUploading"
         @click="handleConfirmUpload"
-      ) Отправить выбранные в RAG
+      ) Отправить выбранные в базу знаний
 
   // Editor View
   div(v-else class="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm space-y-6 animate-in fade-in slide-in-from-right-4")

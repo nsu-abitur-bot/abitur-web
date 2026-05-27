@@ -242,7 +242,7 @@ export const useRagParserStore = defineStore("ragParser", () => {
           successCount++
         } catch (err: any) {
           current.status = "index_error"
-          current.error = err?.data?.detail || "Ошибка загрузки в RAG"
+          current.error = err?.data?.detail || "Ошибка загрузки в базу знаний"
         }
       }
 

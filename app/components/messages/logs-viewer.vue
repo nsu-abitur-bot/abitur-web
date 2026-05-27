@@ -43,9 +43,9 @@ const getLogTypeColor = (type: string) => {
 const getLogTypeLabel = (type: string) => {
   switch (type) {
     case "user_input": return "Вопрос"
-    case "rag_context": return "RAG Контекст"
-    case "llm_response": return "LLM Ответ"
-    case "faq_match": return "FAQ Совпадение"
+    case "rag_context": return "Контекст базы знаний"
+    case "llm_response": return "Ответ модели"
+    case "faq_match": return "Совпадение с частыми вопросами"
     default: return type
   }
 }

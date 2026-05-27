@@ -119,10 +119,10 @@ u-container(class="py-8 space-y-6")
     div(class="flex flex-wrap items-end gap-3")
       u-form-field(label="Статус" class="w-full sm:w-52")
         u-select(v-model="statusFilter" :items="statusOptions" class="w-full")
-      u-form-field(label="User ID" class="w-full sm:w-40")
+      u-form-field(label="Идентификатор пользователя" class="w-full sm:w-40")
         u-input(v-model="userIdFilter" type="number" placeholder="123456" class="w-full" @keydown.enter.prevent="applyFilters")
-      u-form-field(label="Session ID" class="w-full sm:flex-1 min-w-64")
-        u-input(v-model="sessionIdFilter" placeholder="session..." class="w-full" @keydown.enter.prevent="applyFilters")
+      u-form-field(label="Идентификатор сессии" class="w-full sm:flex-1 min-w-64")
+        u-input(v-model="sessionIdFilter" placeholder="Введите идентификатор сессии" class="w-full" @keydown.enter.prevent="applyFilters")
       u-button(color="primary" @click="applyFilters") Применить
 
   ui-box(:title="`Обращения (${total})`")
@@ -181,13 +181,13 @@ u-container(class="py-8 space-y-6")
 
         div(class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm")
           div
-            div(class="text-xs text-gray-500") User ID
+            div(class="text-xs text-gray-500") Идентификатор пользователя
             div(class="font-medium") {{ selectedReport.user_id }}
           div
             div(class="text-xs text-gray-500") Канал
             div(class="font-medium") {{ selectedReport.channel }}
           div(class="sm:col-span-2")
-            div(class="text-xs text-gray-500") Session ID
+            div(class="text-xs text-gray-500") Идентификатор сессии
             div(class="font-mono text-xs break-all") {{ selectedReport.session_id }}
           div
             div(class="text-xs text-gray-500") Создано

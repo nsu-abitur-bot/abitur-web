@@ -131,7 +131,7 @@ const handleClearCache = async () => {
   isClearingCache.value = true
   try {
     await clearRagCache()
-    toast.add({ title: "Готово", description: "Кэш ответов RAG очищен", color: "success" })
+    toast.add({ title: "Готово", description: "Кэш ответов базы знаний очищен", color: "success" })
   } catch {
     toast.add({ title: "Ошибка", description: "Не удалось очистить кэш", color: "error" })
   } finally {
@@ -267,8 +267,8 @@ div(class="space-y-4")
 
     div(class="flex items-center gap-2")
       u-modal(
-        title="Очистить кэш RAG"
-        description="Это удалит сохранённые ответы LLM. Агент перестанет отдавать устаревшие ответы по обновлённым данным."
+        title="Очистить кэш базы знаний"
+        description="Это удалит сохранённые ответы модели. Агент перестанет отдавать устаревшие ответы по обновлённым данным."
       )
         u-button(
           variant="outline"
@@ -288,7 +288,7 @@ div(class="space-y-4")
 
   div(v-else-if="documents.length === 0" class="py-12 text-center text-gray-500 bg-gray-50 dark:bg-gray-800 rounded-lg border border-dashed border-gray-300 dark:border-gray-700")
     u-icon(name="i-heroicons-document-duplicate" class="w-12 h-12 mx-auto text-gray-400 mb-3")
-    p База знаний пуста. Добавьте URL выше.
+    p База знаний пуста. Добавьте ссылку выше.
 
   div(v-else class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm table-wrap-safe")
     div

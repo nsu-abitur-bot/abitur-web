@@ -10,7 +10,7 @@ const handleDelete = async (itemId?: string | null) => {
   if (!itemId) {
     toast.add({
       title: "Ошибка",
-      description: "У аббревиатуры нет ID",
+      description: "У аббревиатуры нет идентификатора",
       color: "error",
     })
     return
