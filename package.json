@@ -9,6 +9,7 @@
     "db": "curl localhost:7868/api/db/rake -d",
     "dev": "nuxt dev",
     "lint": "eslint --fix . && stylelint --fix '**/*.{css,scss,vue}'",
+    "openapi:update": "node scripts/update-openapi.mjs",
     "types": "nuxt typecheck",
     "test": "vitest run"
   },

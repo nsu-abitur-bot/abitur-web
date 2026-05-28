@@ -1,0 +1,4 @@
+interface:
+  display_name: Update OpenAPI
+  short_description: Refresh OpenAPI schema and TypeScript types.
+  default_prompt: Update openapi.json from the local backend, regenerate types, and adapt the frontend to API changes.
