@@ -101,6 +101,7 @@ export async function updateRagDocument(
 export interface PopularQuestion {
   question: string
   count: number
+  variants: string[]
 }
 
 export async function getPopularQuestions(limit = 10): Promise<PopularQuestion[]> {

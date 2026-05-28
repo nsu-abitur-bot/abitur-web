@@ -2,7 +2,6 @@
 import type { CalendarDate } from "@internationalized/date"
 
 import type { components } from "#openapi"
-import { getPopularQuestions } from "~/services/rag-upload"
 
 type MessageResponse = components["schemas"]["MessageResponse"]
 
@@ -68,15 +67,6 @@ const getMessengerColor = (value?: string | null) => getMessengerMeta(value)?.co
 const selectedSessionId = ref<string | null>(null)
 const isLogsOpen = ref(false)
 
-const popularLimit = ref(10)
-const {
-  data: popularQuestions,
-  status: popularStatus,
-  refresh: refreshPopularQuestions,
-} = await useAsyncData("popular-questions", () => getPopularQuestions(popularLimit.value), {
-  watch: [popularLimit],
-})
-
 const openLogs = (sessionId: string) => {
   selectedSessionId.value = sessionId
   isLogsOpen.value = true
@@ -118,35 +108,6 @@ const exportToCsv = () => {
 
 <template lang="pug">
 div(class="space-y-6")
-  ui-box(title="Популярные вопросы")
-    template(#right)
-      div(class="flex items-center gap-2")
-        u-select(
-          v-model="popularLimit"
-          :items="[5, 10, 20, 50]"
-          class="w-24"
-          size="sm"
-        )
-        u-button(
-          icon="i-heroicons-arrow-path"
-          color="neutral"
-          variant="soft"
-          size="sm"
-          :loading="popularStatus === 'pending'"
-          @click="() => refreshPopularQuestions()"
-        )
-
-    div(v-if="popularStatus === 'pending' && !popularQuestions?.length" class="py-8 flex justify-center text-gray-500")
-      u-icon(name="i-heroicons-arrow-path" class="animate-spin" size="lg")
-
-    div(v-else-if="!popularQuestions || popularQuestions.length === 0" class="py-6 text-center text-gray-500 bg-gray-50 dark:bg-gray-800 rounded-lg")
-      p Популярные вопросы пока отсутствуют.
-
-    ul(v-else class="divide-y divide-gray-100 dark:divide-gray-800")
-      li(v-for="(item, index) in popularQuestions" :key="`${item.question}-${index}`" class="flex items-start justify-between gap-3 py-3")
-        p(class="text-sm text-gray-800 dark:text-gray-100 leading-relaxed break-anywhere min-w-0") {{ item.question }}
-        u-badge(color="neutral" variant="subtle") {{ item.count }}
-
   ui-box(title="Сообщения пользователей")
     template(#right)
       u-button(icon="i-heroicons-arrow-path" color="neutral" variant="soft" :loading="status === 'pending'" @click="() => refresh()") Обновить

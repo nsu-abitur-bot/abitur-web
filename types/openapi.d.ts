@@ -378,7 +378,9 @@ export interface paths {
      * Получить самые популярные вопросы
      * @description Получает самые часто задаваемые вопросы пользователей.
      *
-     *     - **limit**: максимальное количество возвращаемых вопросов
+     *     - **limit**: максимальное количество возвращаемых кластеров вопросов
+     *     - **raw_limit**: сколько исходных формулировок взять для кластеризации
+     *     - **similarity_threshold**: порог семантической близости формулировок
      */
     get: operations["get_popular_questions_api_v1_logs_popular_get"]
     put?: never
@@ -1324,6 +1326,8 @@ export interface components {
       question: string
       /** Count */
       count: number
+      /** Variants */
+      variants?: string[]
     }
     /** PopularQuestionsResponse */
     PopularQuestionsResponse: {
@@ -2483,6 +2487,8 @@ export interface operations {
     parameters: {
       query?: {
         limit?: number
+        raw_limit?: number
+        similarity_threshold?: number
       }
       header?: never
       path?: never

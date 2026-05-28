@@ -1234,7 +1234,7 @@
           "Message Logs"
         ],
         "summary": "Получить самые популярные вопросы",
-        "description": "Получает самые часто задаваемые вопросы пользователей.\n\n- **limit**: максимальное количество возвращаемых вопросов",
+        "description": "Получает самые часто задаваемые вопросы пользователей.\n\n- **limit**: максимальное количество возвращаемых кластеров вопросов\n- **raw_limit**: сколько исходных формулировок взять для кластеризации\n- **similarity_threshold**: порог семантической близости формулировок",
         "operationId": "get_popular_questions_api_v1_logs_popular_get",
         "security": [
           {
@@ -1252,6 +1252,30 @@
               "minimum": 1,
               "default": 10,
               "title": "Limit"
+            }
+          },
+          {
+            "name": "raw_limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 5000,
+              "minimum": 1,
+              "default": 500,
+              "title": "Raw Limit"
+            }
+          },
+          {
+            "name": "similarity_threshold",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "maximum": 1,
+              "minimum": 0.5,
+              "default": 0.86,
+              "title": "Similarity Threshold"
             }
           }
         ],
@@ -3537,6 +3561,13 @@
           "count": {
             "type": "integer",
             "title": "Count"
+          },
+          "variants": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Variants"
           }
         },
         "type": "object",

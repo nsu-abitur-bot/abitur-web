@@ -6,6 +6,7 @@ import { createTopic, deleteTopic, listTopics, updateTopic } from "~/services/to
 export interface PopularQuestion {
   question: string
   count: number
+  variants: string[]
 }
 
 const defaultPopularLimit = 5
