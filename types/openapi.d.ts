@@ -106,6 +106,23 @@ export interface paths {
     patch: operations["deactivate_admin_api_v1_auth_admins__admin_id__deactivate_patch"]
     trace?: never
   }
+  "/api/v1/auth/admins/{admin_id}/role": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    /** Change Admin Role */
+    patch: operations["change_admin_role_api_v1_auth_admins__admin_id__role_patch"]
+    trace?: never
+  }
   "/api/v1/topics/": {
     parameters: {
       query?: never
@@ -661,6 +678,72 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/rag/debug/query": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Инспектор поиска: сырая выдача ретривала
+     * @description Выполняет запрос к базе знаний и возвращает извлечённые чанки, сущности,
+     *     связи и источники. Позволяет сравнить режимы (hybrid vs mix) и проверить,
+     *     попадает ли нужный документ в выдачу.
+     */
+    post: operations["debug_rag_query_api_v1_rag_debug_query_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/rag/docs/{doc_id}/diagnostics": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Диагностика документа в LightRAG
+     * @description Возвращает статус обработки документа в LightRAG, число чанков, сущностей
+     *     и связей. entities_count == 0 означает, что граф для документа не построен и
+     *     в режиме hybrid он недостижим.
+     */
+    get: operations["get_rag_document_diagnostics_api_v1_rag_docs__doc_id__diagnostics_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/rag/export": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Экспорт базы знаний (без эмбеддингов)
+     * @description Отдаёт zip с сервисными сторами LightRAG: исходные тексты, статусы
+     *     обработки, чанки и граф сущностей. Векторные базы (эмбеддинги) исключены —
+     *     они привязаны к провайдеру и непереносимы между OpenAI и Gemini.
+     */
+    get: operations["export_knowledge_base_api_v1_rag_export_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/evals/run": {
     parameters: {
       query?: never
@@ -911,6 +994,11 @@ export interface components {
       /** File */
       file: string
     }
+    /** ChangeRoleRequest */
+    ChangeRoleRequest: {
+      /** @description Новая роль администратора */
+      role: components["schemas"]["AdminRole"]
+    }
     /** ConfirmUploadRequest */
     ConfirmUploadRequest: {
       /**
@@ -1006,6 +1094,170 @@ export interface components {
        */
       message?: string | null
     }
+    /** DebugChunk */
+    DebugChunk: {
+      /**
+       * Index
+       * @description Порядковый номер чанка в выдаче
+       */
+      index: number
+      /**
+       * Source Url
+       * @description URL источника чанка
+       */
+      source_url?: string | null
+      /**
+       * File Path
+       * @description Исходное поле file_path чанка
+       */
+      file_path?: string | null
+      /**
+       * Content
+       * @description Текст чанка
+       */
+      content: string
+      /**
+       * Rerank Score
+       * @description Скор реранкинга, если есть
+       */
+      rerank_score?: number | null
+    }
+    /** DebugEntity */
+    DebugEntity: {
+      /**
+       * Name
+       * @description Имя сущности
+       */
+      name: string
+      /**
+       * Type
+       * @description Тип сущности
+       */
+      type?: string | null
+      /**
+       * Description
+       * @description Описание сущности
+       */
+      description?: string | null
+    }
+    /** DebugQueryRequest */
+    DebugQueryRequest: {
+      /**
+       * Question
+       * @description Вопрос для проверки поиска по базе знаний
+       */
+      question: string
+      /**
+       * Mode
+       * @description Режим поиска LightRAG: hybrid, mix, local, global, naive, bypass
+       * @default hybrid
+       */
+      mode: string
+    }
+    /** DebugQueryResponse */
+    DebugQueryResponse: {
+      /**
+       * Question
+       * @description Заданный вопрос
+       */
+      question: string
+      /**
+       * Mode
+       * @description Использованный режим поиска
+       */
+      mode: string
+      /**
+       * Answer
+       * @description Сгенерированный ответ базы знаний
+       */
+      answer: string
+      /** @description Параметры поиска */
+      settings: components["schemas"]["DebugQuerySettings"]
+      /**
+       * Chunks
+       * @description Извлечённые чанки
+       */
+      chunks: components["schemas"]["DebugChunk"][]
+      /**
+       * Entities
+       * @description Найденные сущности
+       */
+      entities: components["schemas"]["DebugEntity"][]
+      /**
+       * Relations
+       * @description Найденные связи
+       */
+      relations: components["schemas"]["DebugRelation"][]
+      /**
+       * Sources
+       * @description Итоговые источники
+       */
+      sources: components["schemas"]["DebugSource"][]
+    }
+    /** DebugQuerySettings */
+    DebugQuerySettings: {
+      /**
+       * Mode
+       * @description Использованный режим поиска
+       */
+      mode: string
+      /**
+       * Chunk Top K
+       * @description Сколько чанков извлекается
+       */
+      chunk_top_k?: number | null
+      /**
+       * Top K
+       * @description Top-k для сущностей/связей
+       */
+      top_k?: number | null
+      /**
+       * Enable Rerank
+       * @description Включён ли реранкинг
+       */
+      enable_rerank?: boolean | null
+      /**
+       * Min Rerank Score
+       * @description Порог rerank-скора
+       */
+      min_rerank_score?: number | null
+    }
+    /** DebugRelation */
+    DebugRelation: {
+      /**
+       * Source
+       * @description Сущность-источник связи
+       */
+      source?: string | null
+      /**
+       * Target
+       * @description Сущность-цель связи
+       */
+      target?: string | null
+      /**
+       * Description
+       * @description Описание связи
+       */
+      description?: string | null
+    }
+    /** DebugSource */
+    DebugSource: {
+      /**
+       * Url
+       * @description URL источника
+       */
+      url: string
+      /**
+       * Title
+       * @description Название источника
+       */
+      title: string
+      /**
+       * Snippet
+       * @description Фрагмент текста источника
+       */
+      snippet: string
+    }
     /** DocumentCheckRequest */
     DocumentCheckRequest: {
       /**
@@ -1069,6 +1321,54 @@ export interface components {
        * @description Ошибка или пояснение
        */
       message?: string | null
+    }
+    /** DocumentDiagnosticsResponse */
+    DocumentDiagnosticsResponse: {
+      /**
+       * Id
+       * @description Идентификатор документа в Postgres
+       */
+      id: string
+      /**
+       * Title
+       * @description Название документа
+       */
+      title?: string | null
+      /**
+       * Postgres Status
+       * @description Статус документа в Postgres
+       */
+      postgres_status: string
+      /**
+       * Lightrag Status
+       * @description Статус обработки в LightRAG: processed, failed, pending, processing, not_found
+       */
+      lightrag_status: string
+      /**
+       * Chunks Count
+       * @description Количество чанков документа
+       */
+      chunks_count: number
+      /**
+       * Entities Count
+       * @description Количество извлечённых сущностей (0 → недостижим в hybrid)
+       */
+      entities_count: number
+      /**
+       * Relations Count
+       * @description Количество извлечённых связей
+       */
+      relations_count: number
+      /**
+       * Content Length
+       * @description Длина контента
+       */
+      content_length?: number | null
+      /**
+       * Error
+       * @description Ошибка обработки в LightRAG, если есть
+       */
+      error?: string | null
     }
     /** DocumentUpdateResponse */
     DocumentUpdateResponse: {
@@ -1871,6 +2171,41 @@ export interface operations {
       cookie?: never
     }
     requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["AdminResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  change_admin_role_api_v1_auth_admins__admin_id__role_patch: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        admin_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ChangeRoleRequest"]
+      }
+    }
     responses: {
       /** @description Successful Response */
       200: {
@@ -2998,6 +3333,90 @@ export interface operations {
     }
   }
   clear_rag_cache_api_v1_rag_cache_clear_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": unknown
+        }
+      }
+    }
+  }
+  debug_rag_query_api_v1_rag_debug_query_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["DebugQueryRequest"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["DebugQueryResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_rag_document_diagnostics_api_v1_rag_docs__doc_id__diagnostics_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        doc_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["DocumentDiagnosticsResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  export_knowledge_base_api_v1_rag_export_get: {
     parameters: {
       query?: never
       header?: never

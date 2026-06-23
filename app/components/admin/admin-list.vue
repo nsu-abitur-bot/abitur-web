@@ -2,9 +2,12 @@
 import type { components } from "#openapi"
 
 type AdminResponse = components["schemas"]["AdminResponse"]
+type AdminRole = components["schemas"]["AdminRole"]
+type ChangeRoleRequest = components["schemas"]["ChangeRoleRequest"]
 
 const { data: adminsRes, refresh, status } = await useApi("/api/v1/auth/admins")
 const { data: meRes } = await useApi("/api/v1/auth/me")
+const { isSuperadmin } = useRole()
 const toast = useToast()
 
 const admins = computed(() => adminsRes.value ?? [])
@@ -23,6 +26,14 @@ const roleColor: Record<string, BadgeColor> = {
   viewer: "neutral",
 }
 
+const roleOptions: { label: string, value: AdminRole }[] = [
+  { label: "Суперадмин", value: "superadmin" },
+  { label: "Администратор", value: "admin" },
+  { label: "Просмотр", value: "viewer" },
+]
+
+const savingRoleId = ref<string | null>(null)
+
 const handleDeactivate = async (admin: AdminResponse) => {
   try {
     await apiFetch(`/api/v1/auth/admins/${admin.id}/deactivate`, { method: "PATCH" })
@@ -30,6 +41,36 @@ const handleDeactivate = async (admin: AdminResponse) => {
     await refresh()
   } catch {
     toast.add({ title: "Ошибка", description: "Не удалось деактивировать пользователя", color: "error" })
+  }
+}
+
+const handleChangeRole = async (admin: AdminResponse, role: AdminRole) => {
+  if (role === admin.role) {
+    return
+  }
+
+  savingRoleId.value = admin.id
+  try {
+    await apiFetch<AdminResponse>(`/api/v1/auth/admins/${admin.id}/role`, {
+      method: "PATCH",
+      body: { role } satisfies ChangeRoleRequest,
+    })
+    admin.role = role
+    toast.add({
+      title: "Роль изменена",
+      description: `${admin.username}: ${roleLabel[role] ?? role}`,
+      color: "success",
+    })
+  } catch (error) {
+    const detail = (error as { data?: { detail?: string } })?.data?.detail
+    toast.add({
+      title: "Ошибка",
+      description: detail || "Не удалось изменить роль",
+      color: "error",
+    })
+    await refresh()
+  } finally {
+    savingRoleId.value = null
   }
 }
 </script>
@@ -62,6 +103,19 @@ ui-box(title="Администраторы")
           u-badge(v-if="!admin.is_active" color="neutral" variant="subtle" size="xs") Деактивирован
         p(class="text-xs text-gray-400 mt-0.5")
           | Создан: {{ new Date(admin.created_at).toLocaleDateString("ru") }}
+
+      u-select(
+        v-if="isSuperadmin && admin.is_active && admin.id !== currentUserId"
+        :model-value="admin.role"
+        :items="roleOptions"
+        value-key="value"
+        label-key="label"
+        size="sm"
+        class="w-44"
+        :loading="savingRoleId === admin.id"
+        :disabled="savingRoleId === admin.id"
+        @update:model-value="(role) => handleChangeRole(admin, role)"
+      )
 
       u-modal(
         v-if="admin.is_active && admin.id !== currentUserId"

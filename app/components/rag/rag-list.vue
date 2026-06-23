@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { exportRagKnowledgeBase } from "~/services/rag-debug"
 import {
   checkRagDocuments,
   clearRagCache,
@@ -12,6 +13,8 @@ import type { DocumentCheckResult, RagDocument } from "~/types/rag-upload"
 const props = defineProps<{
   refreshTrigger?: number
 }>()
+
+const { isAdmin } = useRole()
 
 const documents = ref<RagDocument[]>([])
 const isLoading = ref(false)
@@ -152,6 +155,28 @@ const handleClearCache = async () => {
   } finally {
     isClearingCache.value = false
   }
+}
+
+const isExporting = ref(false)
+
+const handleExport = async () => {
+  isExporting.value = true
+  try {
+    await exportRagKnowledgeBase()
+    toast.add({ title: "Готово", description: "Экспорт базы знаний скачан", color: "success" })
+  } catch {
+    toast.add({ title: "Ошибка", description: "Не удалось экспортировать базу знаний", color: "error" })
+  } finally {
+    isExporting.value = false
+  }
+}
+
+const diagnosticsDocId = ref<string | null>(null)
+const isDiagnosticsOpen = ref(false)
+
+const openDiagnostics = (doc: RagDocument) => {
+  diagnosticsDocId.value = doc.id
+  isDiagnosticsOpen.value = true
 }
 
 const openEditDocument = (doc: RagDocument) => {
@@ -403,6 +428,25 @@ div(class="space-y-4")
             u-button(color="error" @click="handleBatchDelete(); close()") Удалить
 
     div(class="flex items-center gap-2")
+      u-button(
+        v-if="isAdmin"
+        variant="outline"
+        color="neutral"
+        size="sm"
+        icon="i-heroicons-magnifying-glass"
+        to="/rag/inspector"
+      ) Инспектор поиска
+
+      u-button(
+        v-if="isAdmin"
+        variant="outline"
+        color="neutral"
+        size="sm"
+        icon="i-heroicons-arrow-down-tray"
+        :loading="isExporting"
+        @click="handleExport"
+      ) Экспорт базы знаний
+
       u-modal(
         title="Очистить кэш базы знаний"
         description="Это удалит сохранённые ответы модели. Агент перестанет отдавать устаревшие ответы по обновлённым данным."
@@ -418,6 +462,9 @@ div(class="space-y-4")
           div(class="flex justify-end gap-2 w-full")
             u-button(color="neutral" variant="ghost" @click="close") Отмена
             u-button(color="primary" @click="handleClearCache(); close()") Очистить
+
+  p(v-if="isAdmin" class="text-[11px] text-gray-400")
+    | Экспорт содержит исходные документы и служебные JSON-хранилища LightRAG, но не включает эмбеддинги (они зависят от провайдера).
 
   // Table
   div(v-if="isLoading && documents.length === 0" class="py-10 flex justify-center text-gray-500")
@@ -484,6 +531,15 @@ div(class="space-y-4")
                 title="Просмотреть"
               )
               u-button(
+                v-if="isAdmin"
+                icon="i-heroicons-wrench-screwdriver"
+                variant="ghost"
+                color="neutral"
+                size="lg"
+                title="Диагностика"
+                @click="openDiagnostics(doc)"
+              )
+              u-button(
                 icon="i-heroicons-pencil-square"
                 variant="ghost"
                 color="neutral"
@@ -513,6 +569,8 @@ div(class="space-y-4")
       div(class="flex justify-end gap-2 w-full")
         u-button(color="neutral" variant="ghost" @click="editingDocument = null") Отмена
         u-button(color="primary" :loading="isSavingDocument" @click="handleUpdateDocument") Сохранить
+
+  rag-diagnostics-modal(v-model:open="isDiagnosticsOpen" :doc-id="diagnosticsDocId")
 </template>
 
 <style scoped>
@@ -525,6 +583,6 @@ div(class="space-y-4")
 }
 
 .rag-documents-table td:nth-child(4) {
-  width: 6.5rem;
+  width: 9.5rem;
 }
 </style>

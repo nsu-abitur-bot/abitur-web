@@ -236,6 +236,63 @@
         }
       }
     },
+    "/api/v1/auth/admins/{admin_id}/role": {
+      "patch": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Change Admin Role",
+        "operationId": "change_admin_role_api_v1_auth_admins__admin_id__role_patch",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "admin_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Admin Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeRoleRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/topics/": {
       "get": {
         "tags": [
@@ -2095,6 +2152,126 @@
         ]
       }
     },
+    "/api/v1/rag/debug/query": {
+      "post": {
+        "tags": [
+          "RAG Management"
+        ],
+        "summary": "Инспектор поиска: сырая выдача ретривала",
+        "description": "Выполняет запрос к базе знаний и возвращает извлечённые чанки, сущности,\nсвязи и источники. Позволяет сравнить режимы (hybrid vs mix) и проверить,\nпопадает ли нужный документ в выдачу.",
+        "operationId": "debug_rag_query_api_v1_rag_debug_query_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DebugQueryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DebugQueryResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/rag/docs/{doc_id}/diagnostics": {
+      "get": {
+        "tags": [
+          "RAG Management"
+        ],
+        "summary": "Диагностика документа в LightRAG",
+        "description": "Возвращает статус обработки документа в LightRAG, число чанков, сущностей\nи связей. entities_count == 0 означает, что граф для документа не построен и\nв режиме hybrid он недостижим.",
+        "operationId": "get_rag_document_diagnostics_api_v1_rag_docs__doc_id__diagnostics_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "doc_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Doc Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentDiagnosticsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/rag/export": {
+      "get": {
+        "tags": [
+          "RAG Management"
+        ],
+        "summary": "Экспорт базы знаний (без эмбеддингов)",
+        "description": "Отдаёт zip с сервисными сторами LightRAG: исходные тексты, статусы\nобработки, чанки и граф сущностей. Векторные базы (эмбеддинги) исключены —\nони привязаны к провайдеру и непереносимы между OpenAI и Gemini.",
+        "operationId": "export_knowledge_base_api_v1_rag_export_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
     "/api/v1/evals/run": {
       "post": {
         "tags": [
@@ -2670,6 +2847,19 @@
         ],
         "title": "Body_upload_faq_csv_api_v1_faq_upload_post"
       },
+      "ChangeRoleRequest": {
+        "properties": {
+          "role": {
+            "$ref": "#/components/schemas/AdminRole",
+            "description": "Новая роль администратора"
+          }
+        },
+        "type": "object",
+        "required": [
+          "role"
+        ],
+        "title": "ChangeRoleRequest"
+      },
       "ConfirmUploadRequest": {
         "properties": {
           "title": {
@@ -2827,6 +3017,317 @@
         ],
         "title": "CsvImportResult"
       },
+      "DebugChunk": {
+        "properties": {
+          "index": {
+            "type": "integer",
+            "title": "Index",
+            "description": "Порядковый номер чанка в выдаче"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url",
+            "description": "URL источника чанка"
+          },
+          "file_path": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Path",
+            "description": "Исходное поле file_path чанка"
+          },
+          "content": {
+            "type": "string",
+            "title": "Content",
+            "description": "Текст чанка"
+          },
+          "rerank_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rerank Score",
+            "description": "Скор реранкинга, если есть"
+          }
+        },
+        "type": "object",
+        "required": [
+          "index",
+          "content"
+        ],
+        "title": "DebugChunk"
+      },
+      "DebugEntity": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Имя сущности"
+          },
+          "type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Type",
+            "description": "Тип сущности"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "description": "Описание сущности"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "DebugEntity"
+      },
+      "DebugQueryRequest": {
+        "properties": {
+          "question": {
+            "type": "string",
+            "title": "Question",
+            "description": "Вопрос для проверки поиска по базе знаний"
+          },
+          "mode": {
+            "type": "string",
+            "title": "Mode",
+            "description": "Режим поиска LightRAG: hybrid, mix, local, global, naive, bypass",
+            "default": "hybrid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "question"
+        ],
+        "title": "DebugQueryRequest"
+      },
+      "DebugQueryResponse": {
+        "properties": {
+          "question": {
+            "type": "string",
+            "title": "Question",
+            "description": "Заданный вопрос"
+          },
+          "mode": {
+            "type": "string",
+            "title": "Mode",
+            "description": "Использованный режим поиска"
+          },
+          "answer": {
+            "type": "string",
+            "title": "Answer",
+            "description": "Сгенерированный ответ базы знаний"
+          },
+          "settings": {
+            "$ref": "#/components/schemas/DebugQuerySettings",
+            "description": "Параметры поиска"
+          },
+          "chunks": {
+            "items": {
+              "$ref": "#/components/schemas/DebugChunk"
+            },
+            "type": "array",
+            "title": "Chunks",
+            "description": "Извлечённые чанки"
+          },
+          "entities": {
+            "items": {
+              "$ref": "#/components/schemas/DebugEntity"
+            },
+            "type": "array",
+            "title": "Entities",
+            "description": "Найденные сущности"
+          },
+          "relations": {
+            "items": {
+              "$ref": "#/components/schemas/DebugRelation"
+            },
+            "type": "array",
+            "title": "Relations",
+            "description": "Найденные связи"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/DebugSource"
+            },
+            "type": "array",
+            "title": "Sources",
+            "description": "Итоговые источники"
+          }
+        },
+        "type": "object",
+        "required": [
+          "question",
+          "mode",
+          "answer",
+          "settings",
+          "chunks",
+          "entities",
+          "relations",
+          "sources"
+        ],
+        "title": "DebugQueryResponse"
+      },
+      "DebugQuerySettings": {
+        "properties": {
+          "mode": {
+            "type": "string",
+            "title": "Mode",
+            "description": "Использованный режим поиска"
+          },
+          "chunk_top_k": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chunk Top K",
+            "description": "Сколько чанков извлекается"
+          },
+          "top_k": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Top K",
+            "description": "Top-k для сущностей/связей"
+          },
+          "enable_rerank": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enable Rerank",
+            "description": "Включён ли реранкинг"
+          },
+          "min_rerank_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Rerank Score",
+            "description": "Порог rerank-скора"
+          }
+        },
+        "type": "object",
+        "required": [
+          "mode"
+        ],
+        "title": "DebugQuerySettings"
+      },
+      "DebugRelation": {
+        "properties": {
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source",
+            "description": "Сущность-источник связи"
+          },
+          "target": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target",
+            "description": "Сущность-цель связи"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "description": "Описание связи"
+          }
+        },
+        "type": "object",
+        "title": "DebugRelation"
+      },
+      "DebugSource": {
+        "properties": {
+          "url": {
+            "type": "string",
+            "title": "Url",
+            "description": "URL источника"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Название источника"
+          },
+          "snippet": {
+            "type": "string",
+            "title": "Snippet",
+            "description": "Фрагмент текста источника"
+          }
+        },
+        "type": "object",
+        "required": [
+          "url",
+          "title",
+          "snippet"
+        ],
+        "title": "DebugSource"
+      },
       "DocumentCheckRequest": {
         "properties": {
           "document_ids": {
@@ -2950,6 +3451,86 @@
           "status"
         ],
         "title": "DocumentCheckResult"
+      },
+      "DocumentDiagnosticsResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Идентификатор документа в Postgres"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title",
+            "description": "Название документа"
+          },
+          "postgres_status": {
+            "type": "string",
+            "title": "Postgres Status",
+            "description": "Статус документа в Postgres"
+          },
+          "lightrag_status": {
+            "type": "string",
+            "title": "Lightrag Status",
+            "description": "Статус обработки в LightRAG: processed, failed, pending, processing, not_found"
+          },
+          "chunks_count": {
+            "type": "integer",
+            "title": "Chunks Count",
+            "description": "Количество чанков документа"
+          },
+          "entities_count": {
+            "type": "integer",
+            "title": "Entities Count",
+            "description": "Количество извлечённых сущностей (0 → недостижим в hybrid)"
+          },
+          "relations_count": {
+            "type": "integer",
+            "title": "Relations Count",
+            "description": "Количество извлечённых связей"
+          },
+          "content_length": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content Length",
+            "description": "Длина контента"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error",
+            "description": "Ошибка обработки в LightRAG, если есть"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "postgres_status",
+          "lightrag_status",
+          "chunks_count",
+          "entities_count",
+          "relations_count"
+        ],
+        "title": "DocumentDiagnosticsResponse"
       },
       "DocumentUpdateResponse": {
         "properties": {
