@@ -204,6 +204,34 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/abbrev/upload": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Загрузить аббревиатуры из CSV
+     * @description Загружает аббревиатуры из CSV-файла (UPSERT по полю «Аббревиатура»).
+     *
+     *     Ожидаются две колонки:
+     *     - «Аббревиатура» / «Short» / «Сокращение»
+     *     - «Расшифровка» / «Full» / «Полная форма»
+     *
+     *     Поиск колонок ведётся по названию, иначе используются позиции 0 и 1.
+     *     Если аббревиатура уже существует — её расшифровка обновляется.
+     *     При повторе аббревиатуры внутри файла побеждает последнее значение.
+     */
+    post: operations["upload_abbrev_csv_api_v1_abbrev_upload_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/abbrev/{item_id}": {
     parameters: {
       query?: never
@@ -971,6 +999,11 @@ export interface components {
        * File
        * @description CSV файл с полями (Название, Link, Комментарий)
        */
+      file: string
+    }
+    /** Body_upload_abbrev_csv_api_v1_abbrev_upload_post */
+    Body_upload_abbrev_csv_api_v1_abbrev_upload_post: {
+      /** File */
       file: string
     }
     /** Body_upload_csv_documents_api_v1_rag_upload_csv_post */
@@ -2415,6 +2448,39 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["AbbrevItem"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  upload_abbrev_csv_api_v1_abbrev_upload_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "multipart/form-data": components["schemas"]["Body_upload_abbrev_csv_api_v1_abbrev_upload_post"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["AbbrevListResponse"]
         }
       }
       /** @description Validation Error */

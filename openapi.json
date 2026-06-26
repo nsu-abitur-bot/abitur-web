@@ -553,6 +553,53 @@
         ]
       }
     },
+    "/api/v1/abbrev/upload": {
+      "post": {
+        "tags": [
+          "Abbreviations"
+        ],
+        "summary": "Загрузить аббревиатуры из CSV",
+        "description": "Загружает аббревиатуры из CSV-файла (UPSERT по полю «Аббревиатура»).\n\nОжидаются две колонки:\n- «Аббревиатура» / «Short» / «Сокращение»\n- «Расшифровка» / «Full» / «Полная форма»\n\nПоиск колонок ведётся по названию, иначе используются позиции 0 и 1.\nЕсли аббревиатура уже существует — её расшифровка обновляется.\nПри повторе аббревиатуры внутри файла побеждает последнее значение.",
+        "operationId": "upload_abbrev_csv_api_v1_abbrev_upload_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_abbrev_csv_api_v1_abbrev_upload_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AbbrevListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
     "/api/v1/abbrev/{item_id}": {
       "put": {
         "tags": [
@@ -2799,6 +2846,20 @@
           "file"
         ],
         "title": "Body_preview_csv_documents_api_v1_rag_upload_csv_preview_post"
+      },
+      "Body_upload_abbrev_csv_api_v1_abbrev_upload_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_upload_abbrev_csv_api_v1_abbrev_upload_post"
       },
       "Body_upload_csv_documents_api_v1_rag_upload_csv_post": {
         "properties": {
