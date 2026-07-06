@@ -21,6 +21,11 @@ const items = computed<NavigationMenuItem[]>(() => [
     active: route.path.startsWith("/abbrev"),
   },
   {
+    label: "Факультеты",
+    to: "/faculties",
+    active: route.path.startsWith("/faculties"),
+  },
+  {
     label: "Статистика",
     to: "/stats",
     active: route.path.startsWith("/stats"),

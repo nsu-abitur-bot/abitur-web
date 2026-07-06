@@ -310,6 +310,80 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/faculties": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Список факультетов с направлениями
+     * @description Возвращает все факультеты (включая выключенные) с их направлениями.
+     */
+    get: operations["get_faculties_api_v1_faculties_get"]
+    put?: never
+    /** Создать факультет */
+    post: operations["create_faculty_api_v1_faculties_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/faculties/{faculty_id}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /** Обновить факультет */
+    put: operations["update_faculty_api_v1_faculties__faculty_id__put"]
+    post?: never
+    /** Удалить факультет */
+    delete: operations["delete_faculty_api_v1_faculties__faculty_id__delete"]
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/faculties/{faculty_id}/programs": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Добавить направление факультету */
+    post: operations["create_program_api_v1_faculties__faculty_id__programs_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/faculties/programs/{program_id}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /** Обновить направление */
+    put: operations["update_program_api_v1_faculties_programs__program_id__put"]
+    post?: never
+    /** Удалить направление */
+    delete: operations["delete_program_api_v1_faculties_programs__program_id__delete"]
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/logs/request-stats": {
     parameters: {
       query?: never
@@ -1499,6 +1573,65 @@ export interface components {
        */
       results: components["schemas"]["DocumentCheckResult"][]
     }
+    /**
+     * FacultyCreate
+     * @description Данные для создания факультета.
+     */
+    FacultyCreate: {
+      /**
+       * Name
+       * @description Название факультета
+       */
+      name: string
+      /**
+       * Aliases
+       * @description Аббревиатуры и альтернативные названия
+       */
+      aliases?: string[]
+      /**
+       * Is Active
+       * @description Активен ли факультет
+       * @default true
+       */
+      is_active: boolean
+    }
+    /**
+     * FacultyItem
+     * @description Факультет с его направлениями подготовки.
+     */
+    FacultyItem: {
+      /** Id */
+      id: string
+      /** Name */
+      name: string
+      /** Aliases */
+      aliases?: string[]
+      /** Is Active */
+      is_active: boolean
+      /** Programs */
+      programs?: components["schemas"]["ProgramItem"][]
+    }
+    /**
+     * FacultyUpdate
+     * @description Данные для обновления факультета.
+     */
+    FacultyUpdate: {
+      /**
+       * Name
+       * @description Название факультета
+       */
+      name?: string | null
+      /**
+       * Aliases
+       * @description Аббревиатуры и альтернативные названия
+       */
+      aliases?: string[] | null
+      /**
+       * Is Active
+       * @description Активен ли факультет
+       */
+      is_active?: boolean | null
+    }
     /** FaqItem */
     FaqItem: {
       /**
@@ -1765,6 +1898,77 @@ export interface components {
        * @description Количество символов в обработанном тексте
        */
       chars: number
+    }
+    /**
+     * ProgramCreate
+     * @description Данные для создания направления подготовки.
+     */
+    ProgramCreate: {
+      /**
+       * Name
+       * @description Название направления
+       */
+      name: string
+      /**
+       * Level
+       * @description Уровень: bachelor / specialist / master
+       */
+      level: string
+      /**
+       * Code
+       * @description Код направления (ФГОС)
+       */
+      code?: string | null
+      /**
+       * Is Active
+       * @description Активно ли направление
+       * @default true
+       */
+      is_active: boolean
+    }
+    /**
+     * ProgramItem
+     * @description Направление подготовки (образовательная программа).
+     */
+    ProgramItem: {
+      /** Id */
+      id: string
+      /** Faculty Id */
+      faculty_id: string
+      /** Name */
+      name: string
+      /** Code */
+      code?: string | null
+      /** Level */
+      level: string
+      /** Is Active */
+      is_active: boolean
+    }
+    /**
+     * ProgramUpdate
+     * @description Данные для обновления направления подготовки.
+     */
+    ProgramUpdate: {
+      /**
+       * Name
+       * @description Название направления
+       */
+      name?: string | null
+      /**
+       * Level
+       * @description Уровень образования
+       */
+      level?: string | null
+      /**
+       * Code
+       * @description Код направления (ФГОС)
+       */
+      code?: string | null
+      /**
+       * Is Active
+       * @description Активно ли направление
+       */
+      is_active?: boolean | null
     }
     /** RagDocument */
     RagDocument: {
@@ -2763,6 +2967,222 @@ export interface operations {
       header?: never
       path: {
         item_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_faculties_api_v1_faculties_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["FacultyItem"][]
+        }
+      }
+    }
+  }
+  create_faculty_api_v1_faculties_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["FacultyCreate"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["FacultyItem"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  update_faculty_api_v1_faculties__faculty_id__put: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        faculty_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["FacultyUpdate"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["FacultyItem"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  delete_faculty_api_v1_faculties__faculty_id__delete: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        faculty_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  create_program_api_v1_faculties__faculty_id__programs_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        faculty_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ProgramCreate"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["ProgramItem"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  update_program_api_v1_faculties_programs__program_id__put: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        program_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ProgramUpdate"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["ProgramItem"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  delete_program_api_v1_faculties_programs__program_id__delete: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        program_id: string
       }
       cookie?: never
     }
