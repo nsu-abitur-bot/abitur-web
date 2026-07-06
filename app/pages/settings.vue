@@ -78,6 +78,8 @@ div(class="py-8 w-full space-y-6")
   div(class="w-full space-y-6")
     settings-rate-limit-settings
 
+    settings-crag-settings
+
     ui-box(title="Темы для классификации")
       p(class="text-sm text-gray-500 dark:text-gray-400 mb-4")
         | Темы используются для классификации сообщений и в разделе статистики.

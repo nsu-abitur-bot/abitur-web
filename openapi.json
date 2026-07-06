@@ -2618,6 +2618,76 @@
         ]
       }
     },
+    "/api/v1/settings/crag": {
+      "get": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Получить настройки корректирующего RAG (CRAG)",
+        "operationId": "get_crag_settings_api_v1_settings_crag_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CragSettings"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Обновить настройки корректирующего RAG (CRAG)",
+        "operationId": "update_crag_settings_api_v1_settings_crag_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CragSettingsUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CragSettings"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
     "/api/v1/users/count-stats": {
       "get": {
         "summary": "Get Users Count Stats",
@@ -2955,6 +3025,100 @@
           "documents"
         ],
         "title": "ConfirmUploadRequest"
+      },
+      "CragSettings": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "description": "Включён ли CRAG-слой (корректирующий RAG)",
+            "default": true
+          },
+          "relevance_threshold": {
+            "type": "number",
+            "maximum": 1,
+            "minimum": 0,
+            "title": "Relevance Threshold",
+            "description": "Порог релевантности чанка при LLM-грейдинге (0..1)",
+            "default": 0.5
+          },
+          "min_chunks": {
+            "type": "integer",
+            "maximum": 100,
+            "minimum": 0,
+            "title": "Min Chunks",
+            "description": "Минимум чанков после фильтра, ниже которого пробуем доретрив",
+            "default": 2
+          },
+          "allow_refine": {
+            "type": "boolean",
+            "title": "Allow Refine",
+            "description": "Разрешить одну переформулировку запроса и доретрив",
+            "default": true
+          },
+          "use_faculty_table": {
+            "type": "boolean",
+            "title": "Use Faculty Table",
+            "description": "Авторитетная фильтрация по таблице факультетов",
+            "default": true
+          },
+          "max_graded_chunks": {
+            "type": "integer",
+            "maximum": 100,
+            "minimum": 1,
+            "title": "Max Graded Chunks",
+            "description": "Максимум чанков, отправляемых на LLM-грейдинг (латентность)",
+            "default": 12
+          }
+        },
+        "type": "object",
+        "title": "CragSettings",
+        "description": "Настройки корректирующего RAG (CRAG)."
+      },
+      "CragSettingsUpdate": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          },
+          "relevance_threshold": {
+            "type": "number",
+            "maximum": 1,
+            "minimum": 0,
+            "title": "Relevance Threshold"
+          },
+          "min_chunks": {
+            "type": "integer",
+            "maximum": 100,
+            "minimum": 0,
+            "title": "Min Chunks"
+          },
+          "allow_refine": {
+            "type": "boolean",
+            "title": "Allow Refine"
+          },
+          "use_faculty_table": {
+            "type": "boolean",
+            "title": "Use Faculty Table"
+          },
+          "max_graded_chunks": {
+            "type": "integer",
+            "maximum": 100,
+            "minimum": 1,
+            "title": "Max Graded Chunks"
+          }
+        },
+        "type": "object",
+        "required": [
+          "enabled",
+          "relevance_threshold",
+          "min_chunks",
+          "allow_refine",
+          "use_faculty_table",
+          "max_graded_chunks"
+        ],
+        "title": "CragSettingsUpdate",
+        "description": "Обновление настроек CRAG."
       },
       "CsvImportPreviewResponse": {
         "properties": {

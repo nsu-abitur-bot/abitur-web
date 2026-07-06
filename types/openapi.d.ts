@@ -904,6 +904,24 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/settings/crag": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Получить настройки корректирующего RAG (CRAG) */
+    get: operations["get_crag_settings_api_v1_settings_crag_get"]
+    /** Обновить настройки корректирующего RAG (CRAG) */
+    put: operations["update_crag_settings_api_v1_settings_crag_put"]
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/users/count-stats": {
     parameters: {
       query?: never
@@ -1054,6 +1072,66 @@ export interface components {
        * @description Финальный список файлов для загрузки
        */
       documents: components["schemas"]["ParsedDocument"][]
+    }
+    /**
+     * CragSettings
+     * @description Настройки корректирующего RAG (CRAG).
+     */
+    CragSettings: {
+      /**
+       * Enabled
+       * @description Включён ли CRAG-слой (корректирующий RAG)
+       * @default true
+       */
+      enabled: boolean
+      /**
+       * Relevance Threshold
+       * @description Порог релевантности чанка при LLM-грейдинге (0..1)
+       * @default 0.5
+       */
+      relevance_threshold: number
+      /**
+       * Min Chunks
+       * @description Минимум чанков после фильтра, ниже которого пробуем доретрив
+       * @default 2
+       */
+      min_chunks: number
+      /**
+       * Allow Refine
+       * @description Разрешить одну переформулировку запроса и доретрив
+       * @default true
+       */
+      allow_refine: boolean
+      /**
+       * Use Faculty Table
+       * @description Авторитетная фильтрация по таблице факультетов
+       * @default true
+       */
+      use_faculty_table: boolean
+      /**
+       * Max Graded Chunks
+       * @description Максимум чанков, отправляемых на LLM-грейдинг (латентность)
+       * @default 12
+       */
+      max_graded_chunks: number
+    }
+    /**
+     * CragSettingsUpdate
+     * @description Обновление настроек CRAG.
+     */
+    CragSettingsUpdate: {
+      /** Enabled */
+      enabled: boolean
+      /** Relevance Threshold */
+      relevance_threshold: number
+      /** Min Chunks */
+      min_chunks: number
+      /** Allow Refine */
+      allow_refine: boolean
+      /** Use Faculty Table */
+      use_faculty_table: boolean
+      /** Max Graded Chunks */
+      max_graded_chunks: number
     }
     /** CsvImportPreviewResponse */
     CsvImportPreviewResponse: {
@@ -3690,6 +3768,59 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["RateLimitSettings"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_crag_settings_api_v1_settings_crag_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["CragSettings"]
+        }
+      }
+    }
+  }
+  update_crag_settings_api_v1_settings_crag_put: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CragSettingsUpdate"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["CragSettings"]
         }
       }
       /** @description Validation Error */
