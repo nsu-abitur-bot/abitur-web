@@ -58,11 +58,11 @@ const onSubmit = async () => {
     })
 
     data.value = updated
-    toast.add({ title: "Настройки CRAG сохранены", color: "success" })
+    toast.add({ title: "Настройки проверки ответов сохранены", color: "success" })
   } catch {
     toast.add({
       title: "Ошибка",
-      description: "Не удалось сохранить настройки CRAG",
+      description: "Не удалось сохранить настройки",
       color: "error",
     })
   } finally {
@@ -72,7 +72,7 @@ const onSubmit = async () => {
 </script>
 
 <template lang="pug">
-ui-box(title="Думающий RAG (CRAG)")
+ui-box(title="Умная проверка ответов")
   template(#right)
     u-button(
       icon="i-heroicons-arrow-path"
@@ -83,6 +83,11 @@ ui-box(title="Думающий RAG (CRAG)")
       @click="() => refresh()"
     )
 
+  p(class="text-sm text-gray-500 dark:text-gray-400 mb-4")
+    | Перед ответом бот дополнительно убирает найденные в базе знаний куски текста,
+    | которые не относятся к вопросу — чтобы не приплетать лишнее
+    | (например, направления чужого факультета).
+
   div(v-if="status === 'pending' && !data" class="py-6 flex justify-center text-gray-500")
     u-icon(name="i-heroicons-arrow-path" class="animate-spin w-8 h-8")
 
@@ -90,24 +95,24 @@ ui-box(title="Думающий RAG (CRAG)")
     div(class="space-y-4")
       div(class="flex items-center justify-between gap-3")
         div
-          div(class="text-sm font-medium text-gray-800 dark:text-gray-200") Включить CRAG
-          div(class="text-xs text-gray-500") Корректирующий RAG: фильтрация чанков перед ответом бота.
+          div(class="text-sm font-medium text-gray-800 dark:text-gray-200") Проверять найденное перед ответом
+          div(class="text-xs text-gray-500") Главный переключатель. Если выключить — бот отвечает как раньше, без проверки.
         u-switch(v-model="state.enabled")
 
       div(class="flex items-center justify-between gap-3")
         div
-          div(class="text-sm font-medium text-gray-800 dark:text-gray-200") Фильтр по таблице факультетов
-          div(class="text-xs text-gray-500") Отсекать направления чужих факультетов по справочнику.
+          div(class="text-sm font-medium text-gray-800 dark:text-gray-200") Не смешивать факультеты
+          div(class="text-xs text-gray-500") Если в вопросе назван факультет — убирать из ответа направления других факультетов. Нужен заполненный справочник факультетов.
         u-switch(v-model="state.use_faculty_table")
 
       div(class="flex items-center justify-between gap-3")
         div
-          div(class="text-sm font-medium text-gray-800 dark:text-gray-200") Доретрив с переформулировкой
-          div(class="text-xs text-gray-500") Одна попытка уточнить запрос, если релевантных чанков мало.
+          div(class="text-sm font-medium text-gray-800 dark:text-gray-200") Искать ещё раз, если нашлось мало
+          div(class="text-xs text-gray-500") Если подходящего текста осталось мало, бот один раз переформулирует вопрос и поищет снова. Точнее, но чуть медленнее.
         u-switch(v-model="state.allow_refine")
 
     div(class="grid grid-cols-1 md:grid-cols-3 gap-4")
-      u-form-field(label="Порог релевантности" name="relevance_threshold")
+      u-form-field(label="Строгость отбора" name="relevance_threshold")
         u-input(
           v-model.number="state.relevance_threshold"
           type="number"
@@ -117,9 +122,9 @@ ui-box(title="Думающий RAG (CRAG)")
           class="w-full"
         )
         template(#help)
-          | 0..1 — чанки ниже порога отсекаются.
+          | От 0 до 1. Чем выше — тем строже отбор: 1 оставляет только точные попадания. Обычно 0.5.
 
-      u-form-field(label="Минимум чанков" name="min_chunks")
+      u-form-field(label="Когда искать повторно" name="min_chunks")
         u-input(
           v-model.number="state.min_chunks"
           type="number"
@@ -128,9 +133,9 @@ ui-box(title="Думающий RAG (CRAG)")
           class="w-full"
         )
         template(#help)
-          | Ниже этого числа пробуем доретрив.
+          | Если подходящих кусков текста осталось меньше этого числа — запускается повторный поиск.
 
-      u-form-field(label="Макс. чанков на грейдинг" name="max_graded_chunks")
+      u-form-field(label="Сколько кусков проверять" name="max_graded_chunks")
         u-input(
           v-model.number="state.max_graded_chunks"
           type="number"
@@ -139,9 +144,9 @@ ui-box(title="Думающий RAG (CRAG)")
           class="w-full"
         )
         template(#help)
-          | Ограничение латентности.
+          | Сколько найденных кусков текста бот проверяет. Больше — точнее, но ответ дольше.
 
     div(class="flex flex-wrap items-center justify-between gap-3")
-      div(class="text-xs text-gray-500") При выключенном CRAG бот отвечает как раньше, без фильтрации.
+      div(class="text-xs text-gray-500") Изменения применяются к ответам бота сразу после сохранения.
       u-button(type="submit" color="primary" :loading="isSaving") Сохранить
 </template>
