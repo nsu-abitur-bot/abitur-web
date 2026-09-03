@@ -15,6 +15,17 @@ This is a Nuxt 4 TypeScript application. Main app code lives in `app/`: pages in
 - `pnpm run check`: run linting and type checking together.
 - `docker-compose up -d --build`: build and run the app container; the README documents `http://localhost:3000`.
 
+## Orca Workspaces
+
+`orca.yaml` defines the setup hook for a new workspace: it runs `mise trust` (a fresh
+worktree path is untrusted, and without this `pnpm` silently does nothing), copies `.env`
+from the root checkout since it is not in git, runs `pnpm install --prefer-offline`, and runs `pnpm nuxt prepare` to generate `.nuxt/`
+(without it `pnpm test` and `pnpm run types` fail in a fresh worktree).
+Agents wait for setup to finish (`setupAgentStartupPolicy: wait-for-setup`).
+
+`node_modules` is deliberately not shared between workspaces — Nuxt and Vitest break on a
+shared directory. The cost is that the first install in a new workspace takes a few minutes.
+
 ## Coding Style & Naming Conventions
 
 Use TypeScript, Vue single-file components, and the existing Nuxt conventions. Prefer kebab-case for Vue component filenames such as `faq-item.vue`, `rate-limit-settings.vue`, and route files. Keep tests named after the unit they cover, for example `rag-upload.test.ts`. Use the configured `@ilyasemenov` ESLint and Stylelint presets; do not manually reformat files in ways that fight `pnpm run lint`. Path aliases in tests are `~` for `app` and `~~` for the repository root.

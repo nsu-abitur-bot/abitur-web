@@ -1,0 +1,34 @@
+# Хуки Orca для abitur-web.
+# Запускаются при создании нового воркспейса (worktree), cwd — новый воркспейс.
+# Доступные переменные: $ORCA_ROOT_PATH (корневой чекаут репы), $ORCA_WORKTREE_PATH.
+
+scripts:
+  setup: |
+    set -e
+
+    # Новый путь = новый недоверенный .mise.toml, без этого pnpm тихо не ставится.
+    mise trust
+
+    # .env не в git — подтягиваем из корневого воркспейса.
+    if [ ! -e .env ] && [ -e "$ORCA_ROOT_PATH/.env" ]; then
+      cp "$ORCA_ROOT_PATH/.env" .env
+    fi
+
+    # --prefer-offline: берём из глобального pnpm-стора всё, что там есть,
+    # и доливаем недостающее одним проходом. Чистый --offline тут всегда падает
+    # (ERR_PNPM_NO_OFFLINE_TARBALL) и уводит в полную переустановку.
+    # Без --silent: установка небыстрая, прогресс должен быть виден в логе setup.
+    pnpm install --prefer-offline
+
+    # Генерирует .nuxt/ (в git его нет). Без него в свежем воркспейсе сразу падают
+    # и `pnpm test`, и `pnpm run types`: vite не находит .nuxt/tsconfig.app.json.
+    pnpm nuxt prepare
+
+# Не пускать агента в воркспейс, пока не встали зависимости.
+setupAgentStartupPolicy: wait-for-setup
+
+worktree:
+  sharedDirectories: []
+  # node_modules намеренно НЕ шарим: Nuxt и Vitest ломаются на общем каталоге
+  # (тот же вывод, что и в logist). Плата за это — первая установка в новом
+  # воркспейсе занимает минуты; именно поэтому агент ждёт setup (см. выше).
