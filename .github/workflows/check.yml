@@ -56,5 +56,5 @@ jobs:
             -e NUXT_DATABASE_URL=postgres://test:test@127.0.0.1:5432/unused \
             abitur-web:test
           trap 'docker logs abitur-smoke; docker rm -f abitur-smoke' EXIT
-          curl --retry 20 --retry-connrefused --retry-delay 1 --fail http://127.0.0.1:9466/login
-          curl --fail http://127.0.0.1:9466/api/rating
+          curl --retry 20 --retry-all-errors --retry-delay 1 --max-time 3 --fail --silent --show-error --output /dev/null http://127.0.0.1:9466/login
+          curl --fail --silent --show-error --output /dev/null http://127.0.0.1:9466/api/rating
