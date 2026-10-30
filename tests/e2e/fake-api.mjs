@@ -1,6 +1,7 @@
 import { createServer } from "node:http"
 
 // Deliberately local, stateless fixtures. Unknown endpoints fail closed.
+let publicProfile = "nsu"
 const token = "e2e-local-admin-token"
 const server = createServer(async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "http://127.0.0.1:9464")
@@ -27,6 +28,21 @@ const server = createServer(async (req, res) => {
     const credentials = JSON.parse(body)
     const valid = credentials.username === "e2e-admin" && credentials.password === "local-test-password"
     reply(valid ? 200 : 401, valid ? { access_token: token, token_type: "bearer" } : { detail: "Incorrect username or password" })
+    return
+  }
+  if (req.url?.startsWith("/__test/profile/")) {
+    publicProfile = req.url.split("/").at(-1)
+    reply(200, { ok: true })
+    return
+  }
+  if (req.url === "/api/v1/university/profile") {
+    if (req.headers.authorization || req.headers.cookie) {
+      reply(400, { detail: "Public profile must not receive credentials" })
+    } else if (publicProfile === "unavailable" || publicProfile === "missing") {
+      reply(publicProfile === "missing" ? 404 : 503, { detail: "Unavailable" })
+    } else {
+      reply(200, { profile: publicProfile })
+    }
     return
   }
   if (req.headers.authorization !== `Bearer ${token}`) {

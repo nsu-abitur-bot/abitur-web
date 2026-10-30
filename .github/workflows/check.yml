@@ -51,10 +51,15 @@ jobs:
           cache-to: type=gha,mode=max
       - name: Smoke test production container
         run: |
-          docker run -d --name abitur-smoke -p 127.0.0.1:9466:3000 \
+          node tests/e2e/fake-api.mjs > /tmp/fake-api.log 2>&1 &
+          fake_api_pid=$!
+          curl --retry 20 --retry-all-errors --retry-delay 1 --max-time 3 --fail --silent --show-error --output /dev/null http://127.0.0.1:9465/health
+          docker run -d --name abitur-smoke --network host \
+            -e NITRO_PORT=9466 \
+            -e NUXT_PUBLIC_API_BASE_URL=http://127.0.0.1:9465 \
             -e NUXT_SESSION_PASSWORD=isolated-docker-session-password-32-characters \
             -e NUXT_DATABASE_URL=postgres://test:test@127.0.0.1:5432/unused \
             abitur-web:test
-          trap 'docker logs abitur-smoke; docker rm -f abitur-smoke' EXIT
+          trap 'docker logs abitur-smoke; docker rm -f abitur-smoke; kill "$fake_api_pid"' EXIT
           curl --retry 20 --retry-all-errors --retry-delay 1 --max-time 3 --fail --silent --show-error --output /dev/null http://127.0.0.1:9466/login
           curl --fail --silent --show-error --output /dev/null http://127.0.0.1:9466/api/rating
