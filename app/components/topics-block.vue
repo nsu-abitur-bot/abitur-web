@@ -88,6 +88,7 @@ const chartData = computed<ChartData<"doughnut"> | null>(() => topicsData.value.
 
 const chartOptions = computed<ChartOptions<"doughnut">>(() => ({
   responsive: true,
+  animation: false,
   maintainAspectRatio: false,
   plugins: {
     legend: {

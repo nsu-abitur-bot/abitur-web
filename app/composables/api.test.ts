@@ -73,5 +73,4 @@ describe("expired API session", () => {
     expect(token.value).toBe("new-session")
     expect(navigate).not.toHaveBeenCalled()
   })
-
 })

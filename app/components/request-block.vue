@@ -67,13 +67,14 @@ const chartData = computed<ChartData<"line"> | null>(() => {
       borderColor: lineColor.value,
       borderWidth: 2,
       tension: 0.3,
-      pointRadius: 0,
+      pointRadius: 2,
     }],
   }
 })
 
 const chartOptions = computed<ChartOptions<"line">>(() => ({
   responsive: true,
+  animation: false,
   maintainAspectRatio: false,
   plugins: {
     legend: { display: false },

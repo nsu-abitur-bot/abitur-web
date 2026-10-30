@@ -12,6 +12,15 @@ mise exec -- task hooks
 
 Заполните `.env` адресом бэкенда и локальными настройками. В активированном mise shell можно опускать `mise exec --`. Установка зависимостей генерирует `.nuxt`, но не запускает все проверки и не устанавливает git hooks автоматически.
 
+При обновлении существующего checkout с pnpm сначала уберите старый `node_modules`, затем выполните чистую установку Bun. Frozen install поверх старого каталога может оставить `.pnpm` и несовместимые транзитивные зависимости:
+
+```bash
+mv node_modules ../abitur-node-modules-before-bun
+mise exec -- bun install --frozen-lockfile
+```
+
+Каталог с резервной копией можно удалить после успешного `task check`; не используйте его в других worktree.
+
 ## Разработка и проверки
 
 ```bash
@@ -40,7 +49,7 @@ bunx --no-install playwright install chromium
 task e2e
 ```
 
-Playwright копирует только `.output` во временный каталог без зависимостей проекта и запускает production на `127.0.0.1:9464` и отдельный fake API на `127.0.0.1:9465`; порты должны быть свободны. Проверяются protected route, ошибочный и успешный вход, основной экран базы знаний, навигация, выход и публичный `/rating` с настоящим Nitro API. Используются только фиктивные локальные credentials. Внешние запросы браузера блокируются, неизвестные fake API endpoints возвращают ошибку; платные модели и рабочие токены не используются. HTML report расположен в `playwright-report`, traces/video/screenshots при ошибке — в `test-results`. CI выполняет frozen install, все проверки, production build и E2E, сохраняя HTML report при любом результате, а traces/video/screenshots при ошибке.
+Playwright копирует только `.output` во временный каталог без зависимостей проекта и запускает production на `127.0.0.1:9464` и отдельный fake API на `127.0.0.1:9465`; порты должны быть свободны. Проверяются protected route, ошибочный и успешный вход, основной экран базы знаний, навигация, отмена и подтверждение выхода с несохранённым черновиком, истечение сессии при сохранении, 409/rebase и явное удаление секрета, ограничения admin/viewer и публичный `/rating` с настоящим Nitro API. Используются только фиктивные локальные credentials. Внешние запросы браузера блокируются, неизвестные fake API endpoints возвращают ошибку; платные модели и рабочие токены не используются. HTML report расположен в `playwright-report`, traces/video/screenshots при ошибке — в `test-results`. CI выполняет frozen install, все проверки, production build и E2E, сохраняя HTML report при любом результате, а traces/video/screenshots при ошибке.
 
 ## Docker
 
