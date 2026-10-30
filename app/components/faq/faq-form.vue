@@ -40,20 +40,15 @@ const removeAlias = (aliasToRemove: string) => {
 }
 
 const onSubmit = async () => {
+  if (!state.question.trim() || !state.answer.trim() || isLoading.value) {
+    return
+  }
   isLoading.value = true
   try {
-    if (isEditMode.value) {
-      await useApi("/api/v1/faq/{item_id}", {
-        method: "PUT",
-        path: { item_id: itemId.value! },
-        body: state,
-      })
-    } else {
-      await useApi("/api/v1/faq", {
-        method: "POST",
-        body: state,
-      })
-    }
+    await apiFetch(isEditMode.value ? `/api/v1/faq/${encodeURIComponent(itemId.value!)}` : "/api/v1/faq", {
+      method: isEditMode.value ? "PUT" : "POST",
+      body: state,
+    })
     emit("submit")
   } catch (err) {
     console.error("Failed to submit FAQ:", err)
@@ -70,10 +65,10 @@ const onSubmit = async () => {
 
 <template lang="pug">
 u-form(:state="state" class="space-y-4" @submit="onSubmit")
-  u-form-group(label="Вопрос" name="question" required class="w-full")
+  u-form-field(label="Вопрос" name="question" required class="w-full")
     u-input(v-model="state.question" placeholder="Например: Как подать документы?" class="w-full")
 
-  u-form-group(label="Синонимы (опционально)" name="aliases" help="Помогает боту лучше понимать похожие вопросы" class="w-full")
+  u-form-field(label="Синонимы (опционально)" name="aliases" help="Помогает боту лучше понимать похожие вопросы" class="w-full")
     div(class="flex flex-wrap gap-2 mb-2")
       u-badge(
         v-for="alias in state.aliases"
@@ -101,7 +96,7 @@ u-form(:state="state" class="space-y-4" @submit="onSubmit")
       )
       u-button(color="neutral" variant="solid" @click="addAlias") Добавить
 
-  u-form-group(label="Ответ" name="answer" required class="w-full")
+  u-form-field(label="Ответ" name="answer" required class="w-full")
     u-textarea(
       v-model="state.answer"
       :rows="5"

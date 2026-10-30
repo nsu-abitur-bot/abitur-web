@@ -77,7 +77,7 @@ const onDelete = async () => {
 </script>
 
 <template lang="pug">
-div(class="rounded-lg border border-gray-200 dark:border-gray-800 p-3" :class="{ 'opacity-60': !program.is_active }")
+div(class="border-t border-default py-3" :class="{ 'opacity-60': !program.is_active }")
   div(v-if="isEditing")
     u-form(:state="state" class="space-y-3" @submit="onSave")
       div(class="flex flex-wrap items-end gap-3")
@@ -103,12 +103,12 @@ div(class="rounded-lg border border-gray-200 dark:border-gray-800 p-3" :class="{
         u-badge(v-if="program.code" color="info" variant="subtle" size="sm" class="font-mono") {{ program.code }}
         u-badge(v-if="!program.is_active" color="warning" variant="subtle" size="sm") Выключено
     div(class="flex gap-1 shrink-0")
-      u-button(icon="i-heroicons-pencil-square" color="neutral" variant="ghost" size="sm" @click="startEdit")
+      u-button(aria-label="Редактировать" icon="i-heroicons-pencil-square" color="neutral" variant="ghost" size="sm" @click="startEdit")
       u-modal(
         title="Удаление направления"
         description="Вы уверены, что хотите удалить это направление? Это действие нельзя отменить."
       )
-        u-button(icon="i-heroicons-trash" color="error" variant="ghost" size="sm")
+        u-button(aria-label="Удалить" icon="i-heroicons-trash" color="error" variant="ghost" size="sm")
         template(#footer="{ close }")
           div(class="flex justify-end gap-2 w-full")
             u-button(color="neutral" variant="ghost" @click="close") Отмена

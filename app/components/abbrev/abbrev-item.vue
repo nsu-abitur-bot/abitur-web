@@ -19,13 +19,13 @@ const handleUpdated = () => {
 </script>
 
 <template lang="pug">
-div(class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-900 transition-colors hover:border-primary-500/50")
+div(class="py-3")
   div(v-if="isEditing")
     abbrev-form(:initial-data="item" @submit="handleUpdated" @cancel="isEditing = false")
 
   div(v-else class="flex items-center gap-4")
     div(class="shrink-0")
-      u-badge(color="primary" variant="subtle" size="lg" class="font-mono font-semibold text-base") {{ props.item.short }}
+      u-badge(color="primary" variant="subtle" size="lg" class="font-mono font-medium text-sm") {{ props.item.short }}
     div(class="flex-1 text-gray-700 dark:text-gray-300") {{ props.item.full }}
     div(class="flex gap-2 shrink-0")
       u-button(
@@ -40,6 +40,7 @@ div(class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white d
         description="Вы уверены, что хотите удалить эту аббревиатуру? Это действие нельзя отменить."
       )
         u-button(
+          aria-label="Удалить"
           icon="i-heroicons-trash"
           color="error"
           variant="ghost"

@@ -1,87 +1,34 @@
 <script setup lang="ts">
+import { getRagDocumentDiagnostics } from "~/services/rag-debug"
+import { materialState } from "~/services/rag-status"
 import { getRagDocumentContent, listRagDocuments } from "~/services/rag-upload"
 
 const route = useRoute()
-const docId = route.params.id as string
-
-const decodeUrlPart = (value: string) => {
-  try {
-    return decodeURIComponent(value)
-  } catch {
-    return value
-  }
-}
-
-const getUrlLabel = (value?: string | null) => {
-  if (!value) {
-    return ""
-  }
-
-  try {
-    const url = new URL(value)
-    const filename = decodeUrlPart(url.pathname.split("/").filter(Boolean).at(-1) || "")
-    return filename ? `${url.hostname}/${filename}` : url.hostname
-  } catch {
-    return decodeUrlPart(value)
-  }
-}
-
-const { data, pending, error } = useAsyncData(`rag-doc-${docId}`, async () => {
-  const [content, docs] = await Promise.all([
-    getRagDocumentContent(docId),
-    listRagDocuments(),
-  ])
-  const doc = docs.find(d => d.id === docId)
-  return {
-    ...content,
-    title: doc?.title,
-    url: doc?.url,
-  }
-})
+const docId = computed(() => String(route.params.id))
+const { data: docs } = useAsyncData("rag-document-metadata", listRagDocuments)
+const doc = computed(() => docs.value?.find(item => item.id === docId.value))
+const { data: content, pending, error, refresh } = useAsyncData(() => `rag-content-${docId.value}`, () => getRagDocumentContent(docId.value))
+const { data: diagnostics } = useAsyncData(() => `rag-diagnostics-${docId.value}`, () => getRagDocumentDiagnostics(docId.value))
+const state = computed(() => materialState({ status: doc.value?.status ?? "" }, diagnostics.value))
+const isDiagnosticsOpen = ref(false)
 </script>
 
 <template lang="pug">
-u-container(class="py-8 min-h-screen")
-  div(class="mb-6 flex items-center justify-between")
-    div(class="flex items-center gap-4 min-w-0")
-      u-button(
-        icon="i-heroicons-arrow-left"
-        variant="ghost"
-        color="neutral"
-        to="/"
-      ) Назад
-      h1(class="text-2xl font-bold break-anywhere text-gray-900 dark:text-white" :title="data?.title || docId")
-        | {{ data?.title || docId }}
-
-  div(v-if="pending" class="py-32 flex flex-col items-center justify-center text-gray-500")
-    u-icon(name="i-heroicons-arrow-path" size="lg" class="animate-spin mb-4 text-primary")
-    p(class="text-lg font-medium") Загрузка содержимого...
-
-  div(v-else-if="error" class="max-w-2xl mx-auto py-12")
-    u-alert(
-      color="error"
-      variant="soft"
-      title="Ошибка загрузки"
-      description="Не удалось найти документ или загрузить его содержимое. Возможно, он был удален или сервер недоступен."
-      icon="i-heroicons-exclamation-triangle"
-    )
-    div(class="mt-6 text-center")
-      u-button(to="/" color="neutral" variant="ghost") Вернуться на главную
-
-  div(v-else-if="data" class="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-6")
-    ui-box(v-if="data.url" title="Источник документа")
-      div(class="flex items-center gap-2 min-w-0")
-        u-input(:model-value="getUrlLabel(data.url)" disabled class="flex-1" :title="data.url")
-        u-button(
-          icon="i-heroicons-link"
-          variant="outline"
-          size="lg"
-          color="neutral"
-          :to="data.url"
-          target="_blank"
-        ) Открыть
-
-    ui-box(title="Полный текст документа")
-      div(class="bg-white dark:bg-gray-900 rounded-xl p-8 font-sans text-base leading-relaxed text-gray-800 dark:text-gray-200 border border-gray-100 dark:border-gray-800 shadow-sm")
-        div(class="pre-wrap-anywhere select-text") {{ data.content }}
+ui-page(:title="doc?.title || docId")
+  template(#actions)
+    u-button(color="neutral" variant="outline" icon="i-lucide-arrow-left" :to="{ path: '/', query: route.query }") Материалы
+    u-button(color="neutral" variant="outline" @click="isDiagnosticsOpen = true") Диагностика
+  ui-box(title="Источник")
+    .admin-actions
+      span {{ state.label }}
+      a(v-if="doc?.url" :href="doc.url" target="_blank" rel="noopener noreferrer" class="text-primary break-anywhere") {{ doc.url }}
+      span.admin-muted(v-else) {{ doc ? 'Нет ссылки для проверки' : 'Источник не загружен' }}
+    p.admin-muted(class="mt-3") {{ doc ? (doc.last_check_message || (doc.last_checked_at ? `Проверен: ${new Date(doc.last_checked_at).toLocaleString('ru-RU')}` : 'Источник не проверялся')) : 'Сведения о проверке недоступны' }}
+  ui-box(title="Содержимое")
+    .admin-empty(v-if="pending" role="status") Загрузка…
+    .admin-empty(v-else-if="error" role="alert")
+      p {{ error.statusCode === 404 ? 'Документ не найден' : 'Не удалось загрузить содержимое' }}
+      u-button(class="mt-3" color="neutral" variant="outline" @click="refresh()") Повторить
+    div(v-else class="pre-wrap-anywhere select-text leading-relaxed") {{ content?.content }}
+  rag-diagnostics-modal(v-model:open="isDiagnosticsOpen" :doc-id="docId")
 </template>

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ru } from "@nuxt/ui/locale"
+
 useHead({
   title: "Abitur",
 })
@@ -6,6 +8,7 @@ useHead({
 
 <template lang="pug">
 u-app(
+  :locale="ru"
   :tooltip="{ delayDuration: 0 }"
 )
   div(class="isolate")

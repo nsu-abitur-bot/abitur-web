@@ -3,7 +3,7 @@ const props = defineProps<{
   sessionId: string
 }>()
 
-const { data, status } = await useApi("/api/v1/logs/session/{session_id}", {
+const { data, status, error, refresh } = await useApi("/api/v1/logs/session/{session_id}", {
   path: {
     session_id: props.sessionId,
   },
@@ -14,7 +14,7 @@ const { data, status } = await useApi("/api/v1/logs/session/{session_id}", {
 
 const logs = computed(() => data.value?.logs ?? [])
 
-const { topics, refresh: refreshTopics } = useTopics()
+const { topics, error: topicsError, refresh: refreshTopics } = useTopics()
 
 onMounted(async () => {
   if (!topics.value.length) {
@@ -58,16 +58,22 @@ const formatDate = (dateString: string) => {
 
 <template lang="pug">
 div(class="flex flex-col h-full")
+  p(class="admin-muted text-xs mb-3") Последние 100 записей сессии.
+  p(v-if="topicsError" class="admin-muted text-xs mb-3" role="status") {{ topicsError }}. Названия тем могут быть устаревшими.
   div(v-if="status === 'pending'" class="flex flex-col items-center justify-center py-20 text-gray-500")
     u-icon(name="i-heroicons-arrow-path" class="animate-spin w-8 h-8 mb-4")
     p Загрузка логов...
+
+  div(v-else-if="error" class="admin-empty" role="alert")
+    p Не удалось загрузить логи сессии.
+    u-button(variant="outline" @click="() => refresh()") Повторить
 
   div(v-else-if="!logs || logs.length === 0" class="flex flex-col items-center justify-center py-20 text-gray-500")
     u-icon(name="i-heroicons-information-circle" class="w-12 h-12 mb-4 text-gray-300")
     p Логов для этой сессии не найдено.
 
   div(v-else class="flex-1 overflow-y-auto overflow-x-hidden pr-2 custom-scrollbar min-w-0")
-    div(class="space-y-6 pb-6")
+    div(class="space-y-3 pb-4")
       div(v-for="log in logs" :key="log.id" class="relative pl-6 border-l-2" :class="`border-${getLogTypeColor(log.message_type)}-500` ")
         div(class="absolute -left-[9px] top-0 w-4 h-4 rounded-full border-2 bg-white dark:bg-gray-900" :class="`border-${getLogTypeColor(log.message_type)}-500` ")
 
@@ -83,7 +89,7 @@ div(class="flex flex-col h-full")
           span(class="text-xs text-gray-400 font-mono")
             | {{ formatDate(log.created_at) }}
 
-        div(class="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4 text-sm min-w-0")
+        div(class="admin-detail text-sm min-w-0")
           div(class="pre-wrap-anywhere leading-relaxed text-gray-700 dark:text-gray-300 mb-3")
             | {{ log.content }}
 

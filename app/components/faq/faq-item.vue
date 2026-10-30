@@ -25,15 +25,16 @@ const handleUpdated = () => {
 </script>
 
 <template lang="pug">
-div(class="border border-gray-200 dark:border-gray-700 rounded-lg p-5 bg-white dark:bg-gray-900 transition-colors hover:border-primary-500/50")
+div(class="py-4")
   div(v-if="isEditing")
     faq-form(:initial-data="item" @submit="handleUpdated" @cancel="handleCancel")
 
   div(v-else class="flex flex-col gap-3")
     div(class="flex justify-between items-start gap-4")
-      h3(class="text-lg font-medium text-gray-900 dark:text-gray-100") {{ props.item.question }}
+      h3(class="text-sm font-semibold text-gray-900 dark:text-gray-100") {{ props.item.question }}
       div(class="flex gap-2 shrink-0")
         u-button(
+          aria-label="Редактировать"
           icon="i-heroicons-pencil-square"
           color="neutral"
           variant="ghost"
@@ -45,7 +46,8 @@ div(class="border border-gray-200 dark:border-gray-700 rounded-lg p-5 bg-white d
           description="Вы уверены, что хотите удалить этот вопрос? Это действие нельзя отменить."
         )
           u-button(
-            icon="i-heroicons-trash"
+            aria-label="Удалить"
+          icon="i-heroicons-trash"
             color="error"
             variant="ghost"
             size="sm"
@@ -67,11 +69,6 @@ div(class="border border-gray-200 dark:border-gray-700 rounded-lg p-5 bg-white d
       ) {{ alias }}
 
     // The Answer block
-    div(class="relative mt-2 p-4 bg-gray-50 dark:bg-gray-800 rounded-md")
-      // Quote icon visual detail
-      u-icon(
-        name="i-heroicons-chat-bubble-bottom-center-text"
-        class="absolute top-4 right-4 text-gray-300 dark:text-gray-600 w-6 h-6"
-      )
-      p(class="text-gray-700 dark:text-gray-300 pre-wrap-anywhere pr-8") {{ props.item.answer }}
+    div(class="mt-1")
+      p(class="text-gray-700 dark:text-gray-300 pre-wrap-anywhere text-sm") {{ props.item.answer }}
 </template>

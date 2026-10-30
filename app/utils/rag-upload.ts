@@ -32,7 +32,7 @@ export function validateRagFiles(files: File[]): RagFileValidationResult {
     if (file.size > RAG_MAX_FILE_SIZE_BYTES) {
       rejectedFiles.push({
         file,
-        reason: `Файл превышает 5 MB (${formatBytes(file.size)})`,
+        reason: `Файл превышает 10 MB (${formatBytes(file.size)})`,
       })
       continue
     }

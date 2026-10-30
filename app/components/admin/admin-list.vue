@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import type { components } from "#openapi"
+import { authErrorMessage } from "~/services/auth-errors"
 
 type AdminResponse = components["schemas"]["AdminResponse"]
 type AdminRole = components["schemas"]["AdminRole"]
 type ChangeRoleRequest = components["schemas"]["ChangeRoleRequest"]
 
-const { data: adminsRes, refresh, status } = await useApi("/api/v1/auth/admins")
+const { data: adminsRes, refresh, status, error } = await useApi("/api/v1/auth/admins")
 const { data: meRes } = await useApi("/api/v1/auth/me")
 const { isSuperadmin } = useRole()
 const toast = useToast()
@@ -19,13 +20,6 @@ const roleLabel: Record<string, string> = {
   viewer: "Просмотр",
 }
 
-type BadgeColor = "primary" | "error" | "neutral"
-const roleColor: Record<string, BadgeColor> = {
-  superadmin: "error",
-  admin: "primary",
-  viewer: "neutral",
-}
-
 const roleOptions: { label: string, value: AdminRole }[] = [
   { label: "Суперадмин", value: "superadmin" },
   { label: "Администратор", value: "admin" },
@@ -35,12 +29,15 @@ const roleOptions: { label: string, value: AdminRole }[] = [
 const savingRoleId = ref<string | null>(null)
 
 const handleDeactivate = async (admin: AdminResponse) => {
+  savingRoleId.value = admin.id
   try {
     await apiFetch(`/api/v1/auth/admins/${admin.id}/deactivate`, { method: "PATCH" })
     toast.add({ title: "Деактивирован", description: `Пользователь ${admin.username} деактивирован`, color: "success" })
     await refresh()
   } catch {
     toast.add({ title: "Ошибка", description: "Не удалось деактивировать пользователя", color: "error" })
+  } finally {
+    savingRoleId.value = null
   }
 }
 
@@ -62,10 +59,9 @@ const handleChangeRole = async (admin: AdminResponse, role: AdminRole) => {
       color: "success",
     })
   } catch (error) {
-    const detail = (error as { data?: { detail?: string } })?.data?.detail
     toast.add({
       title: "Ошибка",
-      description: detail || "Не удалось изменить роль",
+      description: authErrorMessage(error, "Не удалось изменить роль"),
       color: "error",
     })
     await refresh()
@@ -75,61 +71,41 @@ const handleChangeRole = async (admin: AdminResponse, role: AdminRole) => {
 }
 </script>
 
-<template lang="pug">
-ui-box(title="Администраторы")
-  div(v-if="status === 'pending'" class="py-10 flex justify-center text-gray-500")
-    u-icon(name="i-heroicons-arrow-path" class="animate-spin w-8 h-8")
-
-  div(v-else-if="admins.length === 0" class="py-12 text-center text-gray-500 bg-gray-50 dark:bg-gray-800 rounded-lg")
-    u-icon(name="i-heroicons-users" class="w-12 h-12 mx-auto text-gray-400 mb-3")
-    p Нет администраторов
-
-  div(v-else class="space-y-2 mt-4")
-    div(
-      v-for="admin in admins"
-      :key="admin.id"
-      class="flex items-center gap-4 border border-gray-200 dark:border-gray-700 rounded-lg px-4 py-3 bg-white dark:bg-gray-900"
-      :class="{ 'opacity-50': !admin.is_active }"
-    )
-      div(class="flex-1 min-w-0")
-        div(class="flex items-center gap-2 flex-wrap")
-          span(class="font-medium text-gray-900 dark:text-gray-100") {{ admin.username }}
-          span(v-if="admin.id === currentUserId" class="text-xs text-gray-400") (вы)
-          u-badge(
-            :color="roleColor[admin.role] ?? 'neutral'"
-            variant="subtle"
-            size="xs"
-          ) {{ roleLabel[admin.role] ?? admin.role }}
-          u-badge(v-if="!admin.is_active" color="neutral" variant="subtle" size="xs") Деактивирован
-        p(class="text-xs text-gray-400 mt-0.5")
-          | Создан: {{ new Date(admin.created_at).toLocaleDateString("ru") }}
-
-      u-select(
-        v-if="isSuperadmin && admin.is_active && admin.id !== currentUserId"
-        :model-value="admin.role"
-        :items="roleOptions"
-        value-key="value"
-        label-key="label"
-        size="sm"
-        class="w-44"
-        :loading="savingRoleId === admin.id"
-        :disabled="savingRoleId === admin.id"
-        @update:model-value="(role) => handleChangeRole(admin, role)"
-      )
-
-      u-modal(
-        v-if="admin.is_active && admin.id !== currentUserId"
-        :title="`Деактивировать ${admin.username}?`"
-        description="Пользователь потеряет доступ к системе. Это действие нельзя отменить."
-      )
-        u-button(
-          icon="i-heroicons-no-symbol"
-          color="error"
-          variant="ghost"
-          size="sm"
-        )
-        template(#footer="{ close }")
-          div(class="flex justify-end gap-2 w-full")
-            u-button(color="neutral" variant="ghost" @click="close") Отмена
-            u-button(color="error" @click="handleDeactivate(admin); close()") Деактивировать
+<template>
+  <section class="admin-panel" aria-labelledby="team-title">
+    <header class="admin-section-header">
+      <div><h2 id="team-title" class="font-semibold">Участники</h2><p class="admin-muted text-sm">Доступ к администрированию и роли участников.</p></div>
+      <u-button variant="ghost" color="neutral" :loading="status === 'pending'" @click="refresh()">Обновить</u-button>
+    </header>
+    <div v-if="error" class="admin-empty" role="alert">Не удалось загрузить команду. Повторите запрос.</div>
+    <p v-else-if="status === 'pending' && !admins.length" class="admin-empty" role="status">Загрузка участников…</p>
+    <p v-else-if="!admins.length" class="admin-empty">Участников пока нет.</p>
+    <div v-else class="admin-table-wrap relative">
+      <table class="admin-table w-full text-sm">
+        <caption class="sr-only">Участники команды и права доступа</caption>
+        <thead><tr><th scope="col">Участник</th><th scope="col">Роль</th><th scope="col">Доступ</th><th scope="col">Добавлен</th><th scope="col"><span class="sr-only">Действия</span></th></tr></thead>
+        <tbody>
+          <tr v-for="admin in admins" :key="admin.id">
+            <td><span class="font-medium">{{ admin.username }}</span><span v-if="admin.id === currentUserId" class="admin-muted ml-2">Вы</span></td>
+            <td>
+              <u-select v-if="isSuperadmin && admin.is_active && admin.id !== currentUserId" :aria-label="`Роль ${admin.username}`" :model-value="admin.role" :items="roleOptions" value-key="value" label-key="label" class="w-40" :loading="savingRoleId === admin.id" :disabled="savingRoleId !== null" @update:model-value="role => handleChangeRole(admin, role)" />
+              <span v-else>{{ roleLabel[admin.role] }}</span>
+            </td>
+            <td class="admin-muted">{{ admin.is_active ? 'Активен' : 'Деактивирован' }}</td>
+            <td class="admin-muted whitespace-nowrap">{{ new Date(admin.created_at).toLocaleDateString('ru') }}</td>
+            <td>
+              <u-modal v-if="isSuperadmin && admin.is_active && admin.id !== currentUserId" :title="`Деактивировать ${admin.username}?`" description="Пользователь потеряет доступ к системе. Восстановление доступа через этот интерфейс недоступно.">
+                <u-button color="neutral" variant="ghost" size="sm" :disabled="savingRoleId !== null">Деактивировать</u-button>
+                <template #footer="{ close }"><div class="admin-actions"><u-button color="neutral" variant="ghost" @click="close">Отмена</u-button><u-button color="error" :loading="savingRoleId === admin.id" @click="handleDeactivate(admin); close()">Деактивировать</u-button></div></template>
+              </u-modal>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <details class="pt-4 mt-4 border-t border-[var(--ui-border)] text-sm">
+      <summary class="cursor-pointer">Права ролей</summary>
+      <dl class="grid gap-2 mt-3"><dt class="font-medium">Просмотр</dt><dd class="admin-muted">Сообщения, статистика и обработка обратной связи.</dd><dt class="font-medium">Администратор</dt><dd class="admin-muted">Материалы, справочники, проверки, правила ответа и лимиты.</dd><dt class="font-medium">Суперадмин</dt><dd class="admin-muted">Все разделы, подключения, секреты и управление командой.</dd></dl>
+    </details>
+  </section>
 </template>

@@ -1,81 +1,83 @@
 <script setup lang="ts">
-import type { NavigationMenuItem } from "@nuxt/ui"
+import { onKeyStroke } from "@vueuse/core"
 
+type NavItem = [label: string, to: string, icon: string]
 const route = useRoute()
+const router = useRouter()
 const token = useAuthToken()
-
-const items = computed<NavigationMenuItem[]>(() => [
-  {
-    label: "База знаний",
-    to: "/",
-    active: route.path === "/",
-  },
-  {
-    label: "Вопросы/Ответы",
-    to: "/faq",
-    active: route.path.startsWith("/faq"),
-  },
-  {
-    label: "Аббревиатуры",
-    to: "/abbrev",
-    active: route.path.startsWith("/abbrev"),
-  },
-  {
-    label: "Факультеты",
-    to: "/faculties",
-    active: route.path.startsWith("/faculties"),
-  },
-  {
-    label: "Статистика",
-    to: "/stats",
-    active: route.path.startsWith("/stats"),
-  },
-  {
-    label: "Сообщения",
-    to: "/messages",
-    active: route.path.startsWith("/messages"),
-  },
-  {
-    label: "Обратная связь",
-    to: "/feedback",
-    active: route.path.startsWith("/feedback"),
-  },
-  {
-    label: "Настройки",
-    to: "/settings",
-    active: route.path.startsWith("/settings"),
-  },
-  {
-    label: "Тестирование",
-    to: "/testing",
-    active: route.path.startsWith("/testing"),
-  },
-  {
-    label: "Логи системы",
-    to: "/system-logs",
-    active: route.path.startsWith("/system-logs"),
-  },
+const { isAdmin, isSuperadmin } = useRole()
+const open = ref(false)
+onKeyStroke("Escape", () => {
+  open.value = false
+})
+watch(() => route.fullPath, () => {
+  open.value = false
+})
+const groups = computed<{ title?: string, items: NavItem[] }[]>(() => [
+  { title: "Обращения", items: [["Обратная связь", "/feedback", "i-lucide-inbox"], ["Сообщения", "/messages", "i-lucide-message-circle"]] },
+  { title: "Знания", items: isAdmin.value
+    ? [
+        ["Материалы", "/", "i-lucide-files"],
+        ["Готовые ответы", "/faq", "i-lucide-messages-square"],
+        ["Сокращения", "/abbrev", "i-lucide-text"],
+        ["Факультеты", "/faculties", "i-lucide-graduation-cap"],
+      ]
+    : [] },
+  { items: isAdmin.value ? [["Проверка ответа", "/rag/inspector", "i-lucide-search"], ["Автооценка", "/testing", "i-lucide-flask-conical"]] : [] },
+  { items: [["Статистика", "/stats", "i-lucide-chart-no-axes-combined"]] },
+  { title: "Настройки", items: isAdmin.value
+    ? [
+        ...(isSuperadmin.value ? [["Подключения", "/settings?section=connections", "i-lucide-plug"] as NavItem] : []),
+        ["Правила и лимиты", "/settings?section=rules", "i-lucide-settings-2"],
+        ["Темы", "/settings?section=topics", "i-lucide-tags"],
+        ...(isSuperadmin.value ? [["Команда", "/settings?section=team", "i-lucide-users"] as NavItem] : []),
+      ]
+    : [] },
+  { items: isAdmin.value ? [["Системные логи", "/system-logs", "i-lucide-scroll-text"]] : [] },
 ])
-
-const handleLogout = () => {
-  token.value = null
-  navigateTo("/login")
+function active(to: string) {
+  const [path, query] = to.split("?")
+  if (path === "/") {
+    return route.path === "/" || route.path.startsWith("/rag/document/")
+  }
+  if (query) {
+    const section = new URLSearchParams(query).get("section")
+    return route.path === path && (route.query.section || (isSuperadmin.value ? "connections" : "rules")) === section
+  }
+  return route.path === path || route.path.startsWith(`${path}/`)
+}
+async function logout() {
+  await navigateTo("/login")
+  if (router.currentRoute.value.path === "/login") {
+    // The header is unmounted after navigation, so its cookie watcher has stopped.
+    document.cookie = "abitur-token=; Max-Age=0; Path=/"
+    token.value = null
+  }
 }
 </script>
 
 <template lang="pug">
-u-header
-  u-navigation-menu(:items="items")
-  template(#title)
-    span.font-bold.text-lg АБИТУРИЕНТ.РФ
-  template(#right)
-    div(class="flex items-center gap-2")
-      u-color-mode-button
-      u-button(
-        v-if="token"
-        color="neutral"
-        variant="ghost"
-        icon="i-heroicons-arrow-right-on-rectangle"
-        @click="handleLogout"
-      ) Выйти
+header.admin-topbar
+  u-button.admin-menu(icon="i-lucide-menu" color="neutral" variant="ghost" aria-label="Меню" :aria-expanded="open" aria-controls="admin-navigation" @click="open = !open")
+  span.admin-muted Администрирование
+  .admin-actions
+    u-color-mode-button
+    u-button(v-if="token" color="neutral" variant="ghost" icon="i-lucide-log-out" @click="logout") Выйти
+aside#admin-navigation.admin-sidebar(:class="{ 'is-open': open }")
+  nuxt-link.admin-brand(to="/")
+    span.admin-brand-mark а
+    span Абитуриент
+      small Панель управления
+  nav(aria-label="Основная навигация")
+    template(v-for="(group, index) in groups" :key="index")
+      template(v-if="group.items.length")
+        details(v-if="group.title" :open="group.items.some(item => active(item[1]))")
+          summary {{ group.title }}
+          nuxt-link(v-for="item in group.items" :key="item[1]" :to="item[1]" :aria-current="active(item[1]) ? 'page' : undefined")
+            u-icon(:name="item[2]")
+            span {{ item[0] }}
+        .admin-nav-direct(v-else)
+          nuxt-link(v-for="item in group.items" :key="item[1]" :to="item[1]" :aria-current="active(item[1]) ? 'page' : undefined")
+            u-icon(:name="item[2]")
+            span {{ item[0] }}
 </template>

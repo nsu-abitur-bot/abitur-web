@@ -14,7 +14,7 @@ const state = reactive<CragSettingsUpdate>({
   max_graded_chunks: 12,
 })
 
-const { data, status, refresh } = await useAsyncData("crag-settings", getCragSettings)
+const { data, status, error, refresh } = await useAsyncData("crag-settings", getCragSettings)
 
 watch(data, (settings) => {
   if (!settings) {
@@ -46,6 +46,9 @@ const clampInt = (value: number, min: number, max: number) => {
 }
 
 const onSubmit = async () => {
+  if (!data.value) {
+    return
+  }
   isSaving.value = true
   try {
     const updated = await updateCragSettings({
@@ -72,46 +75,39 @@ const onSubmit = async () => {
 </script>
 
 <template lang="pug">
-ui-box(title="Умная проверка ответов")
-  template(#right)
-    u-button(
-      icon="i-heroicons-arrow-path"
-      color="neutral"
-      variant="soft"
-      size="sm"
-      :loading="status === 'pending'"
-      @click="() => refresh()"
-    )
+section(class="admin-panel p-6")
+  h2(class="text-base font-semibold mb-5") Проверка ответов
+  p(class="text-sm admin-muted mb-4")
+    | CRAG отбирает фрагменты базы знаний перед генерацией ответа.
 
-  p(class="text-sm text-gray-500 dark:text-gray-400 mb-4")
-    | Перед ответом бот дополнительно убирает найденные в базе знаний чанки,
-    | которые не относятся к вопросу — чтобы не приплетать лишнее
-    | (например, направления чужого факультета).
-
-  div(v-if="status === 'pending' && !data" class="py-6 flex justify-center text-gray-500")
+  div(v-if="status === 'pending' && !data" class="py-6 flex justify-center admin-muted")
     u-icon(name="i-heroicons-arrow-path" class="animate-spin w-8 h-8")
 
-  u-form(v-else :state="state" class="space-y-5" @submit="onSubmit")
+  div(v-if="error && !data" role="alert" class="text-sm text-error mb-4")
+    p Не удалось загрузить настройки.
+    u-button(variant="ghost" @click="refresh()") Повторить
+
+  u-form(v-if="data" :state="state" class="space-y-5" @submit="onSubmit")
     div(class="space-y-4")
-      div(class="flex items-center justify-between gap-3")
+      div(class="flex items-center justify-between gap-4 border-b border-[var(--ui-border)] pb-4")
         div
           div(class="text-sm font-medium text-gray-800 dark:text-gray-200") Проверять найденное перед ответом
-          div(class="text-xs text-gray-500") Главный переключатель. Если выключить — бот отвечает как раньше, без проверки.
+          div(class="text-xs admin-muted") Отбор найденных фрагментов по релевантности вопросу.
         u-switch(v-model="state.enabled")
 
-      div(class="flex items-center justify-between gap-3")
+      div(class="flex items-center justify-between gap-4 border-b border-[var(--ui-border)] pb-4")
         div
           div(class="text-sm font-medium text-gray-800 dark:text-gray-200") Не смешивать факультеты
-          div(class="text-xs text-gray-500") Если в вопросе назван факультет — убирать из ответа направления других факультетов. Нужен заполненный справочник факультетов.
+          div(class="text-xs admin-muted") Отбор по справочнику факультетов, если факультет указан в вопросе.
         u-switch(v-model="state.use_faculty_table")
 
-      div(class="flex items-center justify-between gap-3")
+      div(class="flex items-center justify-between gap-4 border-b border-[var(--ui-border)] pb-4")
         div
           div(class="text-sm font-medium text-gray-800 dark:text-gray-200") Искать ещё раз, если нашлось мало
-          div(class="text-xs text-gray-500") Если подходящих чанков осталось мало, бот один раз переформулирует вопрос и поищет снова. Точнее, но чуть медленнее.
+          div(class="text-xs admin-muted") Повторный поиск с переформулировкой вопроса.
         u-switch(v-model="state.allow_refine")
 
-    div(class="grid grid-cols-1 md:grid-cols-3 gap-4")
+    div(class="admin-form-grid")
       u-form-field(label="Строгость отбора" name="relevance_threshold")
         u-input(
           v-model.number="state.relevance_threshold"
@@ -122,9 +118,9 @@ ui-box(title="Умная проверка ответов")
           class="w-full"
         )
         template(#help)
-          | От 0 до 1. Чем выше — тем строже отбор: 1 оставляет только точные попадания. Обычно 0.5.
+          | От 0 до 1. Высокое значение усиливает отбор.
 
-      u-form-field(label="Когда искать повторно" name="min_chunks")
+      u-form-field(label="Минимум фрагментов" name="min_chunks")
         u-input(
           v-model.number="state.min_chunks"
           type="number"
@@ -133,9 +129,9 @@ ui-box(title="Умная проверка ответов")
           class="w-full"
         )
         template(#help)
-          | Если подходящих чанков осталось меньше этого числа — запускается повторный поиск.
+          | Ниже этого количества запускается повторный поиск.
 
-      u-form-field(label="Сколько чанков проверять" name="max_graded_chunks")
+      u-form-field(label="Лимит проверяемых фрагментов" name="max_graded_chunks")
         u-input(
           v-model.number="state.max_graded_chunks"
           type="number"
@@ -144,9 +140,9 @@ ui-box(title="Умная проверка ответов")
           class="w-full"
         )
         template(#help)
-          | Сколько найденных чанков бот проверяет. Больше — точнее, но ответ дольше.
+          | Количество фрагментов для оценки релевантности.
 
     div(class="flex flex-wrap items-center justify-between gap-3")
-      div(class="text-xs text-gray-500") Изменения применяются к ответам бота сразу после сохранения.
+      div(class="text-xs admin-muted") Изменения применяются к ответам бота сразу после сохранения.
       u-button(type="submit" color="primary" :loading="isSaving") Сохранить
 </template>

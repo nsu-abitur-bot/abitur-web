@@ -37,7 +37,7 @@ const queryParams = computed(() => {
   return params
 })
 
-const { data: statsData } = await useApi("/api/v1/logs/token-stats", {
+const { data: statsData, status, error, refresh } = await useApi("/api/v1/logs/token-stats", {
   query: queryParams,
 })
 
@@ -71,13 +71,14 @@ const chartData = computed<ChartData<"line"> | null>(() => {
       borderColor: lineColor.value,
       borderWidth: 2,
       tension: 0.3,
-      pointRadius: 0,
+      pointRadius: 2,
     }],
   }
 })
 
 const chartOptions = computed<ChartOptions<"line">>(() => ({
   responsive: true,
+  animation: false,
   maintainAspectRatio: false,
   plugins: {
     legend: { display: false },
@@ -109,11 +110,16 @@ const totalTokens = computed(() => statsData.value?.total ?? 0)
 </script>
 
 <template lang="pug">
-ui-box(title="Потребление токенов" class="w-full")
+ui-box(title="Потребление токенов" class="w-full min-w-0")
   div(class="mb-3 text-sm opacity-70")
     | Всего за период: <b>{{ formatTokens(totalTokens) }}</b> токенов
 
-  div(class="h-64 w-full")
+  template(#right)
+    u-button(icon="i-lucide-refresh-cw" aria-label="Обновить график" color="neutral" variant="ghost" :loading="status === 'pending'" @click="() => refresh()")
+  div(v-if="error" role="alert" class="admin-empty") Не удалось загрузить статистику.
+  div(v-else-if="status === 'pending'" class="admin-empty") Загрузка…
+  div(v-else-if="!statsData?.buckets?.length" class="admin-empty") Нет данных за выбранный период.
+  div(v-else class="h-52 w-full")
     chart-line(v-if="chartData" :data="chartData" :options="chartOptions")
 
   div(class="mt-4 overflow-x-auto")

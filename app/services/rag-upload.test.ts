@@ -59,3 +59,32 @@ describe("uploadRagDocuments", () => {
     expect(result.results.at(1)?.status).toBe("skipped")
   })
 })
+
+describe("document batch operations", () => {
+  it("never interprets an empty selection as all documents", async () => {
+    const request = vi.fn()
+    vi.stubGlobal("apiFetch", request)
+    const { checkRagDocuments, updateChangedRagDocuments } = await import("~/services/rag-upload")
+    await expect(checkRagDocuments([])).rejects.toThrow("Не выбраны")
+    await expect(updateChangedRagDocuments([])).rejects.toThrow("Не выбраны")
+    expect(request).not.toHaveBeenCalled()
+    vi.unstubAllGlobals()
+  })
+  it("preserves explicit empty metadata strings for clearing fields", async () => {
+    const request = vi.fn(async () => ({ id: "doc" }))
+    vi.stubGlobal("apiFetch", request)
+    const { updateRagDocument } = await import("~/services/rag-upload")
+    await updateRagDocument("doc", { title: "", source_url: "" })
+    expect(request).toHaveBeenCalledWith("/api/v1/rag/docs/doc", { method: "PATCH", body: { title: "", source_url: "" } })
+    vi.unstubAllGlobals()
+  })
+  it("settles every deletion and preserves the failed id", async () => {
+    const request = vi.fn((path: string) => path.endsWith("bad") ? Promise.reject(new Error("Failed")) : Promise.resolve())
+    vi.stubGlobal("apiFetch", request)
+    const { deleteRagDocuments } = await import("~/services/rag-upload")
+    const results = await deleteRagDocuments(["ok", "bad", "last"])
+    expect(results.map(result => [result.id, result.status])).toEqual([["ok", "fulfilled"], ["bad", "rejected"], ["last", "fulfilled"]])
+    expect(request).toHaveBeenCalledTimes(3)
+    vi.unstubAllGlobals()
+  })
+})

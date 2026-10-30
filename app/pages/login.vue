@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { authErrorMessage } from "~/services/auth-errors"
+
 definePageMeta({
   layout: false,
 })
@@ -11,36 +13,10 @@ const password = ref("")
 const isLoading = ref(false)
 const errorMessage = ref("")
 
-const getReadableErrorMessage = (error: unknown) => {
-  if (typeof error !== "object" || !error) {
-    return "Не удалось выполнить вход"
-  }
-
-  const maybeError = error as {
-    data?: { message?: string, statusMessage?: string, detail?: string }
-    statusMessage?: string
-    message?: string
-  }
-
-  const message = maybeError.data?.message
-    ?? maybeError.data?.statusMessage
-    ?? (typeof maybeError.data?.detail === "string" ? maybeError.data.detail : undefined)
-    ?? maybeError.statusMessage
-
-  if (message) {
-    return message
-  }
-
-  return maybeError.message && !maybeError.message.startsWith("[")
-    ? maybeError.message
-    : "Не удалось выполнить вход"
-}
-
-if (token.value) {
-  await navigateTo("/")
-}
-
 const handleLogin = async () => {
+  if (isLoading.value) {
+    return
+  }
   if (!username.value || !password.value) {
     errorMessage.value = "Введите логин и пароль"
     return
@@ -65,7 +41,7 @@ const handleLogin = async () => {
     token.value = response.access_token
     await navigateTo("/")
   } catch (error: unknown) {
-    const message = getReadableErrorMessage(error)
+    const message = authErrorMessage(error, "Не удалось выполнить вход")
     errorMessage.value = message
     toast.add({
       title: "Ошибка входа",
@@ -79,12 +55,12 @@ const handleLogin = async () => {
 </script>
 
 <template lang="pug">
-div(class="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 dark:from-gray-950 dark:to-gray-900 flex items-center justify-center px-4")
+div(class="min-h-screen bg-[var(--ui-bg-muted)] flex items-center justify-center px-4 py-10")
   div(class="w-full max-w-md")
-    div(class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-xl p-6 sm:p-8 space-y-6")
+    div(class="bg-[var(--ui-bg)] border border-[var(--ui-border)] rounded-xl p-6 sm:p-8 space-y-6")
       div(class="space-y-2")
-        p(class="text-xs uppercase tracking-[0.18em] text-primary") АБИТУРИЕНТ.РФ
-        h1(class="text-2xl font-bold text-gray-900 dark:text-gray-100") Вход в систему
+        p(class="text-sm font-semibold text-primary") Абитуриент · Администрирование
+        h1(class="text-xl font-semibold text-gray-900 dark:text-gray-100") Вход в систему
 
       form(class="space-y-4" @submit.prevent="handleLogin")
         u-form-field(label="Логин" required)
@@ -93,7 +69,7 @@ div(class="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 dark:from-gr
             autocomplete="username"
             icon="i-heroicons-user"
             placeholder="Введите логин"
-            size="xl"
+            size="md" class="w-full"
             :disabled="isLoading"
           )
 
@@ -104,14 +80,13 @@ div(class="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 dark:from-gr
             autocomplete="current-password"
             icon="i-heroicons-lock-closed"
             placeholder="Введите пароль"
-            size="xl"
+            size="md" class="w-full"
             :disabled="isLoading"
-            @keyup.enter="handleLogin"
           )
 
-        p(v-if="errorMessage" class="text-sm text-error") {{ errorMessage }}
+        p(v-if="errorMessage" role="alert" class="text-sm text-error") {{ errorMessage }}
 
-        u-button(type="submit" color="primary" block size="xl" :loading="isLoading")
+        u-button(type="submit" color="primary" block size="md" class="w-full" :loading="isLoading")
           | Войти
 
       div(class="text-center text-sm text-gray-500")

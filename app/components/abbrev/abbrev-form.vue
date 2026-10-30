@@ -22,20 +22,15 @@ const isLoading = ref(false)
 const toast = useToast()
 
 const onSubmit = async () => {
+  if (!state.short.trim() || !state.full.trim() || isLoading.value) {
+    return
+  }
   isLoading.value = true
   try {
-    if (isEditMode.value) {
-      await useApi("/api/v1/abbrev/{item_id}", {
-        method: "PUT",
-        path: { item_id: itemId.value! },
-        body: state,
-      })
-    } else {
-      await useApi("/api/v1/abbrev", {
-        method: "POST",
-        body: state,
-      })
-    }
+    await apiFetch(isEditMode.value ? `/api/v1/abbrev/${encodeURIComponent(itemId.value!)}` : "/api/v1/abbrev", {
+      method: isEditMode.value ? "PUT" : "POST",
+      body: state,
+    })
     emit("submit")
   } catch (err) {
     console.error("Failed to submit abbreviation:", err)
@@ -52,10 +47,10 @@ const onSubmit = async () => {
 
 <template lang="pug">
 u-form(:state="state" class="space-y-4" @submit="onSubmit")
-  u-form-group(label="Аббревиатура" name="short" required class="w-full")
+  u-form-field(label="Аббревиатура" name="short" required class="w-full")
     u-input(v-model="state.short" placeholder="Например: НГУ" class="w-full")
 
-  u-form-group(label="Расшифровка" name="full" required class="w-full")
+  u-form-field(label="Расшифровка" name="full" required class="w-full")
     u-input(v-model="state.full" placeholder="Например: Новосибирский государственный университет" class="w-full")
 
   div(class="flex justify-end gap-3 pt-2")

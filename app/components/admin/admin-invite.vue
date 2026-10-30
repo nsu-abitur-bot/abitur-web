@@ -18,6 +18,13 @@ const roleOptions: { label: string, value: AdminRole }[] = [
 ]
 
 const handleCreate = async () => {
+  if (isLoading.value) {
+    return
+  }
+  if (expiresInHours.value !== null && expiresInHours.value !== undefined && expiresInHours.value !== 0 && (!Number.isInteger(expiresInHours.value) || expiresInHours.value < 1)) {
+    toast.add({ title: "Укажите срок целым числом часов больше нуля", color: "error" })
+    return
+  }
   isLoading.value = true
   generatedCode.value = null
 
@@ -50,15 +57,21 @@ const copyCode = async () => {
   if (!generatedCode.value) {
     return
   }
-  await navigator.clipboard.writeText(generatedCode.value)
-  toast.add({ title: "Скопировано", color: "success" })
+  try {
+    await navigator.clipboard.writeText(generatedCode.value)
+    toast.add({ title: "Скопировано", color: "success" })
+  } catch {
+    toast.add({ title: "Скопируйте код вручную", color: "error" })
+  }
 }
 </script>
 
 <template lang="pug">
-ui-box(title="Создать инвайт-код")
+section(class="admin-panel p-5")
+  h2(class="font-semibold mb-2") Пригласить участника
+  p(class="admin-muted text-sm mb-5") Создайте одноразовый код и передайте его участнику для регистрации.
   div(class="space-y-4")
-    div(class="flex gap-4 flex-wrap")
+    div(class="admin-form-grid")
       u-form-field(label="Роль" class="flex-1 min-w-40")
         u-select(v-model="role" :items="roleOptions" value-key="value" label-key="label")
 
@@ -71,20 +84,21 @@ ui-box(title="Создать инвайт-код")
         )
 
     u-button(color="primary" :loading="isLoading" icon="i-heroicons-key" @click="handleCreate")
-      | Создать инвайт-код
+      | Создать приглашение
 
-    div(v-if="generatedCode" class="mt-4 p-4 rounded-lg bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 space-y-2")
-      p(class="text-sm text-green-700 dark:text-green-300 font-medium") Инвайт-код создан
+    div(v-if="generatedCode" class="admin-detail mt-4 space-y-2")
+      p(class="text-sm font-medium") Приглашение создано
       div(class="flex items-center gap-2")
-        code(class="flex-1 font-mono text-sm bg-white dark:bg-gray-900 px-3 py-2 rounded border border-green-200 dark:border-green-700 break-all") {{ generatedCode }}
+        code(class="flex-1 font-mono text-sm break-all") {{ generatedCode }}
         u-button(
           icon="i-heroicons-clipboard-document"
           color="neutral"
           variant="ghost"
           size="sm"
+          aria-label="Скопировать код приглашения"
           @click="copyCode"
         )
-      p(v-if="generatedExpiry" class="text-xs text-green-600 dark:text-green-400")
+      p(v-if="generatedExpiry" class="admin-muted text-xs")
         | Действует до: {{ new Date(generatedExpiry).toLocaleString("ru") }}
-      p(v-else class="text-xs text-green-600 dark:text-green-400") Без ограничения по времени
+      p(v-else class="admin-muted text-xs") Без ограничения по времени
 </template>

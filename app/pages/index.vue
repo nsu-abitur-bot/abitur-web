@@ -1,18 +1,13 @@
 <script setup lang="ts">
 const refreshTrigger = ref(0)
-
-function handleRefresh() {
-  refreshTrigger.value++
-}
+const adding = ref(false)
 </script>
 
 <template lang="pug">
-u-container(class="py-8 space-y-8")
-  div(class="grid grid-cols-1 gap-8 items-start")
-    div(class="space-y-6")
-      ui-box(title="Добавить источник")
-        rag-parser(@success="handleRefresh")
-    div(class="space-y-6")
-      ui-box(title="Индексированные источники")
-        rag-list(:refresh-trigger="refreshTrigger")
+ui-page(title="Материалы")
+  template(#actions)
+    u-button(icon="i-lucide-plus" @click="adding = !adding") {{ adding ? 'Закрыть' : 'Добавить материал' }}
+  ui-box(v-show="adding" title="Добавить материал")
+    rag-parser(@success="refreshTrigger++")
+  rag-list(:refresh-trigger="refreshTrigger")
 </template>

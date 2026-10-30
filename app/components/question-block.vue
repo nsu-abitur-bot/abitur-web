@@ -18,7 +18,7 @@ const query = computed(() => ({
   limit: popularLimit.value,
 }))
 
-const { data, refresh, status } = await useApi("/api/v1/logs/popular", {
+const { data, refresh, status, error } = await useApi("/api/v1/logs/popular", {
   query,
 })
 
@@ -33,7 +33,7 @@ const getQuestionVariants = (item: { question: string, variants?: string[] }) =>
 </script>
 
 <template lang="pug">
-ui-box(title="Самые популярные вопросы" class="w-full")
+ui-box(title="Самые популярные вопросы" class="w-full min-w-0")
   template(#right)
     div(class="flex items-center gap-2")
       span(class="text-xs text-gray-500 dark:text-gray-400") Показать
@@ -47,12 +47,16 @@ ui-box(title="Самые популярные вопросы" class="w-full")
 
   div(v-if="status === 'pending'" class="py-6 text-sm text-gray-500 dark:text-gray-400") Загрузка...
 
+  div(v-else-if="error" class="admin-empty" role="alert")
+    p Не удалось загрузить популярные вопросы.
+    u-button(variant="outline" @click="() => refresh()") Повторить
+
   div(v-else-if="!topQuestion" class="py-6 text-sm text-gray-500 dark:text-gray-400") Нет данных.
 
   div(v-else class="space-y-4")
-    blockquote(class="border-l-4 border-primary-500 pl-4 py-2 bg-gray-50 dark:bg-gray-800 rounded-r-lg italic text-lg text-gray-700 dark:text-gray-300")
+    blockquote(class="admin-detail text-sm")
       p(class="mb-2") "{{ topQuestion.question }}"
-      footer(class="text-sm font-bold text-gray-500 dark:text-gray-400 not-italic")
+      footer(class="text-xs font-medium text-gray-500 dark:text-gray-400 not-italic")
         | {{ topQuestion.count }} запросов
       details(v-if="getQuestionVariants(topQuestion).length" class="mt-3 not-italic group")
         summary(class="inline-flex cursor-pointer select-none items-center gap-1 text-xs font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300")

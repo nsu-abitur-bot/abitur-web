@@ -9,7 +9,7 @@ import {
 } from "~/utils/rag-upload"
 
 describe("validateRagFiles", () => {
-  it("accepts supported formats up to 5 MB", () => {
+  it("accepts supported formats up to 10 MB", () => {
     const files = [
       new File(["hello"], "doc.txt", { type: "text/plain" }),
       new File(["{"], "data.json", { type: "application/json" }),
@@ -32,7 +32,7 @@ describe("validateRagFiles", () => {
     expect(result.validFiles).toHaveLength(0)
     expect(result.rejectedFiles).toHaveLength(2)
     expect(result.rejectedFiles.at(0)?.reason).toContain("Неподдерживаемый формат")
-    expect(result.rejectedFiles.at(1)?.reason).toContain("превышает 5 MB")
+    expect(result.rejectedFiles.at(1)?.reason).toContain("превышает 10 MB")
   })
 })
 

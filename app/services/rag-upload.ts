@@ -119,14 +119,18 @@ export async function clearRagCache(): Promise<void> {
   })
 }
 
-export async function deleteRagDocuments(ids: string[]): Promise<void> {
-  await Promise.all(ids.map(id => apiFetch(`/api/v1/rag/docs/${encodeURIComponent(id)}`, {
+export async function deleteRagDocuments(ids: string[]) {
+  const results = await Promise.allSettled(ids.map(id => apiFetch(`/api/v1/rag/docs/${encodeURIComponent(id)}`, {
     method: "DELETE",
   })))
+  return results.map((result, index) => ({ id: ids[index]!, ...result }))
 }
 
 function buildDocumentCheckBody(ids?: string[]): DocumentCheckRequest {
-  return ids?.length ? { document_ids: ids } : {}
+  if (ids && ids.length === 0) {
+    throw new Error("Не выбраны документы")
+  }
+  return ids ? { document_ids: ids } : {}
 }
 
 export async function checkRagDocuments(ids?: string[]): Promise<DocumentCheckResponse> {

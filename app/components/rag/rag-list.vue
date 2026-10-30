@@ -1,553 +1,237 @@
 <script setup lang="ts">
-import { exportRagKnowledgeBase } from "~/services/rag-debug"
-import {
-  checkRagDocuments,
-  clearRagCache,
-  deleteRagDocuments,
-  listRagDocuments,
-  updateChangedRagDocuments,
-  updateRagDocument,
-} from "~/services/rag-upload"
-import type { DocumentCheckResult, RagDocument } from "~/types/rag-upload"
+import { exportRagKnowledgeBase, getRagDocumentDiagnostics } from "~/services/rag-debug"
+import { materialState, materialType } from "~/services/rag-status"
+import { checkRagDocuments, clearRagCache, deleteRagDocuments, listRagDocuments, updateChangedRagDocuments, updateRagDocument } from "~/services/rag-upload"
+import type { RagDocumentDiagnostics } from "~/types/rag-debug"
+import type { RagDocument } from "~/types/rag-upload"
 
-const props = defineProps<{
-  refreshTrigger?: number
-}>()
-
-const { isAdmin } = useRole()
-
-const documents = ref<RagDocument[]>([])
-const isLoading = ref(false)
-const isChecking = ref(false)
-const isUpdating = ref(false)
-const isSavingDocument = ref(false)
-const selectedIds = ref<Set<string>>(new Set())
-const checkResults = ref<DocumentCheckResult[]>([])
+const props = defineProps<{ refreshTrigger?: number }>()
+const route = useRoute()
+const router = useRouter()
 const toast = useToast()
-const editingDocument = ref<RagDocument | null>(null)
-const editForm = reactive({
-  title: "",
-  sourceUrl: "",
-})
-const isEditDocumentOpen = computed({
-  get: () => editingDocument.value !== null,
-  set: (value: boolean) => {
-    if (!value) {
-      editingDocument.value = null
+const documents = ref<RagDocument[]>([])
+const diagnostics = ref<Record<string, RagDocumentDiagnostics | null>>({})
+const isLoading = ref(false)
+const loadError = ref(false)
+const busy = ref(false)
+const clearCacheOpen = ref(false)
+const selectedIds = ref(new Set<string>())
+const operationMessages = ref<string[]>([])
+const query = computed({ get: () => String(route.query.q ?? ""), set: (q) => {
+  router.replace({ query: { ...route.query, q: q || undefined } })
+} })
+const filter = computed({ get: () => String(route.query.status ?? "all"), set: (status) => {
+  router.replace({ query: { ...route.query, status: status === "all" ? undefined : status } })
+} })
+const state = (doc: RagDocument) => materialState(doc, diagnostics.value[doc.id])
+const visible = computed(() => documents.value.filter(doc => (doc.title || doc.id).toLowerCase().includes(query.value.toLowerCase()) && (filter.value === "all" || state(doc).key === filter.value)))
+const isAllSelected = computed(() => visible.value.length > 0 && visible.value.every(doc => selectedIds.value.has(doc.id)))
+function toggleSelectAll() {
+  for (const doc of visible.value) {
+    if (isAllSelected.value) {
+      break
     }
-  },
-})
-
-const fetchDocuments = async () => {
-  isLoading.value = true
-  try {
-    documents.value = await listRagDocuments()
-  } catch (error) {
-    console.error("Failed to fetch RAG documents", error)
-  } finally {
-    isLoading.value = false
+    selectedIds.value.add(doc.id)
   }
 }
-
-onMounted(fetchDocuments)
-
-watch(() => props.refreshTrigger, () => {
-  fetchDocuments()
-})
-
-const formatDate = (dateStr?: string | null) => {
-  if (!dateStr) {
-    return "—"
-  }
-  try {
-    const date = new Date(dateStr)
-    return date.toLocaleDateString("ru-RU", { day: "2-digit", month: "2-digit", year: "2-digit" })
-  } catch {
-    return dateStr
-  }
-}
-
-// --- Selection Logic ---
-const isAllSelected = computed(() => documents.value.length > 0 && selectedIds.value.size === documents.value.length)
-
-const toggleSelectAll = () => {
-  if (isAllSelected.value) {
-    selectedIds.value.clear()
-  } else {
-    selectedIds.value = new Set(documents.value.map(d => d.id))
-  }
-}
-
-const toggleSelection = (id: string) => {
+function toggleSelection(id: string) {
   if (selectedIds.value.has(id)) {
     selectedIds.value.delete(id)
   } else {
     selectedIds.value.add(id)
   }
 }
-
-// --- Actions ---
-const handleBatchDelete = async () => {
-  if (selectedIds.value.size === 0) {
+let generation = 0
+async function fetchDocuments() {
+  const current = ++generation
+  isLoading.value = true
+  loadError.value = false
+  try {
+    const loaded = await listRagDocuments()
+    if (current !== generation) {
+      return
+    }
+    documents.value = loaded
+    selectedIds.value = new Set([...selectedIds.value].filter(id => documents.value.some(doc => doc.id === id)))
+    diagnostics.value = {}
+    const queue = [...documents.value]
+    await Promise.all(Array.from({ length: 3 }, async () => {
+      while (queue.length) {
+        if (current !== generation) {
+          break
+        }
+        const doc = queue.shift()!
+        try {
+          const result = await getRagDocumentDiagnostics(doc.id)
+          if (current === generation) {
+            diagnostics.value[doc.id] = result
+          }
+        } catch {
+          if (current === generation) {
+            diagnostics.value[doc.id] = null
+          }
+        }
+      }
+    }))
+  } catch {
+    loadError.value = true
+  } finally {
+    if (current === generation) {
+      isLoading.value = false
+    }
+  }
+}
+watch(() => route.query.doc, (id) => {
+  if (typeof id === "string" && id) {
+    const { doc: _doc, ...query } = route.query
+    navigateTo({ path: `/rag/document/${encodeURIComponent(id)}`, query })
+  }
+}, { immediate: true })
+onMounted(fetchDocuments)
+onBeforeUnmount(() => {
+  generation++
+})
+watch(() => props.refreshTrigger, fetchDocuments)
+async function run(action: () => Promise<unknown>) {
+  if (busy.value) {
     return
   }
-
-  isLoading.value = true
+  busy.value = true
+  operationMessages.value = []
   try {
-    await deleteRagDocuments([...selectedIds.value])
-    toast.add({ title: "Удалено", description: "Документы успешно удалены", color: "success" })
-    selectedIds.value.clear()
+    await action()
+  } catch {
+    toast.add({ title: "Не удалось выполнить действие", color: "error" })
+  } finally {
+    busy.value = false
+  }
+}
+async function check(update = false, all = false) {
+  const ids = all ? undefined : [...selectedIds.value]
+  if (ids && !ids.length) {
+    return
+  }
+  await run(async () => {
+    const result = await (update ? updateChangedRagDocuments(ids) : checkRagDocuments(ids))
+    const summary = "updated_count" in result ? `Проверено: ${result.checked_count}. Обновлено: ${result.updated_count}.` : `Проверено: ${result.checked_count}. Изменено: ${result.changed_count}.`
+    operationMessages.value = [summary, ...result.results.map(item => `${item.title || item.id}: ${item.message || item.status}`)]
+    if (ids) {
+      for (const id of ids) {
+        if (!result.results.some(item => item.id === id)) {
+          operationMessages.value.push(`${id}: результат не получен`)
+        }
+      }
+    }
     await fetchDocuments()
-  } catch {
-    toast.add({ title: "Ошибка", description: "Не удалось удалить документы", color: "error" })
-  } finally {
-    isLoading.value = false
-  }
+  })
 }
-
-const selectedIdsList = computed(() => [...selectedIds.value])
-const selectedIdsForRequest = computed(() => selectedIdsList.value.length ? selectedIdsList.value : undefined)
-
-const handleCheckDocuments = async () => {
-  isChecking.value = true
-  try {
-    const result = await checkRagDocuments(selectedIdsForRequest.value)
-    checkResults.value = result.results
-    toast.add({
-      title: "Проверка завершена",
-      description: `Проверено: ${result.checked_count}. Изменено: ${result.changed_count}.`,
-      color: result.changed_count > 0 ? "warning" : "success",
-    })
-  } catch {
-    toast.add({ title: "Ошибка", description: "Не удалось проверить документы", color: "error" })
-  } finally {
-    isChecking.value = false
-  }
-}
-
-const handleUpdateChanged = async () => {
-  isUpdating.value = true
-  try {
-    const result = await updateChangedRagDocuments(selectedIdsForRequest.value)
-    checkResults.value = result.results
-    toast.add({
-      title: "Обновление завершено",
-      description: `Проверено: ${result.checked_count}. Обновлено: ${result.updated_count}.`,
-      color: "success",
-    })
+async function removeSelected() {
+  await run(async () => {
+    const results = await deleteRagDocuments([...selectedIds.value])
+    for (const result of results) {
+      if (result.status === "fulfilled") {
+        selectedIds.value.delete(result.id)
+      }
+      operationMessages.value.push(`${documents.value.find(doc => doc.id === result.id)?.title || result.id}: ${result.status === "fulfilled" ? "Удалён" : "Не удалось удалить"}`)
+    }
     await fetchDocuments()
-  } catch {
-    toast.add({ title: "Ошибка", description: "Не удалось обновить документы", color: "error" })
-  } finally {
-    isUpdating.value = false
+  })
+}
+const editingDocument = ref<RagDocument | null>(null)
+const editForm = reactive({ title: "", sourceUrl: "" })
+const isEditDocumentOpen = computed({ get: () => editingDocument.value !== null, set: (value) => {
+  if (!value) {
+    editingDocument.value = null
   }
-}
-
-const isClearingCache = ref(false)
-
-const handleClearCache = async () => {
-  isClearingCache.value = true
-  try {
-    await clearRagCache()
-    toast.add({ title: "Готово", description: "Кэш ответов базы знаний очищен", color: "success" })
-  } catch {
-    toast.add({ title: "Ошибка", description: "Не удалось очистить кэш", color: "error" })
-  } finally {
-    isClearingCache.value = false
-  }
-}
-
-const isExporting = ref(false)
-
-const handleExport = async () => {
-  isExporting.value = true
-  try {
-    await exportRagKnowledgeBase()
-    toast.add({ title: "Готово", description: "Экспорт базы знаний скачан", color: "success" })
-  } catch {
-    toast.add({ title: "Ошибка", description: "Не удалось экспортировать базу знаний", color: "error" })
-  } finally {
-    isExporting.value = false
-  }
-}
-
-const diagnosticsDocId = ref<string | null>(null)
-const isDiagnosticsOpen = ref(false)
-
-const openDiagnostics = (doc: RagDocument) => {
-  diagnosticsDocId.value = doc.id
-  isDiagnosticsOpen.value = true
-}
-
-const openEditDocument = (doc: RagDocument) => {
+} })
+const isSavingDocument = ref(false)
+function openEditDocument(doc: RagDocument) {
   editingDocument.value = doc
   editForm.title = doc.title ?? ""
   editForm.sourceUrl = doc.url ?? ""
 }
-
-const handleUpdateDocument = async () => {
+async function handleUpdateDocument() {
   if (!editingDocument.value) {
     return
   }
-
   isSavingDocument.value = true
   try {
-    const updated = await updateRagDocument(editingDocument.value.id, {
-      title: editForm.title.trim() || null,
-      source_url: editForm.sourceUrl.trim() || null,
-    })
-    documents.value = documents.value.map(doc => doc.id === updated.id ? updated : doc)
-    checkResults.value = checkResults.value.filter(result => result.id !== updated.id)
+    await updateRagDocument(editingDocument.value.id, { title: editForm.title.trim(), source_url: editForm.sourceUrl.trim() })
     editingDocument.value = null
-    toast.add({ title: "Сохранено", description: "Метаданные документа обновлены", color: "success" })
+    await fetchDocuments()
   } catch {
-    toast.add({ title: "Ошибка", description: "Не удалось обновить документ", color: "error" })
+    toast.add({ title: "Не удалось сохранить документ", color: "error" })
   } finally {
     isSavingDocument.value = false
   }
 }
-
-const getDocCheckStatus = (doc: RagDocument) => {
-  return checkResults.value.find(result => result.id === doc.id)?.status ?? null
-}
-
-const getDocCheckMessage = (doc: RagDocument) => {
-  return checkResults.value.find(result => result.id === doc.id)?.message ?? doc.last_check_message ?? null
-}
-
-const normalizeDocStatus = (status?: string | null) => status?.trim().toLowerCase().replaceAll(" ", "_") ?? ""
-
-const getDocStatus = (doc: RagDocument) => {
-  return normalizeDocStatus(getDocCheckStatus(doc) ?? doc.status)
-}
-
-const getDocStatusLabel = (doc: RagDocument) => {
-  switch (getDocStatus(doc)) {
-    case "indexed":
-      return "Проиндексирован"
-    case "changed":
-    case "изменён":
-    case "изменен":
-      return "Изменен"
-    case "source_unavailable":
-    case "источник_недоступен":
-      return "Источник недоступен"
-    case "no_source":
-    case "нет_ссылки":
-      return "Нет ссылки"
-    case "updated":
-    case "обновлён":
-    case "обновлен":
-      return "Обновлен"
-    case "indexing_failed":
-    case "ошибка_индексации":
-    case "failed":
-      return "Ошибка индексации"
-    case "unchanged":
-    case "без_изменений":
-      return "Без изменений"
-    default:
-      return doc.status || "Неизвестно"
-  }
-}
-
-const getDocStatusBadgeColor = (doc: RagDocument) => {
-  switch (getDocStatus(doc)) {
-    case "indexed":
-    case "updated":
-    case "обновлён":
-    case "обновлен":
-    case "unchanged":
-    case "без_изменений":
-      return "success"
-    case "changed":
-    case "изменён":
-    case "изменен":
-      return "warning"
-    case "source_unavailable":
-    case "источник_недоступен":
-    case "indexing_failed":
-    case "ошибка_индексации":
-    case "failed":
-      return "error"
-    default:
-      return "neutral"
-  }
-}
-
-const getDocCheckDisplayMessage = (doc: RagDocument) => {
-  const status = getDocStatus(doc)
-  const message = getDocCheckMessage(doc)
-
-  switch (status) {
-    case "changed":
-      return message || "Источник изменился"
-    case "source_unavailable":
-      return message || "Источник недоступен"
-    case "no_source":
-      return message || "Ссылка на источник не указана"
-    case "updated":
-      return message || "Документ обновлен"
-    case "indexing_failed":
-      return message || "Не удалось обновить индекс"
-    case "failed":
-      break
-    default:
-      return message || null
-  }
-
-  const lowerMessage = (message || "").toLowerCase()
-  if (
-    lowerMessage.includes("404")
-    || lowerMessage.includes("not found")
-    || lowerMessage.includes("не найден")
-    || lowerMessage.includes("no such")
-  ) {
-    return "Источник не найден"
-  }
-
-  return "Не удалось проверить источник"
-}
-
-const getDocCheckClass = (doc: RagDocument) => {
-  switch (getDocStatus(doc)) {
-    case "changed":
-    case "изменён":
-    case "изменен":
-      return "bg-warning-50/70 dark:bg-warning-950/20"
-    case "source_unavailable":
-    case "источник_недоступен":
-    case "indexing_failed":
-    case "ошибка_индексации":
-    case "failed":
-      return "bg-error-50/70 dark:bg-error-950/20"
-    case "no_source":
-    case "нет_ссылки":
-      return "bg-gray-50 dark:bg-gray-800/50"
-    case "updated":
-    case "обновлён":
-    case "обновлен":
-      return "bg-success-50/70 dark:bg-success-950/20"
-    default:
-      return ""
-  }
-}
-
-const getDocCheckMessageClass = (doc: RagDocument) => {
-  switch (getDocStatus(doc)) {
-    case "source_unavailable":
-    case "источник_недоступен":
-    case "indexing_failed":
-    case "ошибка_индексации":
-    case "failed":
-      return "text-error-600 dark:text-error-400"
-    case "changed":
-    case "изменён":
-    case "изменен":
-      return "text-warning-600 dark:text-warning-400"
-    case "updated":
-    case "обновлён":
-    case "обновлен":
-      return "text-success-600 dark:text-success-400"
-    default:
-      return "text-gray-500 dark:text-gray-400"
-  }
-}
-
-const decodeUrlPart = (value: string) => {
-  try {
-    return decodeURIComponent(value)
-  } catch {
-    return value
-  }
-}
-
-const shortenText = (value: string, maxLength = 86) => {
-  return value.length > maxLength ? `${value.slice(0, maxLength - 1)}...` : value
-}
-
-const getDocTitle = (doc: RagDocument) => doc.title || doc.url || doc.id
-
-const getDocUrlLabel = (doc: RagDocument) => {
-  if (!doc.url) {
-    return "Ссылка не указана"
-  }
-
-  try {
-    const url = new URL(doc.url)
-    const filename = decodeUrlPart(url.pathname.split("/").filter(Boolean).at(-1) || "")
-    return filename ? `${url.hostname}/${shortenText(filename)}` : url.hostname
-  } catch {
-    return shortenText(decodeUrlPart(doc.url))
-  }
+const diagnosticsDocId = ref<string | null>(null)
+const isDiagnosticsOpen = ref(false)
+function openDiagnostics(doc: RagDocument) {
+  diagnosticsDocId.value = doc.id
+  isDiagnosticsOpen.value = true
 }
 </script>
 
 <template lang="pug">
-div(class="space-y-4")
-  // Toolbar Panel
-  div(class="flex items-center justify-between bg-gray-50 dark:bg-gray-800/50 p-3 rounded-lg border dark:border-gray-800")
-    div(class="flex items-center gap-2")
-      u-button(
-        variant="outline"
-        color="neutral"
-        size="sm"
-        @click="toggleSelectAll"
-      ) Выделить все
-
-      u-button(
-        variant="outline"
-        color="neutral"
-        size="sm"
-        :loading="isChecking"
-        @click="handleCheckDocuments"
-      ) Проверить
-
-      u-button(
-        variant="outline"
-        color="neutral"
-        size="sm"
-        :loading="isUpdating"
-        @click="handleUpdateChanged"
-      ) Обновить измененные
-
-      u-modal(
-        title="Удалить документы"
-        :description="`Удалить выбранные документы (${selectedIds.size})?`"
-      )
-        u-button(
-          variant="outline"
-          color="neutral"
-          size="sm"
-          :disabled="selectedIds.size === 0"
-        ) Удалить
-
+.materials
+  .admin-table-wrap
+    .admin-toolbar
+      u-input(v-model="query" placeholder="Найти материал" aria-label="Поиск материалов" icon="i-lucide-search" class="materials-search")
+      u-select(v-model="filter" aria-label="Состояние" :items="[{ label: 'Все состояния', value: 'all' }, { label: 'Обработаны', value: 'ready' }, { label: 'Требуют внимания', value: 'attention' }, { label: 'Не подтверждены', value: 'unknown' }]")
+      u-button(color="neutral" variant="outline" :loading="busy" @click="check(false, true)") Проверить все
+      u-dropdown-menu(:items="[{ label: 'Обновить изменённые', onSelect: () => check(true, true) }, { label: 'Экспорт ZIP без эмбеддингов', onSelect: () => run(exportRagKnowledgeBase) }, { label: 'Очистить кэш', onSelect: () => { clearCacheOpen = true } }]")
+        u-button(icon="i-lucide-ellipsis" color="neutral" variant="ghost" aria-label="Другие действия" :disabled="busy")
+      u-modal(v-model:open="clearCacheOpen" title="Очистить кэш?" description="Сохранённые ответы модели будут удалены.")
         template(#footer="{ close }")
-          div(class="flex justify-end gap-2 w-full")
-            u-button(color="neutral" variant="ghost" @click="close") Отмена
-            u-button(color="error" @click="handleBatchDelete(); close()") Удалить
-
-    div(class="flex items-center gap-2")
-      u-button(
-        v-if="isAdmin"
-        variant="outline"
-        color="neutral"
-        size="sm"
-        icon="i-heroicons-magnifying-glass"
-        to="/rag/inspector"
-      ) Инспектор поиска
-
-      u-button(
-        v-if="isAdmin"
-        variant="outline"
-        color="neutral"
-        size="sm"
-        icon="i-heroicons-arrow-down-tray"
-        :loading="isExporting"
-        @click="handleExport"
-      ) Экспорт базы знаний
-
-      u-modal(
-        title="Очистить кэш базы знаний"
-        description="Это удалит сохранённые ответы модели. Агент перестанет отдавать устаревшие ответы по обновлённым данным."
-      )
-        u-button(
-          variant="outline"
-          color="neutral"
-          size="sm"
-          :loading="isClearingCache"
-        ) Очистить кэш
-
+          u-button(color="neutral" variant="ghost" @click="close") Отмена
+          u-button(@click="run(clearRagCache); close()") Очистить
+    .admin-toolbar(v-if="selectedIds.size")
+      span Выбрано: {{ selectedIds.size }}
+      u-button(color="neutral" variant="ghost" @click="selectedIds.clear()") Снять выбор
+      u-button(color="neutral" variant="outline" :disabled="busy" @click="check()") Проверить выбранные
+      u-button(color="neutral" variant="outline" :disabled="busy" @click="check(true)") Обновить изменённые
+      u-modal(title="Удалить материалы?" :description="`Выбрано: ${selectedIds.size}`")
+        u-button(color="error" variant="ghost" :disabled="busy") Удалить
         template(#footer="{ close }")
-          div(class="flex justify-end gap-2 w-full")
-            u-button(color="neutral" variant="ghost" @click="close") Отмена
-            u-button(color="primary" @click="handleClearCache(); close()") Очистить
-
-  p(v-if="isAdmin" class="text-[11px] text-gray-400")
-    | Экспорт содержит исходные документы и служебные JSON-хранилища LightRAG, но не включает эмбеддинги (они зависят от провайдера).
-
-  // Table
-  div(v-if="isLoading && documents.length === 0" class="py-10 flex justify-center text-gray-500")
-    u-icon(name="i-heroicons-arrow-path" class="animate-spin w-8 h-8")
-
-  div(v-else-if="documents.length === 0" class="py-12 text-center text-gray-500 bg-gray-50 dark:bg-gray-800 rounded-lg border border-dashed border-gray-300 dark:border-gray-700")
-    u-icon(name="i-heroicons-document-duplicate" class="w-12 h-12 mx-auto text-gray-400 mb-3")
-    p База знаний пуста. Добавьте ссылку выше.
-
-  div(v-else class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm table-wrap-safe")
-    div
-      table(class="w-full divide-y divide-gray-200 dark:divide-gray-700 rag-documents-table")
-        tbody(class="divide-y divide-gray-100 dark:divide-gray-800")
-          tr(
-            v-for="doc in documents"
-            :key="doc.id"
-            class="group hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
-            :class="[getDocCheckClass(doc), { 'bg-primary-50/30 dark:bg-primary-900/5': selectedIds.has(doc.id) }]"
-          )
-            // Checkbox Column
-            td(class="pl-4 py-4 w-10")
-              u-checkbox(
-                :model-value="selectedIds.has(doc.id)"
-                @update:model-value="toggleSelection(doc.id)"
-              )
-
-            // Content Column
-            td(class="px-4 py-4")
-              div(class="flex flex-col gap-1 min-w-0")
-                div(class="flex items-start gap-2 flex-wrap")
-                  span(class="text-sm font-semibold break-anywhere text-gray-900 dark:text-white min-w-0" :title="getDocTitle(doc)")
-                    | {{ getDocTitle(doc) }}
-                div(
-                  v-if="getDocCheckDisplayMessage(doc) && getDocStatus(doc) !== 'unchanged' && getDocStatus(doc) !== 'без_изменений'"
-                  class="text-[11px] break-anywhere"
-                  :class="getDocCheckMessageClass(doc)"
-                  :title="getDocCheckMessage(doc) || undefined"
-                )
-                  | {{ getDocCheckDisplayMessage(doc) }}
-                div(class="text-[11px] text-gray-500 min-w-0")
-                  a(:href="doc.url || undefined" target="_blank" class="hover:underline hover:text-primary-600 flex items-start gap-1 min-w-0 break-anywhere")
-                    u-icon(name="i-heroicons-link" size="lg" class="shrink-0 mt-0.5")
-                    span(class="min-w-0 break-anywhere" :title="doc.url || undefined") {{ getDocUrlLabel(doc) }}
-                div(v-if="doc.content_summary" class="text-[10px] text-gray-400 italic mt-1 line-clamp-2 break-anywhere") {{ doc.content_summary }}
-
-            // Meta/Status Column
-            td(class="px-4 py-4 text-right")
-              div(class="flex flex-col items-end gap-1 px-4")
-                div(class="text-[11px] font-medium text-gray-500") ({{ formatDate(doc.created_at) }})
-                u-badge(
-                  :color="getDocStatusBadgeColor(doc)"
-                  variant="subtle"
-                  size="sm"
-                ) {{ getDocStatusLabel(doc) }}
-
-            // Actions Column
-            td(class="pr-4 py-4 text-right w-20")
-              u-button(
-                icon="i-heroicons-eye"
-                variant="ghost"
-                color="neutral"
-                size="lg"
-                :to="`/rag/document/${encodeURIComponent(doc.id)}`"
-                title="Просмотреть"
-              )
-              u-button(
-                v-if="isAdmin"
-                icon="i-heroicons-wrench-screwdriver"
-                variant="ghost"
-                color="neutral"
-                size="lg"
-                title="Диагностика"
-                @click="openDiagnostics(doc)"
-              )
-              u-button(
-                icon="i-heroicons-pencil-square"
-                variant="ghost"
-                color="neutral"
-                size="lg"
-                title="Редактировать"
-                @click="openEditDocument(doc)"
-              )
-
+          u-button(color="neutral" variant="ghost" @click="close") Отмена
+          u-button(color="error" @click="removeSelected(); close()") Удалить
+    .admin-empty(v-if="loadError" role="alert")
+      p Не удалось загрузить материалы
+      u-button(class="mt-3" color="neutral" variant="outline" @click="fetchDocuments") Повторить
+    .admin-empty(v-else-if="isLoading && !documents.length" role="status") Загрузка материалов…
+    .admin-empty(v-else-if="!visible.length")
+      p {{ documents.length ? 'Ничего не найдено' : 'Материалов пока нет' }}
+      u-button(v-if="documents.length" color="neutral" variant="ghost" @click="query = ''; filter = 'all'") Сбросить фильтры
+    table.admin-table.materials-table(v-else)
+      thead
+        tr
+          th
+            u-checkbox(:model-value="isAllSelected" aria-label="Выбрать видимые материалы" @update:model-value="value => value ? toggleSelectAll() : visible.forEach(doc => selectedIds.delete(doc.id))")
+          th Название
+          th Тип
+          th Состояние
+          th
+      tbody
+        tr(v-for="doc in visible" :key="doc.id")
+          td
+            u-checkbox(:model-value="selectedIds.has(doc.id)" :aria-label="`Выбрать ${doc.title || doc.id}`" @update:model-value="toggleSelection(doc.id)")
+          td.materials-name
+            nuxt-link(:to="{ path: `/rag/document/${encodeURIComponent(doc.id)}`, query: route.query }") {{ doc.title || doc.id }}
+            small.admin-muted {{ doc.url ? 'Источник по ссылке' : 'Без ссылки' }}
+          td.admin-muted.materials-type {{ materialType(doc.url) }}
+          td
+            span.materials-state(:data-state="state(doc).key") {{ state(doc).label }}
+          td
+            u-dropdown-menu(:items="[{ label: 'Редактировать', onSelect: () => openEditDocument(doc) }, { label: 'Диагностика', onSelect: () => openDiagnostics(doc) }]")
+              u-button(icon="i-lucide-ellipsis" color="neutral" variant="ghost" :aria-label="`Действия: ${doc.title || doc.id}`")
+    .materials-footer.admin-muted(v-if="documents.length")
+      span Материалов: {{ visible.length }} из {{ documents.length }}
+      span(v-if="isLoading") Проверка обработки…
+  details.admin-detail(v-if="operationMessages.length")
+    summary Результаты операции ({{ operationMessages.length }})
+    ul(class="mt-3 space-y-2")
+      li(v-for="(message, index) in operationMessages" :key="index" class="break-anywhere") {{ message }}
   u-slideover(v-model:open="isEditDocumentOpen" title="Редактирование документа")
     template(#body)
       div(v-if="editingDocument" class="space-y-4")
@@ -574,15 +258,96 @@ div(class="space-y-4")
 </template>
 
 <style scoped>
-.rag-documents-table td:first-child {
-  width: 3rem;
+.materials-state[data-state="ready"] {
+  color: var(--admin-success);
 }
 
-.rag-documents-table td:nth-child(3) {
-  width: 8.5rem;
+.materials-state[data-state="attention"] {
+  color: var(--admin-warning);
 }
 
-.rag-documents-table td:nth-child(4) {
-  width: 9.5rem;
+.materials {
+  display: grid;
+  gap: 16px;
+}
+
+.materials-search {
+  flex: 1;
+  max-width: 300px;
+  min-width: 160px;
+}
+
+.materials-name {
+  min-width: 180px;
+  overflow-wrap: anywhere;
+}
+
+.materials-name a {
+  font-weight: 500;
+}
+
+.materials-name a:hover {
+  color: var(--admin-primary);
+}
+
+.materials-name small {
+  display: block;
+  margin-top: 3px;
+  font-size: 11px;
+}
+
+.materials-type {
+  font-size: 12px;
+}
+
+.materials-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 16px;
+  border-top: 1px solid var(--admin-rule);
+  font-size: 11px;
+}
+@media (width <= 600px) {
+  .materials-search {
+    flex-basis: 100%;
+    max-width: none;
+  }
+
+  .materials-table thead {
+    display: none;
+  }
+
+  .materials-table tr {
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr) 32px;
+    padding: 12px;
+    gap: 4px 8px;
+    border-bottom: 1px solid var(--admin-rule);
+  }
+
+  .materials-table td {
+    padding: 0;
+    border: 0;
+  }
+
+  .materials-table td:nth-child(3) {
+    grid-column: 2;
+    font-size: 11px;
+  }
+
+  .materials-table td:nth-child(4) {
+    grid-column: 2;
+    font-size: 11px;
+  }
+
+  .materials-table td:last-child {
+    grid-column: 3;
+    grid-row: 1 / 4;
+  }
+
+  .materials-name {
+    min-width: 0;
+  }
 }
 </style>

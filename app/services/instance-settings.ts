@@ -32,9 +32,41 @@ export function collectChanges(settings: InstanceSetting[], draft: Record<string
       if (draft[setting.key]) {
         changes[setting.key] = draft[setting.key]!
       }
-    } else if (draft[setting.key] !== undefined && draft[setting.key] !== setting.value) {
+    } else if (draft[setting.key] !== undefined && draft[setting.key] !== (setting.value ?? "")) {
       changes[setting.key] = draft[setting.key]!
     }
   }
   return changes
+}
+
+/** Rebase only local edits; untouched fields adopt the current server version. */
+export function rebaseSettings(previous: InstanceSettings, latest: InstanceSettings, draft: Record<string, string>, removed: Set<string>) {
+  const changes = collectChanges(previous.settings, draft, removed)
+  const nextDraft: Record<string, string> = {}
+  const nextRemoved = new Set<string>()
+  const conflicts: string[] = []
+  for (const setting of latest.settings) {
+    nextDraft[setting.key] = setting.secret ? "" : setting.value ?? ""
+    if (!Object.hasOwn(changes, setting.key)) {
+      continue
+    }
+    const old = previous.settings.find(item => item.key === setting.key)
+    if (old && (setting.secret || old.value !== setting.value)) {
+      conflicts.push(setting.key)
+    }
+    const value = changes[setting.key]
+    if (value === null) {
+      nextRemoved.add(setting.key)
+    } else if (value !== undefined) {
+      nextDraft[setting.key] = value
+    }
+  }
+  // A removed schema field must not silently discard a local edit.
+  const missing = Object.keys(changes).filter(key => !latest.settings.some(setting => setting.key === key))
+  return { draft: nextDraft, removed: nextRemoved, conflicts, missing }
+}
+
+export function isRevisionConflict(error: unknown): boolean {
+  const response = error as { status?: number, statusCode?: number, response?: { status?: number } }
+  return response?.status === 409 || response?.statusCode === 409 || response?.response?.status === 409
 }

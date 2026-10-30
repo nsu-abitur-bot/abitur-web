@@ -37,7 +37,7 @@ const queryParams = computed(() => {
   return params
 })
 
-const { data: statsData } = await useApi("/api/v1/logs/request-stats", {
+const { data: statsData, status, error, refresh } = await useApi("/api/v1/logs/request-stats", {
   query: queryParams,
 })
 
@@ -67,13 +67,14 @@ const chartData = computed<ChartData<"line"> | null>(() => {
       borderColor: lineColor.value,
       borderWidth: 2,
       tension: 0.3,
-      pointRadius: 0,
+      pointRadius: 2,
     }],
   }
 })
 
 const chartOptions = computed<ChartOptions<"line">>(() => ({
   responsive: true,
+  animation: false,
   maintainAspectRatio: false,
   plugins: {
     legend: { display: false },
@@ -95,8 +96,13 @@ const chartOptions = computed<ChartOptions<"line">>(() => ({
 </script>
 
 <template lang="pug">
-ui-box(title="Количество запросов" class="w-full")
-  div(class="h-64 w-full")
+ui-box(title="Количество запросов" class="w-full min-w-0")
+  template(#right)
+    u-button(icon="i-lucide-refresh-cw" aria-label="Обновить график" color="neutral" variant="ghost" :loading="status === 'pending'" @click="() => refresh()")
+  div(v-if="error" role="alert" class="admin-empty") Не удалось загрузить статистику.
+  div(v-else-if="status === 'pending'" class="admin-empty") Загрузка…
+  div(v-else-if="!statsData?.buckets?.length" class="admin-empty") Нет данных за выбранный период.
+  div(v-else class="h-52 w-full")
     chart-line(v-if="chartData" :data="chartData" :options="chartOptions")
 
   div(class="mt-4 overflow-x-auto")

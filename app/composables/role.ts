@@ -7,12 +7,12 @@ type AdminRole = components["schemas"]["AdminRole"]
  * Используется для скрытия/блокировки админских действий от роли "viewer".
  */
 export const useRole = () => {
-  const { data: meRes } = useApi("/api/v1/auth/me")
+  const { data: meRes, status, error } = useApi("/api/v1/auth/me")
 
   const role = computed<AdminRole | null>(() => meRes.value?.role ?? null)
   const isViewer = computed(() => role.value === "viewer")
   const isAdmin = computed(() => role.value === "admin" || role.value === "superadmin")
   const isSuperadmin = computed(() => role.value === "superadmin")
 
-  return { role, isViewer, isAdmin, isSuperadmin }
+  return { role, isViewer, isAdmin, isSuperadmin, loading: computed(() => status.value === "pending"), error }
 }

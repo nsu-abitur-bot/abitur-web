@@ -1,13 +1,16 @@
 <script setup lang="ts">
 const threshold = ref(0.95)
 const busy = ref(false)
+const loaded = ref(false)
 const error = ref("")
 const toast = useToast()
 
 async function load() {
   busy.value = true
   try {
+    error.value = ""
     threshold.value = (await apiFetch<{ similarity_threshold: number }>("/api/v1/settings/faq")).similarity_threshold
+    loaded.value = true
   } catch {
     error.value = "Не удалось загрузить настройки FAQ"
   } finally {
@@ -16,6 +19,9 @@ async function load() {
 }
 
 async function save() {
+  if (!loaded.value) {
+    return
+  }
   busy.value = true
   error.value = ""
   try {
@@ -32,13 +38,15 @@ await load()
 </script>
 
 <template>
-  <ui-box title="Сопоставление вопросов с FAQ">
-    <form class="space-y-3" @submit.prevent="save">
+  <section class="admin-panel p-6">
+    <h2 class="text-base font-semibold mb-5">Сопоставление с FAQ</h2>
+    <form v-if="loaded" class="space-y-3" @submit.prevent="save">
       <label for="faq-threshold" class="block text-sm">Порог сходства вопроса с готовым ответом</label>
-      <input id="faq-threshold" v-model.number="threshold" type="number" min="0.5" max="1" step="0.01" required :disabled="busy" class="rounded border p-2 dark:bg-gray-900">
-      <p class="text-sm text-gray-500">Чем выше порог, тем точнее должен совпасть вопрос. Значение по умолчанию — 0.95.</p>
-      <p v-if="error" role="alert" class="text-red-600">{{ error }}</p>
-      <u-button type="submit" :loading="busy" :disabled="busy">Сохранить порог FAQ</u-button>
+      <u-input id="faq-threshold" v-model.number="threshold" type="number" min="0.5" max="1" step="0.01" required :disabled="busy" class="w-full max-w-xs" />
+      <p class="text-sm admin-muted">Чем выше порог, тем точнее должен совпасть вопрос. Значение по умолчанию — 0.95.</p>
+      <u-button type="submit" :loading="busy" :disabled="busy || !loaded">Сохранить порог FAQ</u-button>
     </form>
-  </ui-box>
+    <p v-if="error" role="alert" class="text-error mt-3">{{ error }}</p>
+    <u-button v-if="!loaded" variant="ghost" :loading="busy" @click="load">Повторить загрузку</u-button>
+  </section>
 </template>
