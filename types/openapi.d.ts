@@ -123,64 +123,36 @@ export interface paths {
     patch: operations["change_admin_role_api_v1_auth_admins__admin_id__role_patch"]
     trace?: never
   }
-  "/api/v1/topics/": {
+  "/api/v1/settings/instance": {
     parameters: {
       query?: never
       header?: never
       path?: never
       cookie?: never
     }
-    /**
-     * Получить все темы
-     * @description Получить список всех активных тем.
-     */
-    get: operations["get_topics_api_v1_topics__get"]
-    put?: never
-    /**
-     * Создать новую тему
-     * @description Создает новую тему.
-     *
-     *     - **label**: уникальное название темы
-     *     - **description**: опциональное описание
-     *     - **is_active**: активна ли тема при создании (по умолчанию True)
-     */
-    post: operations["create_topic_api_v1_topics__post"]
+    /** Get Instance Settings */
+    get: operations["get_instance_settings_api_v1_settings_instance_get"]
+    /** Update Instance Settings */
+    put: operations["update_instance_settings_api_v1_settings_instance_put"]
+    post?: never
     delete?: never
     options?: never
     head?: never
     patch?: never
     trace?: never
   }
-  "/api/v1/topics/{topic_id}": {
+  "/api/v1/settings/instance/check": {
     parameters: {
       query?: never
       header?: never
       path?: never
       cookie?: never
     }
-    /**
-     * Получить тему по ID
-     * @description Получает тему по её ID.
-     */
-    get: operations["get_topic_api_v1_topics__topic_id__get"]
-    /**
-     * Обновить тему
-     * @description Обновляет тему по ID.
-     *
-     *     - **label**: новое название (опционально)
-     *     - **description**: новое описание (опционально)
-     *     - **is_active**: изменить статус активности (опционально)
-     */
-    put: operations["update_topic_api_v1_topics__topic_id__put"]
-    post?: never
-    /**
-     * Удалить тему
-     * @description Удаляет (деактивирует) тему по ID.
-     *
-     *     Примечание: тема не удаляется из БД, а деактивируется (is_active = False)
-     *     для сохранения целостности исторических данных.
-     */
-    delete: operations["delete_topic_api_v1_topics__topic_id__delete"]
+    get?: never
+    put?: never
+    /** Test Connection */
+    post: operations["test_connection_api_v1_settings_instance_check_post"]
+    delete?: never
     options?: never
     head?: never
     patch?: never
@@ -384,6 +356,80 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/admission-scores/preview": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Распарсить страницу итогов приёма и показать строки
+     * @description Парсит страницу (без записи в БД) и считает сопоставимость со справочником.
+     */
+    post: operations["preview_scores_api_v1_admission_scores_preview_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/admission-scores/import": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Импортировать отревьюенные строки проходных баллов
+     * @description Идемпотентный upsert строк, присланных админом после предпросмотра.
+     */
+    post: operations["import_scores_api_v1_admission_scores_import_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/admission-scores": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Выборка проходных баллов */
+    get: operations["get_scores_api_v1_admission_scores_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/admission-scores/years": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Список доступных годов */
+    get: operations["get_years_api_v1_admission_scores_years_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/logs/request-stats": {
     parameters: {
       query?: never
@@ -393,6 +439,27 @@ export interface paths {
     }
     /** Статистика количества запросов */
     get: operations["get_request_stats_api_v1_logs_request_stats_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/logs/faq-stats": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Как часто FAQ-слой отвечает без обращения к модели
+     * @description Доля вопросов, закрытых готовыми ответами FAQ (трек качества).
+     *     Порог матчера настраивается через PUT /settings/faq.
+     */
+    get: operations["get_faq_hit_stats_api_v1_logs_faq_stats_get"]
     put?: never
     post?: never
     delete?: never
@@ -505,6 +572,69 @@ export interface paths {
     put?: never
     post?: never
     delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/topics/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Получить все темы
+     * @description Получить список всех активных тем.
+     */
+    get: operations["get_topics_api_v1_topics__get"]
+    put?: never
+    /**
+     * Создать новую тему
+     * @description Создает новую тему.
+     *
+     *     - **label**: уникальное название темы
+     *     - **description**: опциональное описание
+     *     - **is_active**: активна ли тема при создании (по умолчанию True)
+     */
+    post: operations["create_topic_api_v1_topics__post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/topics/{topic_id}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Получить тему по ID
+     * @description Получает тему по её ID.
+     */
+    get: operations["get_topic_api_v1_topics__topic_id__get"]
+    /**
+     * Обновить тему
+     * @description Обновляет тему по ID.
+     *
+     *     - **label**: новое название (опционально)
+     *     - **description**: новое описание (опционально)
+     *     - **is_active**: изменить статус активности (опционально)
+     */
+    put: operations["update_topic_api_v1_topics__topic_id__put"]
+    post?: never
+    /**
+     * Удалить тему
+     * @description Удаляет (деактивирует) тему по ID.
+     *
+     *     Примечание: тема не удаляется из БД, а деактивируется (is_active = False)
+     *     для сохранения целостности исторических данных.
+     */
+    delete: operations["delete_topic_api_v1_topics__topic_id__delete"]
     options?: never
     head?: never
     patch?: never
@@ -996,6 +1126,28 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/settings/faq": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Получить настройки FAQ-матчера */
+    get: operations["get_faq_settings_api_v1_settings_faq_get"]
+    /**
+     * Обновить настройки FAQ-матчера
+     * @description Меняет порог FAQ. Бот подхватывает значение на следующем вопросе —
+     *     без рестарта, как у CRAG.
+     */
+    put: operations["update_faq_settings_api_v1_settings_faq_put"]
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/users/count-stats": {
     parameters: {
       query?: never
@@ -1146,6 +1298,22 @@ export interface components {
        * @description Финальный список файлов для загрузки
        */
       documents: components["schemas"]["ParsedDocument"][]
+    }
+    /** ConnectionCheck */
+    ConnectionCheck: {
+      /** Revision */
+      revision: number
+      /** Changes */
+      changes: {
+        [key: string]: string | null
+      }
+      /** Target */
+      target: string
+    }
+    /** ConnectionCheckResponse */
+    ConnectionCheckResponse: {
+      /** Message */
+      message: string
     }
     /**
      * CragSettings
@@ -1632,6 +1800,43 @@ export interface components {
        */
       is_active?: boolean | null
     }
+    /**
+     * FaqHitBucket
+     * @description Элемент статистики срабатываний FAQ-слоя.
+     */
+    FaqHitBucket: {
+      /**
+       * Period
+       * Format: date-time
+       */
+      period: string
+      /** Questions */
+      questions: number
+      /** Hits */
+      hits: number
+      /** Hit Rate */
+      hit_rate?: number | null
+    }
+    /**
+     * FaqHitStatsResponse
+     * @description Как часто вопросы закрываются готовыми ответами FAQ без модели.
+     */
+    FaqHitStatsResponse: {
+      /** Total Questions */
+      total_questions: number
+      /** Total Hits */
+      total_hits: number
+      /** Hit Rate */
+      hit_rate?: number | null
+      /** Group By */
+      group_by: string
+      /** Start */
+      start?: string | null
+      /** End */
+      end?: string | null
+      /** Buckets */
+      buckets: components["schemas"]["FaqHitBucket"][]
+    }
     /** FaqItem */
     FaqItem: {
       /**
@@ -1662,6 +1867,26 @@ export interface components {
        * @description Список вопросов-ответов
        */
       items: components["schemas"]["FaqItem"][]
+    }
+    /**
+     * FaqSettings
+     * @description Настройки FAQ-матчера.
+     */
+    FaqSettings: {
+      /**
+       * Similarity Threshold
+       * @description Порог косинусного сходства для срабатывания FAQ (0..1)
+       * @default 0.95
+       */
+      similarity_threshold: number
+    }
+    /**
+     * FaqSettingsUpdate
+     * @description Обновление настроек FAQ-матчера.
+     */
+    FaqSettingsUpdate: {
+      /** Similarity Threshold */
+      similarity_threshold: number
     }
     /** FeedbackReportListItem */
     FeedbackReportListItem: {
@@ -1742,6 +1967,54 @@ export interface components {
     HTTPValidationError: {
       /** Detail */
       detail?: components["schemas"]["ValidationError"][]
+    }
+    /**
+     * ImportRequest
+     * @description Запрос на импорт отревьюенных строк проходных баллов.
+     */
+    ImportRequest: {
+      /** Rows */
+      rows?: components["schemas"]["ScoreRowSchema"][]
+    }
+    /**
+     * ImportResponse
+     * @description Статистика идемпотентного upsert.
+     */
+    ImportResponse: {
+      /** Created */
+      created: number
+      /** Updated */
+      updated: number
+      /** Skipped */
+      skipped: number
+    }
+    /** InstanceSettingResponse */
+    InstanceSettingResponse: {
+      /** Key */
+      key: string
+      /** Label */
+      label: string
+      /** Group */
+      group: string
+      /** Kind */
+      kind: string
+      /** Choices */
+      choices: string[]
+      /** Secret */
+      secret: boolean
+      /** Configured */
+      configured: boolean
+      /** Value */
+      value: string | null
+    }
+    /** InstanceSettingsResponse */
+    InstanceSettingsResponse: {
+      /** Revision */
+      revision: number
+      /** Encryption Ready */
+      encryption_ready: boolean
+      /** Settings */
+      settings: components["schemas"]["InstanceSettingResponse"][]
     }
     /** InviteCodeRequest */
     InviteCodeRequest: {
@@ -1898,6 +2171,52 @@ export interface components {
        * @description Количество символов в обработанном тексте
        */
       chars: number
+    }
+    /**
+     * PreviewRequest
+     * @description Запрос на предпросмотр парсинга страницы итогов приёма.
+     */
+    PreviewRequest: {
+      /**
+       * Url
+       * @description URL страницы (по умолчанию — страница НГУ)
+       */
+      url?: string | null
+    }
+    /**
+     * PreviewResponse
+     * @description Результат предпросмотра: распарсенные строки и сводка.
+     */
+    PreviewResponse: {
+      /** Rows */
+      rows?: components["schemas"]["ScoreRowSchema"][]
+      summary: components["schemas"]["PreviewSummary"]
+    }
+    /**
+     * PreviewSummary
+     * @description Сводка предпросмотра распарсенных строк.
+     */
+    PreviewSummary: {
+      /**
+       * Total
+       * @description Всего распарсено строк
+       */
+      total: number
+      /**
+       * Matched
+       * @description Строк, сопоставленных со справочником
+       */
+      matched: number
+      /**
+       * Unmatched
+       * @description Строк без сопоставления
+       */
+      unmatched: number
+      /**
+       * Unmatched Samples
+       * @description Примеры несопоставленных (факультет, направление)
+       */
+      unmatched_samples?: components["schemas"]["UnmatchedSample"][]
     }
     /**
      * ProgramCreate
@@ -2161,6 +2480,82 @@ export interface components {
       /** Buckets */
       buckets: components["schemas"]["RequestCountBucket"][]
     }
+    /**
+     * ScoreItem
+     * @description Плоская запись проходного балла для выборки.
+     */
+    ScoreItem: {
+      /** Faculty Name */
+      faculty_name: string
+      /** Program Name */
+      program_name: string
+      /** Code */
+      code?: string | null
+      /** Year */
+      year: number
+      /** Form */
+      form: string
+      /** Passing Score */
+      passing_score?: number | null
+      /** Average Score */
+      average_score?: number | null
+    }
+    /**
+     * ScoreRowSchema
+     * @description Строка проходного балла (сырая, до/после разрешения в program_id).
+     */
+    ScoreRowSchema: {
+      /**
+       * Faculty Name
+       * @description Название факультета/института
+       */
+      faculty_name: string
+      /**
+       * Program Name
+       * @description Название направления подготовки
+       */
+      program_name: string
+      /**
+       * Code
+       * @description Код направления (ФГОС)
+       */
+      code?: string | null
+      /**
+       * Year
+       * @description Год приёма
+       */
+      year: number
+      /**
+       * Form
+       * @description Форма обучения: budget / paid
+       */
+      form: string
+      /**
+       * Passing Score
+       * @description Проходной балл
+       */
+      passing_score?: number | null
+      /**
+       * Average Score
+       * @description Средний балл
+       */
+      average_score?: number | null
+      /**
+       * Level
+       * @description Уровень: bachelor / specialist
+       * @default bachelor
+       */
+      level: string
+    }
+    /** SettingsChange */
+    SettingsChange: {
+      /** Revision */
+      revision: number
+      /** Changes */
+      changes: {
+        [key: string]: string | null
+      }
+    }
     /** TokenResponse */
     TokenResponse: {
       /** Access Token */
@@ -2277,6 +2672,16 @@ export interface components {
        * @description Активна ли тема
        */
       is_active?: boolean | null
+    }
+    /**
+     * UnmatchedSample
+     * @description Пример строки, не сопоставленной со справочником факультетов.
+     */
+    UnmatchedSample: {
+      /** Faculty Name */
+      faculty_name: string
+      /** Program Name */
+      program_name: string
     }
     /** UploadedDocumentResult */
     UploadedDocumentResult: {
@@ -2542,7 +2947,7 @@ export interface operations {
       }
     }
   }
-  get_topics_api_v1_topics__get: {
+  get_instance_settings_api_v1_settings_instance_get: {
     parameters: {
       query?: never
       header?: never
@@ -2557,12 +2962,12 @@ export interface operations {
           [name: string]: unknown
         }
         content: {
-          "application/json": components["schemas"]["TopicListResponse"]
+          "application/json": components["schemas"]["InstanceSettingsResponse"]
         }
       }
     }
   }
-  create_topic_api_v1_topics__post: {
+  update_instance_settings_api_v1_settings_instance_put: {
     parameters: {
       query?: never
       header?: never
@@ -2571,40 +2976,9 @@ export interface operations {
     }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["TopicCreate"]
+        "application/json": components["schemas"]["SettingsChange"]
       }
     }
-    responses: {
-      /** @description Successful Response */
-      201: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["TopicResponse"]
-        }
-      }
-      /** @description Validation Error */
-      422: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"]
-        }
-      }
-    }
-  }
-  get_topic_api_v1_topics__topic_id__get: {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        topic_id: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
     responses: {
       /** @description Successful Response */
       200: {
@@ -2612,7 +2986,7 @@ export interface operations {
           [name: string]: unknown
         }
         content: {
-          "application/json": components["schemas"]["TopicResponse"]
+          "application/json": components["schemas"]["InstanceSettingsResponse"]
         }
       }
       /** @description Validation Error */
@@ -2626,18 +3000,16 @@ export interface operations {
       }
     }
   }
-  update_topic_api_v1_topics__topic_id__put: {
+  test_connection_api_v1_settings_instance_check_post: {
     parameters: {
       query?: never
       header?: never
-      path: {
-        topic_id: number
-      }
+      path?: never
       cookie?: never
     }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["TopicUpdate"]
+        "application/json": components["schemas"]["ConnectionCheck"]
       }
     }
     responses: {
@@ -2647,37 +3019,8 @@ export interface operations {
           [name: string]: unknown
         }
         content: {
-          "application/json": components["schemas"]["TopicResponse"]
+          "application/json": components["schemas"]["ConnectionCheckResponse"]
         }
-      }
-      /** @description Validation Error */
-      422: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"]
-        }
-      }
-    }
-  }
-  delete_topic_api_v1_topics__topic_id__delete: {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        topic_id: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Successful Response */
-      204: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
       }
       /** @description Validation Error */
       422: {
@@ -3206,6 +3549,130 @@ export interface operations {
       }
     }
   }
+  preview_scores_api_v1_admission_scores_preview_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PreviewRequest"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["PreviewResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  import_scores_api_v1_admission_scores_import_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ImportRequest"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["ImportResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_scores_api_v1_admission_scores_get: {
+    parameters: {
+      query?: {
+        /** @description Фильтр по факультету */
+        faculty?: string | null
+        /** @description Фильтр по направлению */
+        program?: string | null
+        /** @description Фильтр по году */
+        year?: number | null
+        /** @description Форма: budget / paid */
+        form?: string | null
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["ScoreItem"][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_years_api_v1_admission_scores_years_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": number[]
+        }
+      }
+    }
+  }
   get_request_stats_api_v1_logs_request_stats_get: {
     parameters: {
       query?: {
@@ -3231,6 +3698,42 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["RequestCountStatsResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_faq_hit_stats_api_v1_logs_faq_stats_get: {
+    parameters: {
+      query?: {
+        /** @description Начало периода (ISO 8601) */
+        start?: string | null
+        /** @description Конец периода (ISO 8601) */
+        end?: string | null
+        /** @description Группировка: hour, day, week, month */
+        group_by?: string
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["FaqHitStatsResponse"]
         }
       }
       /** @description Validation Error */
@@ -3403,6 +3906,154 @@ export interface operations {
         content: {
           "application/json": components["schemas"]["PopularQuestionsResponse"]
         }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_topics_api_v1_topics__get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["TopicListResponse"]
+        }
+      }
+    }
+  }
+  create_topic_api_v1_topics__post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["TopicCreate"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["TopicResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_topic_api_v1_topics__topic_id__get: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        topic_id: number
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["TopicResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  update_topic_api_v1_topics__topic_id__put: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        topic_id: number
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["TopicUpdate"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["TopicResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  delete_topic_api_v1_topics__topic_id__delete: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        topic_id: number
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
       }
       /** @description Validation Error */
       422: {
@@ -4241,6 +4892,59 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["CragSettings"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_faq_settings_api_v1_settings_faq_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["FaqSettings"]
+        }
+      }
+    }
+  }
+  update_faq_settings_api_v1_settings_faq_put: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["FaqSettingsUpdate"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["FaqSettings"]
         }
       }
       /** @description Validation Error */
