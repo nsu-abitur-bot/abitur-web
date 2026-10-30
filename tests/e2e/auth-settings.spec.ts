@@ -64,6 +64,7 @@ async function mockSettings(context: BrowserContext, role = "superadmin") {
       "/api/v1/logs/popular": { questions: [] },
       "/api/v1/stats/topics": [{ topic_id: 1, label: "Поступление", count: 8 }, { topic_id: 2, label: "Документы", count: 6 }],
       "/api/v1/feedback": { reports: [], total: 0 },
+      "/api/v1/rag/docs": { documents: [] },
     }
     return Object.hasOwn(fixtures, url.pathname) ? reply(fixtures[url.pathname]) : route.continue()
   })
@@ -186,3 +187,48 @@ test("charts read semantic colors without pinning the global theme", async ({ pa
   await page.getByRole("button", { name: "Переключиться на светлый режим" }).click()
   await expect.poll(ruleColor).toBe("#e2e5ec")
 })
+
+for (const mobile of [false, true]) {
+  for (const theme of ["light", "dark"]) {
+    test(`sidebar groups stay visible across routes (${mobile ? "mobile" : "desktop"}, ${theme})`, async ({ page, context }, testInfo) => {
+      await mockSettings(context)
+      await page.setViewportSize(mobile ? { width: 390, height: 844 } : { width: 1049, height: 881 })
+      await context.addInitScript(theme => localStorage.setItem("nuxt-color-mode", theme), theme)
+      await page.goto("/")
+      const navigation = page.getByRole("navigation", { name: "Основная навигация" })
+      const menu = page.getByRole("button", { name: "Меню", exact: true })
+      const links = ["Обратная связь", "Сообщения", "Материалы", "Готовые ответы", "Сокращения", "Факультеты", "Проверка ответа", "Автооценка", "Статистика", "Подключения", "Правила и лимиты", "Темы", "Команда", "Системные логи"]
+      if (mobile) {
+        await menu.click()
+      }
+      for (const [label, url] of [["Материалы", "/"], ["Обратная связь", "/feedback"], ["Темы", "/settings?section=topics"], ["Правила и лимиты", "/settings?section=rules"]]) {
+        if (label !== "Материалы") {
+          await navigation.getByRole("link", { name: label, exact: true }).click()
+          await expect(page).toHaveURL(url!)
+          if (mobile) {
+            await expect(menu).toHaveAttribute("aria-expanded", "false")
+            await expect(navigation).toBeHidden()
+            await menu.click()
+          }
+        }
+        for (const name of links) {
+          await expect(navigation.getByRole("link", { name, exact: true })).toBeVisible()
+        }
+        await expect(navigation.locator("[aria-current='page']")).toHaveText(label!)
+        await expect(navigation.locator("[aria-current='page']")).toHaveCount(1)
+        await expect(navigation.locator("details, summary")).toHaveCount(0)
+        if (label === "Темы") {
+          await page.screenshot({ path: testInfo.outputPath("sidebar.png"), fullPage: true })
+        }
+      }
+      await page.setViewportSize({ width: mobile ? 390 : 1049, height: 420 })
+      const sidebar = page.locator("#admin-navigation")
+      expect(await sidebar.evaluate(element => element.scrollHeight > element.clientHeight && getComputedStyle(element).overflowY === "auto")).toBe(true)
+      const lastLink = navigation.getByRole("link", { name: "Системные логи", exact: true })
+      await lastLink.scrollIntoViewIfNeeded()
+      await expect(lastLink).toBeInViewport()
+      expect(await sidebar.evaluate(element => element.scrollTop)).toBeGreaterThan(0)
+      await page.screenshot({ path: testInfo.outputPath("sidebar-short.png"), fullPage: true })
+    })
+  }
+}
