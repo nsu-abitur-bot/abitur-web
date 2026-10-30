@@ -71,12 +71,8 @@ aside#admin-navigation.admin-sidebar(:class="{ 'is-open': open }")
   nav(aria-label="Основная навигация")
     template(v-for="(group, index) in groups" :key="index")
       template(v-if="group.items.length")
-        details(v-if="group.title" :open="group.items.some(item => active(item[1]))")
-          summary {{ group.title }}
-          nuxt-link(v-for="item in group.items" :key="item[1]" :to="item[1]" :aria-current="active(item[1]) ? 'page' : undefined")
-            u-icon(:name="item[2]")
-            span {{ item[0] }}
-        .admin-nav-direct(v-else)
+        .admin-nav-group
+          .admin-nav-title(v-if="group.title") {{ group.title }}
           nuxt-link(v-for="item in group.items" :key="item[1]" :to="item[1]" :aria-current="active(item[1]) ? 'page' : undefined")
             u-icon(:name="item[2]")
             span {{ item[0] }}

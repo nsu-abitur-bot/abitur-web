@@ -79,13 +79,11 @@
   font-size: 27px;
 }
 
-.admin-sidebar details,
-.admin-nav-direct {
+.admin-nav-group {
   margin-bottom: 16px;
 }
 
-.admin-sidebar summary {
-  cursor: pointer;
+.admin-nav-title {
   padding: 8px 12px;
   font-size: 11px;
   font-weight: 600;
