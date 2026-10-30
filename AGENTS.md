@@ -6,33 +6,31 @@ This is a Nuxt 4 TypeScript application. Main app code lives in `app/`: pages in
 
 ## Build, Test, and Development Commands
 
-- `pnpm i`: install dependencies using the pinned pnpm version.
-- `cp .env.example .env`: create local configuration, then fill backend and runtime values.
-- `pnpm dev`: start Nuxt locally, usually at `http://localhost:7868` unless `.env` overrides it.
-- `pnpm test`: run Vitest tests in `happy-dom`.
-- `pnpm run lint`: run ESLint and Stylelint with auto-fix.
-- `pnpm run types`: run Nuxt type checking.
-- `pnpm run check`: run linting and type checking together.
-- `docker-compose up -d --build`: build and run the app container; the README documents `http://localhost:3000`.
+Use the pinned toolchain in `.mise.toml`: `mise trust`, `mise install`, then `mise exec -- bun install --frozen-lockfile`. Never use a shared or symlinked node_modules across worktrees.
+
+- `task dev`: start Nuxt (port from `.env`, usually 7868).
+- `task prepare`: generate `.nuxt` and API imports.
+- `task types`: Golar 0.1.9 with @golar/vue checks client Vue/TS/Pug; built-in `bun check --no-script` checks server, shared and tooling projects.
+- `task types:verify`: prove that invalid Pug template and server TS fixtures fail type checking.
+- `task lint`: ESLint and Stylelint without auto-fixing.
+- `task test`: run the existing Vitest 5 / happy-dom unit tests.
+- `task check`: types, lint and unit tests, with prepare dependencies.
+- `task build`: prepare and production build; `bun run start` runs the result using Node.
+- `task e2e`: Playwright against production output and an isolated local fake API; build first and install Chromium with `bunx --no-install playwright install chromium`.
+- `task hooks`: install Lefthook; pre-commit runs `task check` without modifying files.
+- `docker compose up -d --build`: build and run at `http://localhost:3000`.
 
 ## Orca Workspaces
 
-`orca.yaml` defines the setup hook for a new workspace: it runs `mise trust` (a fresh
-worktree path is untrusted, and without this `pnpm` silently does nothing), copies `.env`
-from the root checkout since it is not in git, runs `pnpm install --prefer-offline`, and runs `pnpm nuxt prepare` to generate `.nuxt/`
-(without it `pnpm test` and `pnpm run types` fail in a fresh worktree).
-Agents wait for setup to finish (`setupAgentStartupPolicy: wait-for-setup`).
-
-`node_modules` is deliberately not shared between workspaces — Nuxt and Vitest break on a
-shared directory. The cost is that the first install in a new workspace takes a few minutes.
+`orca.yaml` runs mise trust/install, copies `.env` from the root checkout when absent, installs with the frozen Bun lockfile, prepares Nuxt and installs hooks. Setup must finish before agent startup. Each worktree owns its node_modules and generated files; no shared dependencies. Dependency installation must never trigger the full check suite.
 
 ## Coding Style & Naming Conventions
 
-Use TypeScript, Vue single-file components, and the existing Nuxt conventions. Prefer kebab-case for Vue component filenames such as `faq-item.vue`, `rate-limit-settings.vue`, and route files. Keep tests named after the unit they cover, for example `rag-upload.test.ts`. Use the configured `@ilyasemenov` ESLint and Stylelint presets; do not manually reformat files in ways that fight `pnpm run lint`. Path aliases in tests are `~` for `app` and `~~` for the repository root.
+Use TypeScript, Vue single-file components, and the existing Nuxt conventions. Prefer kebab-case for Vue component filenames such as `faq-item.vue`, `rate-limit-settings.vue`, and route files. Keep tests named after the unit they cover, for example `rag-upload.test.ts`. Use the configured `@ilyasemenov` ESLint and Stylelint presets; do not manually reformat files in ways that fight `task lint`. Path aliases in tests are `~` for `app` and `~~` for the repository root.
 
 ## Testing Guidelines
 
-Vitest is configured in `vitest.config.ts` and only includes `app/**/*.test.ts`. Add focused unit tests next to the service, utility, or composable being changed. Use `happy-dom` assumptions for DOM-related tests. Before opening a PR, run `pnpm test` and `pnpm run check`.
+Vitest is configured in `vitest.config.ts` and only includes `app/**/*.test.ts`. Add focused unit tests next to the service, utility, or composable being changed. Use `happy-dom` assumptions for DOM-related tests. Before opening a PR, run `task check`, `task types:verify`, `task build` and `task e2e`.
 
 ## Commit & Pull Request Guidelines
 

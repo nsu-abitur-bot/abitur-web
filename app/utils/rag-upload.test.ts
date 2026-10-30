@@ -1,10 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import type { RagUploadResponse } from "~/types/rag-upload"
-import {
-  RAG_MAX_FILE_SIZE_BYTES,
-
-} from "~/types/rag-upload"
+import { RAG_MAX_FILE_SIZE_BYTES } from "~/types/rag-upload"
 import {
   getUploadStateFromResponse,
   mapRagUploadError,

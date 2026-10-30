@@ -1,4 +1,3 @@
-import * as fs from "node:fs/promises"
 import process from "node:process"
 import { fileURLToPath } from "node:url"
 
@@ -7,8 +6,11 @@ import type { VueTSConfig } from "nuxt/schema"
 function fixTsConfig(tsConfig: VueTSConfig) {
   // убрать лишние стандартные алиасы, чтобы остался ровно один ~, который и будем использовать
   for (const p of ["~~", "@@", "@"]) {
-    delete tsConfig.compilerOptions!.paths[p]
-    delete tsConfig.compilerOptions!.paths[p + "/*"]
+    const paths = tsConfig.compilerOptions?.paths
+    if (paths) {
+      delete paths[p]
+      delete paths[p + "/*"]
+    }
   }
 }
 
@@ -56,23 +58,6 @@ export default defineNuxtConfig({
     hooks: {
       "types:extend": ({ tsConfig }) => {
         fixTsConfig(tsConfig!)
-      },
-      "compiled": async (nitro) => {
-        // Хотфикс чтобы не падала прод. сборка при запуске:
-        // https://github.com/svg/svgo/issues/2149#issuecomment-3723806500
-        const getSourcePath = (pkg: string, ver: string) => new URL(`node_modules/.pnpm/${pkg}@${ver}/node_modules/${pkg}`, import.meta.url).pathname
-        const getTargetPath = (pkgPath: string) => `${nitro.options.output.serverDir}/node_modules/${pkgPath}`
-        const copy = async (source: string, target: string) => await fs.cp(source, target, { recursive: true })
-        for (const version of ["2.2.1", "3.1.0"]) {
-          await copy(
-            getSourcePath("css-tree", version) + "/data",
-            getTargetPath(`.nitro/css-tree@${version}/data`),
-          )
-        }
-        await copy(
-          getSourcePath("mdn-data", "2.12.2"),
-          getTargetPath("mdn-data"),
-        )
       },
     },
   },
