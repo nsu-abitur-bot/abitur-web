@@ -5,6 +5,7 @@ import type { InstanceSettings } from "~/services/instance-settings"
 import { checkInstanceConnection, collectChanges, getInstanceSettings, isRevisionConflict, rebaseSettings, saveInstanceSettings } from "~/services/instance-settings"
 
 const snapshot = ref<InstanceSettings | null>(null)
+const authToken = useAuthToken()
 const draft = reactive<Record<string, string>>({})
 const removed = reactive(new Set<string>())
 const selectedGroup = ref("Назначение моделей")
@@ -26,7 +27,9 @@ function decideLeave(leave: boolean) {
   resolveLeave = undefined
 }
 onBeforeRouteLeave(() => {
-  if (!changedCount.value) {
+  // Cookie refs can lag behind the API interceptor clearing the browser cookie.
+  const authenticated = import.meta.client ? /(?:^|;\s*)abitur-token=[^;]+/.test(document.cookie) : Boolean(authToken.value)
+  if (!authenticated || !changedCount.value) {
     return true
   }
   leaveOpen.value = true
