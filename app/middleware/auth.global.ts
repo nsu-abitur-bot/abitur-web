@@ -9,6 +9,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   if (!token.value) {
     return navigateTo("/login")
   }
+  const requestToken = token.value
   try {
     const me = await apiFetch<components["schemas"]["AdminResponse"]>("/api/v1/auth/me")
     if (to.path === "/" && me.role === "viewer") {
@@ -20,6 +21,10 @@ export default defineNuxtRouteMiddleware(async (to) => {
   } catch (error) {
     const status = (error as { statusCode?: number, status?: number }).statusCode ?? (error as { status?: number }).status
     if (status === 401) {
+      if (token.value && token.value !== requestToken) {
+        // A stale access check cannot revoke a newer login from another request/tab.
+        return abortNavigation()
+      }
       token.value = null
       return navigateTo("/login")
     }

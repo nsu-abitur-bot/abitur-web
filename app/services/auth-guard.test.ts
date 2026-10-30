@@ -17,6 +17,7 @@ beforeEach(async () => {
   vi.stubGlobal("useAuthToken", () => token)
   vi.stubGlobal("apiFetch", fetchMe)
   vi.stubGlobal("navigateTo", navigate)
+  vi.stubGlobal("abortNavigation", () => false)
   vi.stubGlobal("createError", (options: object) => Object.assign(new Error("route error"), options))
   await import("../middleware/auth.global")
 })
@@ -35,6 +36,15 @@ describe("authorization guard", () => {
     fetchMe.mockRejectedValueOnce({ statusCode: 401 })
     expect(await guard({ path: "/settings", query: {} })).toBe("/login")
     expect(token.value).toBeNull()
+  })
+  it("keeps a newer session when an old navigation check returns 401", async () => {
+    fetchMe.mockImplementationOnce(async () => {
+      token.value = "new-session"
+      throw Object.assign(new Error("Expired old session"), { statusCode: 401 })
+    })
+    expect(await guard({ path: "/settings", query: {} })).toBe(false)
+    expect(token.value).toBe("new-session")
+    expect(navigate).not.toHaveBeenCalled()
   })
   it("redirects viewer home and blocks admin deep links", async () => {
     fetchMe.mockResolvedValue({ role: "viewer" })

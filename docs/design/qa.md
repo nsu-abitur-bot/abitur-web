@@ -5,7 +5,7 @@
 ## Автоматические проверки
 
 - `mise exec -- bun install --frozen-lockfile` на чистом локальном `node_modules`.
-- `mise exec -- task check`: ESLint, Stylelint, Golar client types, Bun server/shared/tooling types, 43 unit tests.
+- `mise exec -- task check`: ESLint, Stylelint, Golar client types, Bun server/shared/tooling types, 44 unit tests.
 - `mise exec -- task types:verify`: ошибочные Pug и server TypeScript fixtures действительно отклоняются.
 - `mise exec -- task build`: production Nitro artifact.
 - `mise exec -- task e2e`: 8 Playwright сценариев; production artifact запускается вне checkout без fallback на зависимости проекта, fake API изолирован, внешние запросы заблокированы.
