@@ -1,4 +1,7 @@
 <template lang="pug">
-layout-header
-u-container: slot
+.admin-shell
+  a.admin-skip(href="#main-content") К содержимому
+  layout-header
+  main#main-content.admin-content(tabindex="-1")
+    slot
 </template>
