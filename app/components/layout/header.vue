@@ -3,6 +3,7 @@ import { onKeyStroke } from "@vueuse/core"
 
 type NavItem = [label: string, to: string, icon: string]
 const route = useRoute()
+const router = useRouter()
 const token = useAuthToken()
 const { isAdmin, isSuperadmin } = useRole()
 const open = ref(false)
@@ -45,9 +46,11 @@ function active(to: string) {
   }
   return route.path === path || route.path.startsWith(`${path}/`)
 }
-function logout() {
-  token.value = null
-  navigateTo("/login")
+async function logout() {
+  await navigateTo("/login")
+  if (router.currentRoute.value.path === "/login") {
+    token.value = null
+  }
 }
 </script>
 
