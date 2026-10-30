@@ -3,11 +3,12 @@ import { createFaculty, getFaculties } from "~/services/faculties"
 
 const toast = useToast()
 
-const { data, status, refresh } = await useAsyncData("faculties", getFaculties)
+const { data, status, error, refresh } = await useAsyncData("faculties", getFaculties)
 
 const faculties = computed(() => data.value ?? [])
 
 const isCreating = ref(false)
+const showCreate = ref(false)
 const newFaculty = reactive({
   name: "",
   aliases: "",
@@ -32,6 +33,7 @@ const addFaculty = async () => {
       aliases: parseAliases(newFaculty.aliases),
       is_active: newFaculty.is_active,
     })
+    showCreate.value = false
     newFaculty.name = ""
     newFaculty.aliases = ""
     newFaculty.is_active = true
@@ -50,15 +52,12 @@ const addFaculty = async () => {
 </script>
 
 <template lang="pug">
-u-container(class="py-8")
-  div(class="space-y-6")
-    h1(class="text-3xl font-bold text-gray-900 dark:text-white") Факультеты и направления
+ui-page(title="Факультеты и направления")
+  template(#actions)
+    u-button(icon="i-lucide-plus" @click="showCreate = !showCreate") {{ showCreate ? "Закрыть форму" : "Добавить факультет" }}
+  div(class="space-y-4")
 
-    ui-box(title="Добавить факультет")
-      p(class="text-sm text-gray-500 dark:text-gray-400 mb-4")
-        | Справочник факультетов и направлений используется для умной проверки
-        | ответов бота — чтобы не смешивать направления разных факультетов.
-
+    ui-box(v-if="showCreate" title="Новый факультет")
       u-form(:state="newFaculty" class="space-y-3" @submit="addFaculty")
         div(class="flex flex-wrap items-end gap-3")
           u-form-field(label="Название факультета" name="name" required class="flex-1 min-w-56")
@@ -74,7 +73,11 @@ u-container(class="py-8")
     div(v-if="status === 'pending'" class="py-10 flex justify-center text-gray-500")
       u-icon(name="i-heroicons-arrow-path" class="animate-spin w-8 h-8")
 
-    div(v-else-if="faculties.length === 0" class="py-12 text-center text-gray-500 bg-gray-50 dark:bg-gray-800 rounded-lg")
+    div(v-else-if="error" class="admin-empty" role="alert")
+      p Не удалось загрузить факультеты.
+      u-button(variant="outline" @click="() => refresh()") Повторить
+
+    div(v-else-if="faculties.length === 0" class="admin-empty")
       u-icon(name="i-heroicons-academic-cap" class="w-12 h-12 mx-auto text-gray-400 mb-3")
       p Факультеты пока не добавлены. Создайте первый.
 

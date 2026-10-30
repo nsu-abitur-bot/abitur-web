@@ -21,13 +21,15 @@ export function useTopics() {
   const topics = useState<Topic[]>("topics-cache", () => [])
   const isLoading = useState<boolean>("topics-loading", () => false)
 
+  const error = useState<string | null>("topics-error", () => null)
+
   const refresh = async (): Promise<void> => {
     isLoading.value = true
+    error.value = null
     try {
       topics.value = await listTopics()
-    } catch (error) {
-      topics.value = []
-      console.error("Failed to refresh topics", error)
+    } catch {
+      error.value = "Не удалось загрузить темы"
     } finally {
       isLoading.value = false
     }
@@ -50,5 +52,5 @@ export function useTopics() {
     await refresh()
   }
 
-  return { topics, isLoading, refresh, create, update, remove }
+  return { topics, isLoading, error, refresh, create, update, remove }
 }

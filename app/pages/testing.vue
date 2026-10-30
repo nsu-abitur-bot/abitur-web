@@ -1,211 +1,139 @@
 <script setup lang="ts">
-/**
- * Страница тестирования и оценки качества ответов.
- * Использует эндпоинты /api/v1/evals/run и /api/v1/evals/status.
- */
+import type { EvaluationStatus } from "~/services/evaluations"
+import { summarizeEvaluation } from "~/services/evaluations"
 
-interface EvaluationResult {
-  accuracy?: string | number | null
-  recall?: string | number | null
-  avg_latency?: string | number | null
-  summary?: string | null
-}
-
-interface EvaluationStatus {
-  is_running?: boolean
-  error?: string | null
-  last_result?: EvaluationResult | null
-  done?: number
-  total?: number
-}
-
-interface RunEvaluationResponse {
-  message?: string | null
-}
-
-// Получаем текущий статус оценки
-const { data: statusData, refresh: refreshStatus } = await useApi("/api/v1/evals/status", {
-  transform: (data): EvaluationStatus => data as EvaluationStatus,
-})
-
-const isRunning = computed(() => !!statusData.value?.is_running)
-const isError = computed(() => !!statusData.value?.error)
-const isCompleted = computed(() => !!statusData.value?.last_result && !isRunning.value)
-const isIdle = computed(() => !isRunning.value && !isCompleted.value && !isError.value)
-const completedEvaluations = computed(() => statusData.value?.done ?? 0)
-const totalEvaluations = computed(() => statusData.value?.total ?? 0)
-const progressPercent = computed(() => totalEvaluations.value > 0
-  ? Math.round((completedEvaluations.value / totalEvaluations.value) * 100)
-  : 0)
-
-const toast = useToast()
+const { data, error, status, refresh } = await useAsyncData("evaluation-status", () =>
+  apiFetch<EvaluationStatus>("/api/v1/evals/status"))
 const isStarting = ref(false)
+const awaitingStart = ref(false)
+const runError = ref("")
+const isPolling = ref(false)
+const result = computed(() => data.value?.last_result)
+const summary = computed(() => summarizeEvaluation(result.value ?? {}))
+const cases = computed(() => summary.value.cases)
+const isRunning = computed(() => data.value?.is_running === true)
+const toast = useToast()
+let timer: ReturnType<typeof setInterval> | undefined
+let startChecks = 0
+let previousResult = ""
 
-/**
- * Запуск процесса оценки
- */
-const handleRunEvaluation = async () => {
-  if (isRunning.value || isStarting.value) {
+const poll = async () => {
+  if (isPolling.value || (!isRunning.value && !awaitingStart.value)) {
     return
   }
-
-  isStarting.value = true
+  isPolling.value = true
   try {
-    const result = await apiFetch<RunEvaluationResponse>("/api/v1/evals/run", {
-      method: "POST",
-    })
+    await refresh()
+    if (error.value) {
+      awaitingStart.value = false
+      return
+    }
+    if (isRunning.value || data.value?.error || (data.value?.last_result && JSON.stringify(data.value.last_result) !== previousResult)) {
+      awaitingStart.value = false
+    } else if (awaitingStart.value && ++startChecks >= 10) {
+      awaitingStart.value = false
+      runError.value = "Запуск не подтверждён. Обновите статус перед повторным запуском."
+    }
+  } finally {
+    isPolling.value = false
+  }
+}
 
-    toast.add({
-      title: result?.message ? "Информация" : "Запущено",
-      description: result?.message || "Процесс тестирования базы знаний запущен в фоновом режиме",
-      color: result?.message ? "info" : "success",
-    })
+const refreshManually = async () => {
+  await refresh()
+  if (!error.value) {
+    runError.value = ""
+  }
+}
 
-    // Сразу обновляем статус
-    await refreshStatus()
-  } catch (err: any) {
-    toast.add({
-      title: "Ошибка запуска",
-      description: err?.data?.message || err?.data?.detail || err.message || "Не удалось запустить тестирование",
-      color: "error",
-    })
+const run = async () => {
+  if (isRunning.value || isStarting.value || awaitingStart.value || error.value || runError.value) {
+    return
+  }
+  isStarting.value = true
+  runError.value = ""
+  try {
+    const response = await apiFetch<{ message?: string }>("/api/v1/evals/run", { method: "POST" })
+    toast.add({ title: response.message || "Запрос на запуск принят", color: "info" })
+    previousResult = JSON.stringify(result.value ?? null)
+    startChecks = 0
+    awaitingStart.value = true
+    await poll()
+  } catch (err: unknown) {
+    runError.value = err instanceof Error ? err.message : "Не удалось запустить оценку"
   } finally {
     isStarting.value = false
   }
 }
 
-// Опрос статуса при запущенном процессе
-let pollInterval: any = null
-
 onMounted(() => {
-  pollInterval = setInterval(() => {
-    if (isRunning.value) {
-      refreshStatus()
-    }
-  }, 3000)
+  timer = setInterval(poll, 3000)
 })
-
 onUnmounted(() => {
-  if (pollInterval) {
-    clearInterval(pollInterval)
-  }
-})
-
-// Если статус изменился на завершенный, можно показать уведомление
-watch(() => isRunning.value, (running) => {
-  if (!running && statusData.value?.last_result) {
-    toast.add({
-      title: "Готово",
-      description: "Тестирование успешно завершено",
-      color: "success",
-    })
+  if (timer) {
+    clearInterval(timer)
   }
 })
 </script>
 
 <template lang="pug">
-u-container(class="py-8 space-y-8")
-  div(class="max-w-4xl mx-auto space-y-8")
-    // Заголовок и описание
-    div(class="space-y-2")
-      h1(class="text-3xl font-bold text-gray-900 dark:text-white") Тестирование системы
-      p(class="text-gray-500 dark:text-gray-400")
-        | Запуск автоматизированной оценки качества ответов ассистента на основе текущей базы знаний.
-        | Система проверит точность и актуальность информации.
+ui-page(title="Тестирование" description="Автоматическая оценка ответов бота на наборе проверочных вопросов.")
+  template(#actions)
+    u-button(color="neutral" variant="outline" :loading="status === 'pending'" @click="refreshManually") Обновить статус
+    u-button(icon="i-lucide-play" :loading="isStarting" :disabled="isRunning || awaitingStart || !!error || !!runError || status === 'pending'" @click="run") Запустить оценку
 
-    // Основной блок управления
-    ui-box(title="Управление оценкой")
-      div(class="space-y-6")
-        div(class="flex flex-col md:flex-row items-center justify-between gap-6")
-          div(class="space-y-1 flex-1")
-            div(class="flex items-center gap-2")
-              span(class="text-sm font-medium text-gray-700 dark:text-gray-300") Текущий статус:
-              u-badge(
-                v-if="isIdle"
-                color="neutral"
-                variant="subtle"
-              ) Ожидание
-              u-badge(
-                v-else-if="isRunning"
-                color="primary"
-                variant="subtle"
-                class="animate-pulse"
-              ) В процессе
-              u-badge(
-                v-else-if="isCompleted"
-                color="success"
-                variant="subtle"
-              ) Завершено
-              u-badge(
-                v-else-if="isError"
-                color="error"
-                variant="subtle"
-              ) Ошибка
+  u-alert(v-if="error" color="error" title="Не удалось получить статус" description="Состояние оценки неизвестно. Обновите статус перед запуском." role="alert")
+  u-alert(v-if="runError || data?.error" color="error" title="Ошибка оценки" :description="runError || data?.error || ''")
+  ui-box(title="Состояние")
+    div(class="admin-toolbar" aria-live="polite")
+      u-icon(v-if="isRunning || awaitingStart" name="i-lucide-loader-circle" class="animate-spin")
+      span(v-if="error") Неизвестно
+      span(v-else-if="isRunning") Оценка выполняется
+      span(v-else-if="awaitingStart") Ожидаем подтверждения запуска
+      span(v-else-if="status === 'pending'") Загружаем статус…
+      span(v-else-if="data?.error") Завершилась с ошибкой
+      span(v-else-if="runError") Запуск не подтверждён
+      span(v-else-if="result") Есть результаты последней оценки
+      span(v-else) Оценка ещё не запускалась
+    p(v-if="!error && (isRunning || awaitingStart)" class="admin-muted text-sm") Сервер не сообщает прогресс по вопросам. Статус обновляется автоматически.
 
-            p(class="text-xs text-gray-500 mt-2")
-              | {{ isRunning ? 'Идет выполнение тестов, это может занять несколько минут...' : 'Нажмите кнопку для запуска полного цикла тестирования.' }}
+  template(v-if="result")
+    ui-box(title="Последний результат")
+      div(class="admin-stat-grid")
+        div
+          p(class="admin-muted text-xs") Успешно пройдено
+          p(class="text-2xl font-semibold") {{ summary.passRate }}
+        div
+          p(class="admin-muted text-xs") Всего примеров
+          p(class="text-2xl font-semibold") {{ summary.total ?? '—' }}
+        div
+          p(class="admin-muted text-xs") Пройдено полностью
+          p(class="text-2xl font-semibold") {{ summary.passed ?? '—' }}
+      p(v-if="cases.length" class="admin-muted text-sm mt-4") Не пройдено: {{ summary.failed }} · С ошибкой: {{ summary.errors }} (по подробным результатам)
+      p(v-if="result.mode" class="admin-muted text-sm mt-4") Режим: {{ result.mode }}
+      p(v-if="result.skipped_ids?.length" class="admin-muted text-sm mt-2") Пропущены: {{ result.skipped_ids.join(', ') }}
+      p(class="admin-muted text-xs mt-2") Результат относится к последней сохранённой оценке.
 
-          u-button(
-            color="primary"
-            size="lg"
-            icon="i-heroicons-play-circle"
-            :loading="isRunning || isStarting"
-            @click="handleRunEvaluation"
-          ) {{ isRunning ? 'Выполняется...' : 'Запустить тест' }}
-
-        // Шкала прогресса (отображается только при выполнении)
-        div(v-if="isRunning" class="space-y-2 animate-in fade-in duration-300")
-          div(v-if="totalEvaluations" class="space-y-2")
-            div(class="flex justify-between text-xs font-medium text-gray-600 dark:text-gray-400")
-              span Прогресс тестирования
-              span {{ completedEvaluations }} / {{ totalEvaluations }} ({{ progressPercent }}%)
-            u-progress(
-              :value="completedEvaluations"
-              :max="totalEvaluations"
-              color="primary"
-              size="md"
-            )
-          div(v-else class="flex items-center gap-2 text-xs text-gray-500")
-            u-icon(name="i-heroicons-arrow-path" class="animate-spin")
-            span Выполнение тестов...
-
-    // Детализация (если есть данные)
-    div(v-if="statusData?.last_result || isCompleted" class="animate-in fade-in slide-in-from-bottom-4 duration-500")
-      ui-box(title="Результаты последнего запуска")
-        div(v-if="statusData?.last_result" class="space-y-6")
-          // Здесь можно добавить графики или метрики, если они будут в API
-          div(class="grid grid-cols-1 md:grid-cols-3 gap-4")
-            div(class="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800")
-              div(class="text-xs text-gray-500 uppercase font-semibold") Точность
-              div(class="text-2xl font-bold text-primary-600") {{ statusData.last_result.accuracy || '94%' }}
-            div(class="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800")
-              div(class="text-xs text-gray-500 uppercase font-semibold") Полнота
-              div(class="text-2xl font-bold text-success-600") {{ statusData.last_result.recall || '89%' }}
-            div(class="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800")
-              div(class="text-xs text-gray-500 uppercase font-semibold") Время ответа
-              div(class="text-2xl font-bold text-warning-600") {{ statusData.last_result.avg_latency || '1.2s' }}
-
-          div(class="mt-6 p-4 rounded-lg bg-primary-50 dark:bg-primary-900/10 border border-primary-100 dark:border-primary-800/50")
-            h4(class="text-sm font-semibold text-primary-800 dark:text-primary-300 mb-2") Резюме системы:
-            p(class="text-sm text-primary-700 dark:text-primary-400")
-              | {{ statusData.last_result.summary || 'Тестирование прошло успешно. База знаний актуальна и содержит достаточно информации для ответов на большинство вопросов абитуриентов.' }}
-
-        div(v-else class="flex flex-col items-center py-12 text-center space-y-4")
-          u-icon(name="i-heroicons-clipboard-document-check" size="4xl" class="text-gray-300")
-          div
-            div(class="text-lg font-medium text-gray-900 dark:text-white") Данные готовы
-            p(class="text-sm text-gray-500") Результаты оценки успешно сформированы.
-
-    // Заглушка, если данных нет
-    div(v-else-if="isIdle" class="flex flex-col items-center py-20 text-center space-y-4 text-gray-400")
-      u-icon(name="i-heroicons-beaker" size="4xl")
-      p Оценка еще не проводилась или данные были сброшены.
-
-    // Состояние ошибки
-    div(v-else-if="isError" class="p-6 rounded-xl bg-error-50 dark:bg-error-900/10 border border-error-100 dark:border-error-900/50 text-center space-y-4")
-      u-icon(name="i-heroicons-x-circle" size="3xl" class="text-error-500 mx-auto")
-      div
-        h3(class="text-lg font-semibold text-error-900 dark:text-error-400") Ошибка тестирования
-        p(class="text-sm text-error-700 dark:text-error-500") {{ statusData?.error || 'Произошла непредвиденная ошибка при выполнении оценки качества.' }}
-      u-button(color="error" variant="outline" @click="handleRunEvaluation") Попробовать снова
+    ui-box(:title="`Примеры (${cases.length})`")
+      p(v-if="!cases.length" class="admin-empty") Сервер не вернул подробные результаты примеров.
+      div(v-else class="divide-y divide-default")
+        details(v-for="(item, index) in cases" :key="String(item.id ?? index)" class="py-3")
+          summary(class="cursor-pointer flex items-start gap-3 text-sm")
+            span(class="admin-muted shrink-0") {{ item.id ?? index + 1 }}
+            span(class="flex-1") {{ item.question || 'Без вопроса' }}
+            u-badge(:color="item.error ? 'error' : item.passed === true ? 'success' : item.passed === false ? 'warning' : 'neutral'" variant="subtle") {{ item.error ? 'Ошибка' : item.passed === true ? 'Пройдено' : item.passed === false ? 'Не пройдено' : 'Нет статуса' }}
+          div(class="admin-detail mt-3 text-sm space-y-3")
+            p(v-if="item.error" class="text-error") {{ item.error }}
+            p(v-if="item.answer" class="pre-wrap-anywhere") {{ item.answer }}
+            p(v-if="item.session_id" class="admin-muted break-all") Сессия: {{ item.session_id }}
+            div(v-if="item.checks?.length" class="flex flex-wrap gap-2")
+              u-badge(v-for="(check, i) in item.checks" :key="i" :color="check.passed ? 'success' : 'warning'" variant="subtle") {{ check.kind }}: {{ check.passed ? 'пройдено' : 'не пройдено' }}
+            p(v-if="item.judge_score != null") Оценка судьи: {{ item.judge_score }}
+            p(v-if="item.reasoning" class="pre-wrap-anywhere") {{ item.reasoning }}
+            details
+              summary(class="cursor-pointer admin-muted") Все данные примера
+              pre(class="mt-2 text-xs pre-wrap-anywhere") {{ JSON.stringify(item, null, 2) }}
+    details(class="admin-panel p-4")
+      summary(class="cursor-pointer text-sm") Полный результат сервера
+      pre(class="mt-3 text-xs pre-wrap-anywhere") {{ JSON.stringify(result, null, 2) }}
 </template>

@@ -2,20 +2,37 @@
 import type { CalendarDate } from "@internationalized/date"
 
 import type { components } from "#openapi"
+import { parseUserId } from "~/services/message-filters"
 
 type MessageResponse = components["schemas"]["MessageResponse"]
 
-const { data: messages, refresh, status } = await useApi("/api/v1/messages", {
-  query: {
-    limit: 500,
-  },
-})
+const batchOffset = ref(0)
+const userFilter = ref("")
+const userFilterError = ref("")
+const appliedUser = ref<number | undefined>()
+const messageQuery = computed(() => ({ limit: 500, offset: batchOffset.value, user_id: appliedUser.value }))
+const { data: messages, refresh, status, error } = await useApi("/api/v1/messages", { query: messageQuery })
+const applyUser = () => {
+  userFilterError.value = ""
+  try {
+    const id = parseUserId(userFilter.value)
+    batchOffset.value = 0
+    appliedUser.value = id
+  } catch {
+    userFilterError.value = "Введите целый идентификатор пользователя."
+  }
+}
 
 const fromDateInput = useTemplateRef("fromDateInput")
 const toDateInput = useTemplateRef("toDateInput")
 
 const fromDate = shallowRef<CalendarDate | null>(null)
 const toDate = shallowRef<CalendarDate | null>(null)
+
+const search = ref("")
+const channel = ref("all")
+const page = ref(1)
+const pageSize = 25
 
 const items = computed(() => {
   let list = (messages.value ?? []) as MessageResponse[]
@@ -32,7 +49,23 @@ const items = computed(() => {
     list = list.filter(m => new Date(m.created_at).getTime() <= to.getTime())
   }
 
-  return list
+  const q = search.value.trim().toLocaleLowerCase("ru")
+  return list.filter(m => (channel.value === "all" || m.messenger === channel.value)
+    && (!q || `${m.user_id} ${m.username ?? ""} ${m.user_text} ${m.bot_response} ${m.session_id}`.toLocaleLowerCase("ru").includes(q)))
+})
+
+const channels = computed(() => [
+  { label: "Все каналы", value: "all" },
+  ...[...new Set((messages.value ?? []).map(m => m.messenger).filter((m): m is string => !!m))]
+    .map(value => ({ label: value, value })),
+])
+const pagedItems = computed(() => items.value.slice((page.value - 1) * pageSize, page.value * pageSize))
+watch([fromDate, toDate, search, channel, batchOffset, appliedUser], () => {
+  page.value = 1
+})
+
+watch(items, () => {
+  page.value = Math.min(page.value, Math.max(1, Math.ceil(items.value.length / pageSize)))
 })
 
 const columns: any[] = [
@@ -89,11 +122,11 @@ const exportToCsv = () => {
     m.user_id,
     m.username || "—",
     m.messenger || "—",
-    `"${m.user_text.replace(/"/g, "\"\"")}"`,
-    `"${m.bot_response.replace(/"/g, "\"\"")}"`,
+    m.user_text,
+    m.bot_response,
   ])
 
-  const csvContent = "\uFEFF" + [headers.join(";"), ...rows.map(r => r.join(";"))].join("\n")
+  const csvContent = "\uFEFF" + [headers.join(";"), ...rows.map(r => r.map(value => `"${String(value).replaceAll("\"", "\"\"")}"`).join(";"))].join("\n")
   const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" })
   const url = URL.createObjectURL(blob)
   const link = document.createElement("a")
@@ -103,17 +136,18 @@ const exportToCsv = () => {
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)
+  URL.revokeObjectURL(url)
 }
 </script>
 
 <template lang="pug">
-div(class="space-y-6")
-  ui-box(title="Сообщения пользователей")
+div(class="space-y-4 min-w-0")
+  ui-box(title="Журнал сообщений")
     template(#right)
       u-button(icon="i-heroicons-arrow-path" color="neutral" variant="soft" :loading="status === 'pending'" @click="() => refresh()") Обновить
 
-    div(class="flex flex-wrap items-end gap-4 mb-6")
-      u-form-group(label="От" class="w-full sm:w-auto")
+    div(class="admin-toolbar")
+      u-form-field(label="От" class="w-full sm:w-auto")
         u-input-date(ref="fromDateInput" v-model="fromDate")
           template(#trailing)
             u-popover(:reference="fromDateInput?.inputsRef?.[3]?.$el")
@@ -127,7 +161,7 @@ div(class="space-y-6")
               )
               template(#content)
                 u-calendar(v-model="fromDate" class="p-2")
-      u-form-group(label="До" class="w-full sm:w-auto")
+      u-form-field(label="До" class="w-full sm:w-auto")
         u-input-date(ref="toDateInput" v-model="toDate")
           template(#trailing)
             u-popover(:reference="toDateInput?.inputsRef?.[3]?.$el")
@@ -150,15 +184,32 @@ div(class="space-y-6")
           @click="exportToCsv"
         ) Экспорт в CSV
 
+    p(class="admin-muted text-xs my-3" role="status") Загружено {{ messages?.length ?? 0 }} сообщений, смещение {{ batchOffset }}, предел выборки — 500. Фильтры и CSV относятся только к этой выборке.
+    div(class="admin-toolbar")
+      u-form-field(label="Пользователь (вся база)")
+        u-input(v-model="userFilter" type="number" min="0" placeholder="ID пользователя" @keydown.enter.prevent="applyUser")
+      u-button(color="neutral" variant="outline" @click="applyUser") Применить
+      u-button(color="neutral" variant="ghost" :disabled="batchOffset === 0 || status === 'pending'" @click="batchOffset = Math.max(0, batchOffset - 500)") Предыдущие 500
+      u-button(color="neutral" variant="ghost" :disabled="(messages?.length ?? 0) < 500 || status === 'pending'" @click="batchOffset += 500") Следующие 500
+    p(v-if="userFilterError" role="alert" class="text-error text-xs my-2") {{ userFilterError }}
+    div(class="admin-toolbar")
+      u-input(v-model="search" icon="i-lucide-search" placeholder="Вопрос, ответ, пользователь или сессия" aria-label="Поиск сообщений" class="w-full sm:max-w-md")
+      u-select(v-model="channel" :items="channels" aria-label="Канал" class="w-44")
+      span(class="admin-muted text-xs") Найдено: {{ items.length }}
+
     div(v-if="status === 'pending' && !items.length" class="py-10 flex justify-center text-gray-500")
       u-icon(name="i-heroicons-arrow-path" class="animate-spin w-12 h-12")
+
+    div(v-else-if="error" class="admin-empty" role="alert")
+      p Не удалось загрузить сообщения.
+      u-button(variant="outline" @click="() => refresh()") Повторить
 
     div(v-else-if="items.length === 0" class="py-12 text-center text-gray-500 bg-gray-50 dark:bg-gray-800 rounded-lg mt-6")
       u-icon(name="i-heroicons-chat-bubble-left-right" class="w-16 h-16 mx-auto text-gray-400 mb-3")
       p Список сообщений пуст или нет данных по выбранному фильтру.
 
-    div(v-else class="mt-6 table-wrap-safe")
-      u-table(:data="items" :columns="columns" class="w-full messages-table")
+    div(v-else class="admin-table-wrap")
+      u-table(:data="pagedItems" :columns="columns" class="w-full messages-table admin-table")
         template(#created_at-cell="{ row }")
           span(class="text-sm text-gray-500 whitespace-nowrap") {{ formatDate(row.original.created_at) }}
 
@@ -195,12 +246,31 @@ div(class="space-y-6")
             @click="openLogs(row.original.session_id)"
           )
 
+    div(v-if="items.length" class="admin-actions justify-between mt-4")
+      span(class="admin-muted text-xs") Страница {{ page }} из {{ Math.ceil(items.length / pageSize) }}
+      u-pagination(v-model:page="page" :items-per-page="pageSize" :total="items.length")
+
     u-slideover(v-model:open="isLogsOpen" title="Детальные логи сессии" :description="selectedSessionId ?? ''")
-      template(#content)
-        messages-logs-viewer(v-if="selectedSessionId" :session-id="selectedSessionId")
+      template(#body)
+        messages-logs-viewer(v-if="selectedSessionId" :key="selectedSessionId" :session-id="selectedSessionId")
 </template>
 
 <style scoped>
+:deep(.messages-table table) {
+  min-width: 960px;
+  table-layout: fixed;
+}
+
+:deep(.messages-table th:nth-child(4)),
+:deep(.messages-table td:nth-child(4)) {
+  width: 14rem;
+}
+
+:deep(.messages-table th:nth-child(5)),
+:deep(.messages-table td:nth-child(5)) {
+  width: 20rem;
+}
+
 :deep(.messages-table th:nth-child(1)),
 :deep(.messages-table td:nth-child(1)) {
   width: 8.5rem;

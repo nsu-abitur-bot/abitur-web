@@ -4,7 +4,7 @@ import type {
   RagDocumentDiagnostics,
 } from "~/types/rag-debug"
 
-/** Инспектор поиска: прогоняет вопрос через RAG и возвращает чанки/сущности/связи. */
+/** Инспектор RAG: aquery_llm генерирует ответ и возвращает диагностику поиска; это не полный путь бота. */
 export async function debugRagQuery(
   payload: RagDebugQueryRequest,
 ): Promise<RagDebugQueryResponse> {

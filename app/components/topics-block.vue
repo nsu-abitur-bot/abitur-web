@@ -13,7 +13,7 @@ interface TopicDatum {
 }
 
 const palette = [
-  "#2563EB",
+  "#4b4bd2",
   "#F97316",
   "#22C55E",
   "#E11D48",
@@ -25,7 +25,7 @@ const palette = [
 
 const getColor = (index: number) => palette[index % palette.length] ?? palette[0]!
 
-const { data: stats, refresh, status } = await useAsyncData<TopicStat[]>("stats-topics", () => getTopicStats())
+const { data: stats, refresh, status, error } = await useAsyncData<TopicStat[]>("stats-topics", () => getTopicStats())
 
 const extractLabel = (item: TopicStat, fallback: string): string => {
   const candidates = ["label", "name", "title", "topic_label", "topic"]
@@ -99,7 +99,7 @@ const chartOptions = computed<ChartOptions<"doughnut">>(() => ({
 </script>
 
 <template lang="pug">
-ui-box(title="Популярные темы" class="w-full")
+ui-box(title="Популярные темы" class="w-full min-w-0")
   template(#right)
     u-button(
       icon="i-heroicons-arrow-path"
@@ -110,7 +110,9 @@ ui-box(title="Популярные темы" class="w-full")
       @click="() => refresh()"
     )
 
-  div(class="h-64 w-full")
+  div(v-if="error" role="alert" class="admin-empty") Не удалось загрузить статистику тем.
+  div(v-else-if="status === 'pending'" class="admin-empty") Загрузка…
+  div(v-else class="h-52 w-full")
     chart-doughnut(v-if="chartData" :data="chartData" :options="chartOptions")
     div(v-else class="h-full flex items-center justify-center text-sm text-gray-500 dark:text-gray-400")
       | Нет данных для построения графика.

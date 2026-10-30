@@ -126,7 +126,7 @@ const onCreateProgram = async () => {
 </script>
 
 <template lang="pug">
-div(class="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4" :class="{ 'opacity-70': !faculty.is_active }")
+div(class="admin-panel p-4" :class="{ 'opacity-70': !faculty.is_active }")
   div(v-if="isEditing")
     u-form(:state="facultyState" class="space-y-3" @submit="onSaveFaculty")
       div(class="flex flex-wrap items-end gap-3")
@@ -146,7 +146,7 @@ div(class="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:
     div(class="flex items-start gap-3")
       div(class="flex-1 min-w-0")
         div(class="flex items-center gap-2 flex-wrap")
-          h3(class="text-lg font-semibold text-gray-900 dark:text-white") {{ faculty.name }}
+          h3(class="text-sm font-semibold text-gray-900 dark:text-white") {{ faculty.name }}
           u-badge(v-if="!faculty.is_active" color="warning" variant="subtle" size="sm") Выключен
         div(v-if="faculty.aliases?.length" class="flex flex-wrap gap-1 mt-1")
           u-badge(
@@ -158,12 +158,12 @@ div(class="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:
             class="font-mono"
           ) {{ alias }}
       div(class="flex gap-1 shrink-0")
-        u-button(icon="i-heroicons-pencil-square" color="neutral" variant="ghost" size="sm" @click="startEdit")
+        u-button(aria-label="Редактировать" icon="i-heroicons-pencil-square" color="neutral" variant="ghost" size="sm" @click="startEdit")
         u-modal(
           title="Удаление факультета"
           description="Факультет будет удалён вместе со всеми его направлениями. Это действие нельзя отменить."
         )
-          u-button(icon="i-heroicons-trash" color="error" variant="ghost" size="sm")
+          u-button(aria-label="Удалить" icon="i-heroicons-trash" color="error" variant="ghost" size="sm")
           template(#footer="{ close }")
             div(class="flex justify-end gap-2 w-full")
               u-button(color="neutral" variant="ghost" @click="close") Отмена

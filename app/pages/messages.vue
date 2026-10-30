@@ -1,4 +1,4 @@
 <template lang="pug">
-u-container(class="py-8")
+ui-page(title="Сообщения")
   messages-message-list
 </template>
