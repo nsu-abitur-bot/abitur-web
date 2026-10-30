@@ -61,6 +61,17 @@
   font-weight: 650;
 }
 
+.admin-brand-copy {
+  min-width: 0;
+}
+
+.admin-brand-name {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .admin-brand small {
   display: block;
   font-size: 11px;
@@ -71,12 +82,31 @@
 .admin-brand-mark {
   display: grid;
   place-items: center;
+  flex: 0 0 32px;
   width: 32px;
   height: 32px;
   background: #4b4bd2;
   color: white;
   border-radius: 10px;
-  font-size: 27px;
+  font-size: 18px;
+  overflow: hidden;
+}
+
+.admin-brand-mark.has-logo {
+  background: transparent;
+}
+
+.admin-brand-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.admin-university {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .admin-nav-group {
@@ -260,6 +290,12 @@
 
 .admin-menu {
   display: none;
+}
+
+.admin-topbar > .admin-muted,
+.admin-topbar > .admin-actions,
+.admin-menu {
+  flex-shrink: 0;
 }
 
 .admin-skip {

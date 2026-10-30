@@ -54,6 +54,7 @@ async function mockSettings(context: BrowserContext, role = "superadmin") {
       return reply({ revision, encryption_ready: true, settings })
     }
     const fixtures: Record<string, unknown> = {
+      "/api/v1/university": { profile: "custom", short_name: "Тестовый вуз", full_name: "Тестовый университет", assistant_name: "Помощник", logo_url: "", website: "", email: "", phone: "", address: "" },
       "/api/v1/settings/crag": { enabled: true, relevance_threshold: 0.5, min_chunks: 2, allow_refine: true, use_faculty_table: true, max_graded_chunks: 12 },
       "/api/v1/settings/faq": { similarity_threshold: 0.95 },
       "/api/v1/settings/rate-limit": { system_requests_per_day: 10000, user_requests_per_day: 100 },

@@ -34,6 +34,7 @@ const server = createServer(async (req, res) => {
     return
   }
   const fixtures = {
+    "/api/v1/university": { profile: "custom", short_name: "Тестовый вуз", full_name: "Тестовый университет", assistant_name: "Помощник", logo_url: "", website: "", email: "", phone: "", address: "" },
     "/api/v1/auth/me": { id: 1, username: "e2e-admin", role: "superadmin", is_active: true },
     "/api/v1/rag/docs": { documents: [{ id: "e2e-document", title: "Локальный тестовый источник", source_url: "https://example.invalid/admissions", chunks_count: 3, created_at: "2026-10-01T00:00:00Z" }] },
     "/api/v1/rag/docs/e2e-document/diagnostics": { id: "e2e-document", postgres_status: "indexed", lightrag_status: "processed", chunks_count: 3, entities_count: 0, relations_count: 0 },

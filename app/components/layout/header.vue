@@ -6,7 +6,15 @@ const route = useRoute()
 const router = useRouter()
 const token = useAuthToken()
 const { isAdmin, isSuperadmin } = useRole()
-const { data: university } = useAsyncData("university", () => apiFetch<{ short_name: string, assistant_name: string, email: string, phone: string, address: string }>("/api/v1/university"))
+const { data: university } = useUniversityIdentity()
+const universityName = computed(() => university.value?.short_name?.trim() || university.value?.full_name?.trim() || "Университет")
+const universityTitle = computed(() => university.value?.full_name?.trim() || universityName.value)
+const universityInitial = computed(() => Array.from(universityName.value)[0]?.toLocaleUpperCase() || "?")
+const logoUrl = computed(() => university.value?.logo_url?.trim())
+const logoFailed = ref(false)
+watch(logoUrl, () => {
+  logoFailed.value = false
+})
 const open = ref(false)
 onKeyStroke("Escape", () => {
   open.value = false
@@ -59,16 +67,19 @@ async function logout() {
 
 <template lang="pug">
 header.admin-topbar
-  span(v-if="university" :title="[university.email, university.phone, university.address].filter(Boolean).join(' · ')") {{ university.short_name }} · {{ university.assistant_name }}
+  span.admin-university(:title="[universityTitle, university?.email, university?.phone, university?.address].filter(Boolean).join(' · ')") {{ universityName }}{{ university?.assistant_name ? ` · ${university.assistant_name}` : '' }}
   u-button.admin-menu(icon="i-lucide-menu" color="neutral" variant="ghost" aria-label="Меню" :aria-expanded="open" aria-controls="admin-navigation" @click="open = !open")
   span.admin-muted Администрирование
   .admin-actions
     u-color-mode-button
     u-button(v-if="token" color="neutral" variant="ghost" icon="i-lucide-log-out" @click="logout") Выйти
 aside#admin-navigation.admin-sidebar(:class="{ 'is-open': open }")
-  nuxt-link.admin-brand(to="/")
-    span.admin-brand-mark а
-    span Абитуриент
+  nuxt-link.admin-brand(to="/" :title="universityTitle" :aria-label="`${universityTitle} — Панель управления`")
+    span.admin-brand-mark(aria-hidden="true" :class="{ 'has-logo': logoUrl && !logoFailed }")
+      img(v-if="logoUrl && !logoFailed" :src="logoUrl" alt="" @error="logoFailed = true")
+      span(v-else) {{ universityInitial }}
+    span.admin-brand-copy
+      span.admin-brand-name {{ universityName }}
       small Панель управления
   nav(aria-label="Основная навигация")
     template(v-for="(group, index) in groups" :key="index")
