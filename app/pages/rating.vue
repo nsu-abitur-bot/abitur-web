@@ -1,4 +1,9 @@
 <script setup lang="ts">
+const { data: university } = await useAsyncData("university-rating", () => apiFetch<{ profile: string }>("/api/v1/university"))
+if (university.value?.profile !== "nsu") {
+  await navigateTo("/")
+}
+
 definePageMeta({
   layout: false,
 })
