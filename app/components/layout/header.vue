@@ -49,6 +49,8 @@ function active(to: string) {
 async function logout() {
   await navigateTo("/login")
   if (router.currentRoute.value.path === "/login") {
+    // The header is unmounted after navigation, so its cookie watcher has stopped.
+    document.cookie = "abitur-token=; Max-Age=0; Path=/"
     token.value = null
   }
 }
