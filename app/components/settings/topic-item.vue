@@ -13,6 +13,9 @@ const draftLabel = ref(props.topic.label)
 const draftDescription = ref(props.topic.description ?? "")
 
 watch(() => props.topic, (next) => {
+  if (isEditing.value) {
+    return
+  }
   draftLabel.value = next.label
   draftDescription.value = next.description ?? ""
 })
@@ -36,8 +39,8 @@ const onCancel = () => {
 <template lang="pug">
 div(class="flex flex-wrap items-center gap-3 rounded-lg border border-gray-200 dark:border-gray-800 p-3")
   template(v-if="isEditing")
-    u-input(v-model="draftLabel" class="flex-1 min-w-40" placeholder="Название темы")
-    u-input(v-model="draftDescription" class="flex-1 min-w-40" placeholder="Описание (опционально)")
+    u-input(v-model="draftLabel" class="flex-1 min-w-40" placeholder="Название темы" aria-label="Название темы")
+    u-input(v-model="draftDescription" class="flex-1 min-w-40" placeholder="Описание (опционально)" aria-label="Описание темы")
     div(class="flex gap-2")
       u-button(color="primary" @click="onSave") Сохранить
       u-button(color="neutral" variant="ghost" @click="onCancel") Отмена
@@ -49,6 +52,7 @@ div(class="flex flex-wrap items-center gap-3 rounded-lg border border-gray-200 d
     div(class="flex gap-2")
       u-button(
         icon="i-heroicons-pencil-square"
+        :aria-label="`Редактировать тему ${topic.label}`"
         color="neutral"
         variant="ghost"
         size="sm"
@@ -60,6 +64,7 @@ div(class="flex flex-wrap items-center gap-3 rounded-lg border border-gray-200 d
       )
         u-button(
           icon="i-heroicons-trash"
+          :aria-label="`Деактивировать тему ${topic.label}`"
           color="error"
           variant="ghost"
           size="sm"
