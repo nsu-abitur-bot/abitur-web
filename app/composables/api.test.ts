@@ -60,4 +60,18 @@ describe("expired API session", () => {
     expect(token.value).toBe("new-session")
     expect(navigate).not.toHaveBeenCalled()
   })
+
+  it("does not clear a new session when an older imperative request returns 401", async () => {
+    let rejectRequest!: (reason: unknown) => void
+    fetch.mockReturnValueOnce(new Promise((_resolve, reject) => {
+      rejectRequest = reject
+    }))
+    const request = apiFetch("/api/v1/auth/me")
+    token.value = "new-session"
+    rejectRequest({ statusCode: 401 })
+    await expect(request).rejects.toMatchObject({ statusCode: 401 })
+    expect(token.value).toBe("new-session")
+    expect(navigate).not.toHaveBeenCalled()
+  })
+
 })
