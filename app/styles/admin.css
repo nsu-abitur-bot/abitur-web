@@ -79,7 +79,8 @@
   font-size: 27px;
 }
 
-.admin-sidebar details {
+.admin-sidebar details,
+.admin-nav-direct {
   margin-bottom: 16px;
 }
 

@@ -12,16 +12,25 @@ const isLoading = ref(false)
 const data = ref<RagDocumentDiagnostics | null>(null)
 const errorMessage = ref<string | null>(null)
 
+let generation = 0
 const load = async (docId: string) => {
+  const current = ++generation
   isLoading.value = true
   errorMessage.value = null
   data.value = null
   try {
-    data.value = await getRagDocumentDiagnostics(docId)
+    const result = await getRagDocumentDiagnostics(docId)
+    if (current === generation) {
+      data.value = result
+    }
   } catch {
-    errorMessage.value = "Не удалось загрузить диагностику документа"
+    if (current === generation) {
+      errorMessage.value = "Не удалось загрузить диагностику документа"
+    }
   } finally {
-    isLoading.value = false
+    if (current === generation) {
+      isLoading.value = false
+    }
   }
 }
 
@@ -30,6 +39,8 @@ watch(
   ([isOpen, docId]) => {
     if (isOpen && docId) {
       load(docId)
+    } else {
+      generation++
     }
   },
 )
@@ -39,17 +50,16 @@ const lightragLabel: Record<string, string> = {
   failed: "Ошибка",
   pending: "В очереди",
   processing: "Обрабатывается",
-  not_found: "Не найден",
+  not_found: "Обработка не подтверждена",
 }
 
-const getLightragLabel = (status: string) => lightragLabel[status] ?? status
+const getLightragLabel = (status: string) => lightragLabel[status] ?? "Неизвестно"
 
 const getLightragColor = (status: string) => {
   switch (status) {
     case "processed":
       return "success"
     case "failed":
-    case "not_found":
       return "error"
     case "pending":
     case "processing":
@@ -79,7 +89,9 @@ u-modal(v-model:open="open" title="Диагностика документа")
       :title="errorMessage"
     )
 
-    div(v-else-if="data" class="space-y-4")
+    u-button(v-if="errorMessage && docId" color="neutral" variant="outline" @click="load(docId)") Повторить
+
+    div(v-if="!isLoading && !errorMessage && data" class="space-y-4")
       div
         div(class="text-xs text-gray-500") Название
         div(class="font-medium text-gray-900 dark:text-white break-anywhere") {{ data.title || "—" }}
@@ -99,7 +111,7 @@ u-modal(v-model:open="open" title="Диагностика документа")
         color="warning"
         variant="soft"
         icon="i-heroicons-exclamation-triangle"
-        title="Документ не обработан в LightRAG"
+        :title="data.lightrag_status === 'not_found' ? 'Обработка не подтверждена' : 'Обработка не завершена'"
         :description="`Статус LightRAG: ${getLightragLabel(data.lightrag_status)}.`"
       )
 

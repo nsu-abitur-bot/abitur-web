@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { onKeyStroke } from "@vueuse/core"
 
+type NavItem = [label: string, to: string, icon: string]
 const route = useRoute()
 const token = useAuthToken()
-const { isAdmin } = useRole()
+const { isAdmin, isSuperadmin } = useRole()
 const open = ref(false)
 onKeyStroke("Escape", () => {
   open.value = false
@@ -11,18 +12,39 @@ onKeyStroke("Escape", () => {
 watch(() => route.fullPath, () => {
   open.value = false
 })
-const groups = computed(() => [
-  { title: "База знаний", items: isAdmin.value
+const groups = computed<{ title?: string, items: NavItem[] }[]>(() => [
+  { title: "Обращения", items: [["Обратная связь", "/feedback", "i-lucide-inbox"], ["Сообщения", "/messages", "i-lucide-message-circle"]] },
+  { title: "Знания", items: isAdmin.value
     ? [
         ["Материалы", "/", "i-lucide-files"],
-        ["Вопросы и ответы", "/faq", "i-lucide-messages-square"],
+        ["Готовые ответы", "/faq", "i-lucide-messages-square"],
         ["Сокращения", "/abbrev", "i-lucide-text"],
         ["Факультеты", "/faculties", "i-lucide-graduation-cap"],
       ]
     : [] },
-  { title: "Аналитика", items: [["Статистика", "/stats", "i-lucide-chart-no-axes-combined"], ["Сообщения", "/messages", "i-lucide-message-circle"], ["Обратная связь", "/feedback", "i-lucide-inbox"]] },
-  { title: "Управление", items: isAdmin.value ? [["Проверка поиска", "/rag/inspector", "i-lucide-search"], ["Тестирование", "/testing", "i-lucide-flask-conical"], ["Настройки", "/settings", "i-lucide-settings-2"], ["Логи системы", "/system-logs", "i-lucide-scroll-text"]] : [] },
+  { items: isAdmin.value ? [["Проверка ответа", "/rag/inspector", "i-lucide-search"], ["Автооценка", "/testing", "i-lucide-flask-conical"]] : [] },
+  { items: [["Статистика", "/stats", "i-lucide-chart-no-axes-combined"]] },
+  { title: "Настройки", items: isAdmin.value
+    ? [
+        ...(isSuperadmin.value ? [["Подключения", "/settings?section=connections", "i-lucide-plug"] as NavItem] : []),
+        ["Правила и лимиты", "/settings?section=rules", "i-lucide-settings-2"],
+        ["Темы", "/settings?section=topics", "i-lucide-tags"],
+        ...(isSuperadmin.value ? [["Команда", "/settings?section=team", "i-lucide-users"] as NavItem] : []),
+      ]
+    : [] },
+  { items: isAdmin.value ? [["Системные логи", "/system-logs", "i-lucide-scroll-text"]] : [] },
 ])
+function active(to: string) {
+  const [path, query] = to.split("?")
+  if (path === "/") {
+    return route.path === "/" || route.path.startsWith("/rag/document/")
+  }
+  if (query) {
+    const section = new URLSearchParams(query).get("section")
+    return route.path === path && (route.query.section || (isSuperadmin.value ? "connections" : "rules")) === section
+  }
+  return route.path === path || route.path.startsWith(`${path}/`)
+}
 function logout() {
   token.value = null
   navigateTo("/login")
@@ -42,10 +64,15 @@ aside#admin-navigation.admin-sidebar(:class="{ 'is-open': open }")
     span Абитуриент
       small Панель управления
   nav(aria-label="Основная навигация")
-    template(v-for="group in groups" :key="group.title")
-      details(v-if="group.items.length" open)
-        summary {{ group.title }}
-        nuxt-link(v-for="item in group.items" :key="item[1]" :to="item[1]" :aria-current="route.path === item[1] || (item[1] === '/' && route.path.startsWith('/rag/document/')) ? 'page' : undefined")
-          u-icon(:name="item[2]")
-          span {{ item[0] }}
+    template(v-for="(group, index) in groups" :key="index")
+      template(v-if="group.items.length")
+        details(v-if="group.title" :open="group.items.some(item => active(item[1]))")
+          summary {{ group.title }}
+          nuxt-link(v-for="item in group.items" :key="item[1]" :to="item[1]" :aria-current="active(item[1]) ? 'page' : undefined")
+            u-icon(:name="item[2]")
+            span {{ item[0] }}
+        .admin-nav-direct(v-else)
+          nuxt-link(v-for="item in group.items" :key="item[1]" :to="item[1]" :aria-current="active(item[1]) ? 'page' : undefined")
+            u-icon(:name="item[2]")
+            span {{ item[0] }}
 </template>

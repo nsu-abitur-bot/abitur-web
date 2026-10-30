@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia"
 
-import { confirmRagUpload, preprocessRagDocument, previewCsvDocuments } from "~/services/rag-upload"
+import { confirmRagUpload, preprocessRagDocument, previewCsvDocuments, uploadRagDocuments } from "~/services/rag-upload"
 import { useRagParserStore } from "~/stores/rag-parser"
+import { RAG_ACCEPTED_EXTENSIONS } from "~/types/rag-upload"
+import { validateRagFiles } from "~/utils/rag-upload"
 
 const emit = defineEmits<{
   (e: "success"): void
@@ -28,6 +30,28 @@ const isManualProcessing = ref(false)
 const manualTitle = ref("")
 const manualUrl = ref("")
 const manualText = ref("")
+const uploadInput = useTemplateRef("uploadInput")
+const uploadingFiles = ref(false)
+const fileResults = ref<string[]>([])
+async function handleFiles(event: Event) {
+  const target = event.target as HTMLInputElement
+  const { validFiles, rejectedFiles } = validateRagFiles(Array.from(target.files ?? []))
+  fileResults.value = rejectedFiles.map(item => `${item.file.name}: ${item.reason}`)
+  target.value = ""
+  if (!validFiles.length) {
+    return
+  }
+  uploadingFiles.value = true
+  try {
+    const result = await uploadRagDocuments({ files: validFiles })
+    fileResults.value.push(...result.results.map(item => `${item.filename}: ${item.message}`))
+    emit("success")
+  } catch {
+    fileResults.value.push("Не удалось загрузить файлы")
+  } finally {
+    uploadingFiles.value = false
+  }
+}
 const fileInput = useTemplateRef("fileInput")
 const toast = useToast()
 
@@ -54,7 +78,7 @@ const handleCsvUpload = async (event: Event) => {
     const result = await previewCsvDocuments(file)
     toast.add({
       title: "CSV прочитан",
-      description: `Найдено ссылок: ${result.total_found}. Начинаем загрузку и препроцессинг.`,
+      description: `Найдено ссылок: ${result.total_found}. Ссылки добавлены в очередь.`,
       color: "info",
     })
 
@@ -207,9 +231,16 @@ const editingText = computed({
 </script>
 
 <template lang="pug">
-div(class="space-y-6")
+div(class="space-y-4")
+  .admin-detail
+    .admin-actions
+      input(ref="uploadInput" type="file" multiple :accept="RAG_ACCEPTED_EXTENSIONS.join(',')" class="hidden" @change="handleFiles")
+      u-button(color="neutral" variant="outline" icon="i-lucide-upload" :loading="uploadingFiles" @click="uploadInput?.click()") Загрузить файлы
+      span.admin-muted До 10 МБ на файл. CSV здесь загружается как текст.
+    ul(v-if="fileResults.length" class="mt-3 space-y-2")
+      li(v-for="(result, index) in fileResults" :key="index" class="break-anywhere") {{ result }}
   // Main Logic View
-  div(v-if="editingIndex === null" class="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm space-y-4")
+  div(v-if="editingIndex === null" class="admin-detail space-y-4")
     // CSV Upload
     div(class="space-y-3 pb-4 border-b dark:border-gray-800")
       div(class="flex flex-wrap items-center justify-between gap-2")
@@ -227,7 +258,7 @@ div(class="space-y-6")
       p(class="text-xs text-gray-500") Формат CSV: Название, Ссылка, Комментарий
 
     // URL Input
-    u-form-field(label="Одна ссылка" class="w-full")
+    u-form-field(label="Ссылка — предпросмотр перед добавлением" class="w-full")
       div(class="flex gap-2 w-full")
         u-input(
           v-model="url"
@@ -241,7 +272,7 @@ div(class="space-y-6")
           variant="outline"
           :disabled="!url"
           @click="handleAdd"
-        ) Добавить
+        ) Загрузить
 
     div(class="pt-2")
       u-button(
@@ -311,14 +342,14 @@ div(class="space-y-6")
         div(class="flex justify-between text-xs font-medium text-gray-600 dark:text-gray-300")
           span Предварительная обработка моделью (идет параллельная загрузка)...
           span {{ parsingStats.done }} / {{ parsingStats.total }}
-        u-progress(:value="parsingStats.done" :max="parsingStats.total" color="primary" size="sm")
+        u-progress(:model-value="parsingStats.done" :max="parsingStats.total" color="primary" size="sm")
 
       // Indexing Progress Bar
       div(v-if="indexingStats.total > 0 && indexingStats.done < indexingStats.total" class="space-y-1 bg-primary-50 dark:bg-primary-900/20 p-3 rounded-lg border border-primary-100 dark:border-primary-800/50")
         div(class="flex justify-between text-xs font-medium text-primary-700 dark:text-primary-300")
           span Загрузка обработанных документов в базу знаний...
           span {{ indexingStats.done }} / {{ indexingStats.total }}
-        u-progress(:value="indexingStats.done" :max="indexingStats.total" color="primary" size="sm")
+        u-progress(:model-value="indexingStats.done" :max="indexingStats.total" color="primary" size="sm")
 
       div(class="space-y-2 max-h-[400px] overflow-y-auto pr-1")
         div(
@@ -382,10 +413,10 @@ div(class="space-y-6")
         :loading="isUploading"
         :disabled="selectedCount === 0 || isUploading"
         @click="handleConfirmUpload"
-      ) Отправить выбранные в базу знаний
+      ) Добавить выбранные
 
   // Editor View
-  div(v-else class="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm space-y-6 animate-in fade-in slide-in-from-right-4")
+  div(v-else class="admin-detail space-y-6 animate-in fade-in slide-in-from-right-4")
     div(class="flex items-center justify-between border-b pb-4 dark:border-gray-800")
       h3(class="text-lg font-semibold flex items-center gap-2")
         u-icon(name="i-heroicons-eye" class="text-primary-500")
