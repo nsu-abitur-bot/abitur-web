@@ -20,8 +20,8 @@ const schema = await response.json()
 writeFileSync("openapi.json", `${JSON.stringify(schema, null, 2)}\n`)
 
 const result = spawnSync(
-  "pnpm",
-  ["exec", "openapi-typescript", "openapi.json", "-o", "types/openapi.d.ts"],
+  "bunx",
+  ["--no-install", "openapi-typescript", "openapi.json", "-o", "types/openapi.d.ts"],
   {
     stdio: "inherit",
   },

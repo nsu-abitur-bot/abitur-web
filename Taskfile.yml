@@ -1,0 +1,42 @@
+version: "3"
+
+tasks:
+  prepare:
+    run: once
+    desc: Generate Nuxt types (once per task invocation)
+    cmds:
+      - bun run prepare
+  dev:
+    cmds:
+      - bun run dev
+  build:
+    deps: [prepare]
+    cmds:
+      - bun run build
+  types:
+    deps: [prepare]
+    cmds:
+      - bunx --no-install golar tsc --noEmit -p tsconfig.client.json
+      - bun check --no-script -p .nuxt/tsconfig.server.json
+      - bun check --no-script -p .nuxt/tsconfig.shared.json
+      - bun check --no-script -p tsconfig.tooling.json
+  types:verify:
+    deps: [prepare]
+    cmds:
+      - node scripts/verify-typecheck.mjs
+  lint:
+    cmds:
+      - bun run lint
+  test:
+    deps: [prepare]
+    cmds:
+      - bun run test
+  check:
+    deps: [types, lint, test]
+  e2e:
+    desc: Browser tests against production output and an isolated fake API
+    cmds:
+      - bunx --no-install playwright test
+  hooks:
+    cmds:
+      - node scripts/install-hooks.mjs

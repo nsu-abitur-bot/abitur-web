@@ -1,59 +1,27 @@
 # syntax=docker/dockerfile:1
 # check=skip=SecretsUsedInArgOrEnv
 
-FROM node:24.10-alpine3.22 AS base
-
-RUN corepack enable
-
-ENV PNPM_HOME=/pnpm
-ENV PATH=$PNPM_HOME:$PATH
-
+FROM oven/bun:1.4.4 AS bun
+FROM node:24.18.1-bookworm-slim AS base
+COPY --from=bun /usr/local/bin/bun /usr/local/bin/bun
 WORKDIR /app
-
-#
-# deps (cache pnpm store by lockfile)
-#
 
 FROM base AS deps
-
-COPY package.json pnpm-lock.yaml ./
-RUN pnpm fetch --frozen-lockfile
-
-#
-# builder
-#
+COPY package.json bun.lock ./
+# Nuxt prepare needs source/config, so run it in the builder instead.
+RUN --mount=type=cache,target=/root/.bun/install/cache bun install --frozen-lockfile --ignore-scripts
 
 FROM base AS builder
-
-# Disable husky in CI/container builds.
-ENV HUSKY=0
-
-COPY --from=deps /pnpm/store /pnpm/store
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+RUN bun run prepare && bun run build
 
-RUN pnpm install --frozen-lockfile --offline
-
-RUN pnpm exec nuxt build
-
-#
-# runner
-#
-
-FROM node:24.10-alpine3.22 AS runner
-
+FROM node:24.18.1-bookworm-slim AS runner
 WORKDIR /app
-
 ENV NODE_ENV=production
 ENV NITRO_HOST=0.0.0.0
 ENV NITRO_PORT=3000
-ENV NUXT_SESSION_PASSWORD=
-ENV NUXT_DATABASE_URL=
-
-# Reduce sharp/font warnings in some setups and provide curl for health checks.
-RUN apk add --no-cache curl fontconfig ttf-dejavu
-
+RUN apt-get update && apt-get install -y --no-install-recommends curl fontconfig fonts-dejavu-core && rm -r /var/lib/apt/lists/*
 COPY --from=builder /app/.output ./.output
-
 EXPOSE 3000
-
 CMD ["sh", "-eu", "-c", "test -n \"$NUXT_SESSION_PASSWORD\" || { echo 'NUXT_SESSION_PASSWORD is required'; exit 1; }; [ ${#NUXT_SESSION_PASSWORD} -ge 32 ] || { echo 'NUXT_SESSION_PASSWORD must be at least 32 characters'; exit 1; }; test -n \"$NUXT_DATABASE_URL\" || { echo 'NUXT_DATABASE_URL is required'; exit 1; }; exec node .output/server/index.mjs"]

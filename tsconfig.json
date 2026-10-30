@@ -16,7 +16,6 @@
   // https://nuxt.com/docs/guide/concepts/typescript
   "files": [],
   "exclude": [
-    "public/nsu/**",
-    "app/pages/rating.vue"
+    "public/nsu/**"
   ]
 }
