@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const { isSuperadmin, isAdmin } = useRole()
 const { topics, isLoading, refresh, create, update, remove } = useTopics()
 
 const newTopicLabel = ref("")
@@ -72,6 +73,8 @@ const reactivateTopic = async (id: number) => {
 div(class="py-8 w-full space-y-6")
   h1(class="text-3xl font-bold text-gray-900 dark:text-white") Настройки системы
 
+  settings-instance-settings(v-if="isSuperadmin")
+
   admin-invite
   admin-list
 
@@ -79,6 +82,8 @@ div(class="py-8 w-full space-y-6")
     settings-rate-limit-settings
 
     settings-crag-settings
+
+    settings-faq-settings(v-if="isAdmin")
 
     ui-box(title="Темы для классификации")
       p(class="text-sm text-gray-500 dark:text-gray-400 mb-4")

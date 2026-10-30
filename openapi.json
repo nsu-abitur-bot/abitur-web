@@ -293,94 +293,54 @@
         }
       }
     },
-    "/api/v1/topics/": {
+    "/api/v1/settings/instance": {
       "get": {
         "tags": [
-          "topics"
+          "settings"
         ],
-        "summary": "Получить все темы",
-        "description": "Получить список всех активных тем.",
-        "operationId": "get_topics_api_v1_topics__get",
+        "summary": "Get Instance Settings",
+        "operationId": "get_instance_settings_api_v1_settings_instance_get",
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TopicListResponse"
+                  "$ref": "#/components/schemas/InstanceSettingsResponse"
                 }
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
       },
-      "post": {
+      "put": {
         "tags": [
-          "topics"
+          "settings"
         ],
-        "summary": "Создать новую тему",
-        "description": "Создает новую тему.\n\n- **label**: уникальное название темы\n- **description**: опциональное описание\n- **is_active**: активна ли тема при создании (по умолчанию True)",
-        "operationId": "create_topic_api_v1_topics__post",
+        "summary": "Update Instance Settings",
+        "operationId": "update_instance_settings_api_v1_settings_instance_put",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/TopicCreate"
+                "$ref": "#/components/schemas/SettingsChange"
               }
             }
           },
           "required": true
         },
         "responses": {
-          "201": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TopicResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/topics/{topic_id}": {
-      "get": {
-        "tags": [
-          "topics"
-        ],
-        "summary": "Получить тему по ID",
-        "description": "Получает тему по её ID.",
-        "operationId": "get_topic_api_v1_topics__topic_id__get",
-        "parameters": [
-          {
-            "name": "topic_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Topic Id"
-            }
-          }
-        ],
-        "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TopicResponse"
+                  "$ref": "#/components/schemas/InstanceSettingsResponse"
                 }
               }
             }
@@ -395,35 +355,30 @@
               }
             }
           }
-        }
-      },
-      "put": {
-        "tags": [
-          "topics"
-        ],
-        "summary": "Обновить тему",
-        "description": "Обновляет тему по ID.\n\n- **label**: новое название (опционально)\n- **description**: новое описание (опционально)\n- **is_active**: изменить статус активности (опционально)",
-        "operationId": "update_topic_api_v1_topics__topic_id__put",
-        "parameters": [
+        },
+        "security": [
           {
-            "name": "topic_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Topic Id"
-            }
+            "OAuth2PasswordBearer": []
           }
+        ]
+      }
+    },
+    "/api/v1/settings/instance/check": {
+      "post": {
+        "tags": [
+          "settings"
         ],
+        "summary": "Test Connection",
+        "operationId": "test_connection_api_v1_settings_instance_check_post",
         "requestBody": {
-          "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/TopicUpdate"
+                "$ref": "#/components/schemas/ConnectionCheck"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
@@ -431,7 +386,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TopicResponse"
+                  "$ref": "#/components/schemas/ConnectionCheckResponse"
                 }
               }
             }
@@ -446,41 +401,12 @@
               }
             }
           }
-        }
-      },
-      "delete": {
-        "tags": [
-          "topics"
-        ],
-        "summary": "Удалить тему",
-        "description": "Удаляет (деактивирует) тему по ID.\n\nПримечание: тема не удаляется из БД, а деактивируется (is_active = False)\nдля сохранения целостности исторических данных.",
-        "operationId": "delete_topic_api_v1_topics__topic_id__delete",
-        "parameters": [
+        },
+        "security": [
           {
-            "name": "topic_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Topic Id"
-            }
+            "OAuth2PasswordBearer": []
           }
-        ],
-        "responses": {
-          "204": {
-            "description": "Successful Response"
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
+        ]
       }
     },
     "/api/v1/abbrev": {
@@ -1229,6 +1155,244 @@
         }
       }
     },
+    "/api/v1/admission-scores/preview": {
+      "post": {
+        "tags": [
+          "admission-scores"
+        ],
+        "summary": "Распарсить страницу итогов приёма и показать строки",
+        "description": "Парсит страницу (без записи в БД) и считает сопоставимость со справочником.",
+        "operationId": "preview_scores_api_v1_admission_scores_preview_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PreviewRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admission-scores/import": {
+      "post": {
+        "tags": [
+          "admission-scores"
+        ],
+        "summary": "Импортировать отревьюенные строки проходных баллов",
+        "description": "Идемпотентный upsert строк, присланных админом после предпросмотра.",
+        "operationId": "import_scores_api_v1_admission_scores_import_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admission-scores": {
+      "get": {
+        "tags": [
+          "admission-scores"
+        ],
+        "summary": "Выборка проходных баллов",
+        "operationId": "get_scores_api_v1_admission_scores_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "faculty",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Фильтр по факультету",
+              "title": "Faculty"
+            },
+            "description": "Фильтр по факультету"
+          },
+          {
+            "name": "program",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Фильтр по направлению",
+              "title": "Program"
+            },
+            "description": "Фильтр по направлению"
+          },
+          {
+            "name": "year",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Фильтр по году",
+              "title": "Year"
+            },
+            "description": "Фильтр по году"
+          },
+          {
+            "name": "form",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Форма: budget / paid",
+              "title": "Form"
+            },
+            "description": "Форма: budget / paid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ScoreItem"
+                  },
+                  "title": "Response Get Scores Api V1 Admission Scores Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admission-scores/years": {
+      "get": {
+        "tags": [
+          "admission-scores"
+        ],
+        "summary": "Список доступных годов",
+        "operationId": "get_years_api_v1_admission_scores_years_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array",
+                  "title": "Response Get Years Api V1 Admission Scores Years Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
     "/api/v1/logs/request-stats": {
       "get": {
         "tags": [
@@ -1312,6 +1476,95 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/RequestCountStatsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/logs/faq-stats": {
+      "get": {
+        "tags": [
+          "Message Logs"
+        ],
+        "summary": "Как часто FAQ-слой отвечает без обращения к модели",
+        "description": "Доля вопросов, закрытых готовыми ответами FAQ (трек качества).\nПорог матчера настраивается через PUT /settings/faq.",
+        "operationId": "get_faq_hit_stats_api_v1_logs_faq_stats_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Начало периода (ISO 8601)",
+              "title": "Start"
+            },
+            "description": "Начало периода (ISO 8601)"
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Конец периода (ISO 8601)",
+              "title": "End"
+            },
+            "description": "Конец периода (ISO 8601)"
+          },
+          {
+            "name": "group_by",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Группировка: hour, day, week, month",
+              "default": "day",
+              "title": "Group By"
+            },
+            "description": "Группировка: hour, day, week, month"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FaqHitStatsResponse"
                 }
               }
             }
@@ -1715,6 +1968,221 @@
                 }
               }
             }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/topics/": {
+      "get": {
+        "tags": [
+          "topics"
+        ],
+        "summary": "Получить все темы",
+        "description": "Получить список всех активных тем.",
+        "operationId": "get_topics_api_v1_topics__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TopicListResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "topics"
+        ],
+        "summary": "Создать новую тему",
+        "description": "Создает новую тему.\n\n- **label**: уникальное название темы\n- **description**: опциональное описание\n- **is_active**: активна ли тема при создании (по умолчанию True)",
+        "operationId": "create_topic_api_v1_topics__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TopicCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TopicResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/topics/{topic_id}": {
+      "get": {
+        "tags": [
+          "topics"
+        ],
+        "summary": "Получить тему по ID",
+        "description": "Получает тему по её ID.",
+        "operationId": "get_topic_api_v1_topics__topic_id__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "topic_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Topic Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TopicResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "topics"
+        ],
+        "summary": "Обновить тему",
+        "description": "Обновляет тему по ID.\n\n- **label**: новое название (опционально)\n- **description**: новое описание (опционально)\n- **is_active**: изменить статус активности (опционально)",
+        "operationId": "update_topic_api_v1_topics__topic_id__put",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "topic_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Topic Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TopicUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TopicResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "topics"
+        ],
+        "summary": "Удалить тему",
+        "description": "Удаляет (деактивирует) тему по ID.\n\nПримечание: тема не удаляется из БД, а деактивируется (is_active = False)\nдля сохранения целостности исторических данных.",
+        "operationId": "delete_topic_api_v1_topics__topic_id__delete",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "topic_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Topic Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
           },
           "422": {
             "description": "Validation Error",
@@ -3010,6 +3478,77 @@
         ]
       }
     },
+    "/api/v1/settings/faq": {
+      "get": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Получить настройки FAQ-матчера",
+        "operationId": "get_faq_settings_api_v1_settings_faq_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FaqSettings"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Обновить настройки FAQ-матчера",
+        "description": "Меняет порог FAQ. Бот подхватывает значение на следующем вопросе —\nбез рестарта, как у CRAG.",
+        "operationId": "update_faq_settings_api_v1_settings_faq_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FaqSettingsUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FaqSettings"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
     "/api/v1/users/count-stats": {
       "get": {
         "summary": "Get Users Count Stats",
@@ -3347,6 +3886,53 @@
           "documents"
         ],
         "title": "ConfirmUploadRequest"
+      },
+      "ConnectionCheck": {
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "title": "Revision"
+          },
+          "changes": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "object",
+            "title": "Changes"
+          },
+          "target": {
+            "type": "string",
+            "title": "Target"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "revision",
+          "changes",
+          "target"
+        ],
+        "title": "ConnectionCheck"
+      },
+      "ConnectionCheckResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "title": "ConnectionCheckResponse"
       },
       "CragSettings": {
         "properties": {
@@ -4223,6 +4809,109 @@
         "title": "FacultyUpdate",
         "description": "Данные для обновления факультета."
       },
+      "FaqHitBucket": {
+        "properties": {
+          "period": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Period"
+          },
+          "questions": {
+            "type": "integer",
+            "title": "Questions"
+          },
+          "hits": {
+            "type": "integer",
+            "title": "Hits"
+          },
+          "hit_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hit Rate"
+          }
+        },
+        "type": "object",
+        "required": [
+          "period",
+          "questions",
+          "hits"
+        ],
+        "title": "FaqHitBucket",
+        "description": "Элемент статистики срабатываний FAQ-слоя."
+      },
+      "FaqHitStatsResponse": {
+        "properties": {
+          "total_questions": {
+            "type": "integer",
+            "title": "Total Questions"
+          },
+          "total_hits": {
+            "type": "integer",
+            "title": "Total Hits"
+          },
+          "hit_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hit Rate"
+          },
+          "group_by": {
+            "type": "string",
+            "title": "Group By"
+          },
+          "start": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start"
+          },
+          "end": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End"
+          },
+          "buckets": {
+            "items": {
+              "$ref": "#/components/schemas/FaqHitBucket"
+            },
+            "type": "array",
+            "title": "Buckets"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_questions",
+          "total_hits",
+          "group_by",
+          "buckets"
+        ],
+        "title": "FaqHitStatsResponse",
+        "description": "Как часто вопросы закрываются готовыми ответами FAQ без модели."
+      },
       "FaqItem": {
         "properties": {
           "id": {
@@ -4279,6 +4968,37 @@
           "items"
         ],
         "title": "FaqListResponse"
+      },
+      "FaqSettings": {
+        "properties": {
+          "similarity_threshold": {
+            "type": "number",
+            "maximum": 1,
+            "minimum": 0.5,
+            "title": "Similarity Threshold",
+            "description": "Порог косинусного сходства для срабатывания FAQ (0..1)",
+            "default": 0.95
+          }
+        },
+        "type": "object",
+        "title": "FaqSettings",
+        "description": "Настройки FAQ-матчера."
+      },
+      "FaqSettingsUpdate": {
+        "properties": {
+          "similarity_threshold": {
+            "type": "number",
+            "maximum": 1,
+            "minimum": 0.5,
+            "title": "Similarity Threshold"
+          }
+        },
+        "type": "object",
+        "required": [
+          "similarity_threshold"
+        ],
+        "title": "FaqSettingsUpdate",
+        "description": "Обновление настроек FAQ-матчера."
       },
       "FeedbackReportListItem": {
         "properties": {
@@ -4512,6 +5232,128 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "ImportRequest": {
+        "properties": {
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/ScoreRowSchema"
+            },
+            "type": "array",
+            "title": "Rows"
+          }
+        },
+        "type": "object",
+        "title": "ImportRequest",
+        "description": "Запрос на импорт отревьюенных строк проходных баллов."
+      },
+      "ImportResponse": {
+        "properties": {
+          "created": {
+            "type": "integer",
+            "title": "Created"
+          },
+          "updated": {
+            "type": "integer",
+            "title": "Updated"
+          },
+          "skipped": {
+            "type": "integer",
+            "title": "Skipped"
+          }
+        },
+        "type": "object",
+        "required": [
+          "created",
+          "updated",
+          "skipped"
+        ],
+        "title": "ImportResponse",
+        "description": "Статистика идемпотентного upsert."
+      },
+      "InstanceSettingResponse": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "group": {
+            "type": "string",
+            "title": "Group"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "choices": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Choices"
+          },
+          "secret": {
+            "type": "boolean",
+            "title": "Secret"
+          },
+          "configured": {
+            "type": "boolean",
+            "title": "Configured"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "group",
+          "kind",
+          "choices",
+          "secret",
+          "configured",
+          "value"
+        ],
+        "title": "InstanceSettingResponse"
+      },
+      "InstanceSettingsResponse": {
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "title": "Revision"
+          },
+          "encryption_ready": {
+            "type": "boolean",
+            "title": "Encryption Ready"
+          },
+          "settings": {
+            "items": {
+              "$ref": "#/components/schemas/InstanceSettingResponse"
+            },
+            "type": "array",
+            "title": "Settings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "revision",
+          "encryption_ready",
+          "settings"
+        ],
+        "title": "InstanceSettingsResponse"
       },
       "InviteCodeRequest": {
         "properties": {
@@ -4869,6 +5711,80 @@
           "chars"
         ],
         "title": "PreprocessDocumentResponse"
+      },
+      "PreviewRequest": {
+        "properties": {
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url",
+            "description": "URL страницы (по умолчанию — страница НГУ)"
+          }
+        },
+        "type": "object",
+        "title": "PreviewRequest",
+        "description": "Запрос на предпросмотр парсинга страницы итогов приёма."
+      },
+      "PreviewResponse": {
+        "properties": {
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/ScoreRowSchema"
+            },
+            "type": "array",
+            "title": "Rows"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/PreviewSummary"
+          }
+        },
+        "type": "object",
+        "required": [
+          "summary"
+        ],
+        "title": "PreviewResponse",
+        "description": "Результат предпросмотра: распарсенные строки и сводка."
+      },
+      "PreviewSummary": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "description": "Всего распарсено строк"
+          },
+          "matched": {
+            "type": "integer",
+            "title": "Matched",
+            "description": "Строк, сопоставленных со справочником"
+          },
+          "unmatched": {
+            "type": "integer",
+            "title": "Unmatched",
+            "description": "Строк без сопоставления"
+          },
+          "unmatched_samples": {
+            "items": {
+              "$ref": "#/components/schemas/UnmatchedSample"
+            },
+            "type": "array",
+            "title": "Unmatched Samples",
+            "description": "Примеры несопоставленных (факультет, направление)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total",
+          "matched",
+          "unmatched"
+        ],
+        "title": "PreviewSummary",
+        "description": "Сводка предпросмотра распарсенных строк."
       },
       "ProgramCreate": {
         "properties": {
@@ -5417,6 +6333,172 @@
         "title": "RequestCountStatsResponse",
         "description": "Статистика количества запросов за период времени."
       },
+      "ScoreItem": {
+        "properties": {
+          "faculty_name": {
+            "type": "string",
+            "title": "Faculty Name"
+          },
+          "program_name": {
+            "type": "string",
+            "title": "Program Name"
+          },
+          "code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code"
+          },
+          "year": {
+            "type": "integer",
+            "title": "Year"
+          },
+          "form": {
+            "type": "string",
+            "title": "Form"
+          },
+          "passing_score": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Passing Score"
+          },
+          "average_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Average Score"
+          }
+        },
+        "type": "object",
+        "required": [
+          "faculty_name",
+          "program_name",
+          "year",
+          "form"
+        ],
+        "title": "ScoreItem",
+        "description": "Плоская запись проходного балла для выборки."
+      },
+      "ScoreRowSchema": {
+        "properties": {
+          "faculty_name": {
+            "type": "string",
+            "title": "Faculty Name",
+            "description": "Название факультета/института"
+          },
+          "program_name": {
+            "type": "string",
+            "title": "Program Name",
+            "description": "Название направления подготовки"
+          },
+          "code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code",
+            "description": "Код направления (ФГОС)"
+          },
+          "year": {
+            "type": "integer",
+            "title": "Year",
+            "description": "Год приёма"
+          },
+          "form": {
+            "type": "string",
+            "title": "Form",
+            "description": "Форма обучения: budget / paid"
+          },
+          "passing_score": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Passing Score",
+            "description": "Проходной балл"
+          },
+          "average_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Average Score",
+            "description": "Средний балл"
+          },
+          "level": {
+            "type": "string",
+            "title": "Level",
+            "description": "Уровень: bachelor / specialist",
+            "default": "bachelor"
+          }
+        },
+        "type": "object",
+        "required": [
+          "faculty_name",
+          "program_name",
+          "year",
+          "form"
+        ],
+        "title": "ScoreRowSchema",
+        "description": "Строка проходного балла (сырая, до/после разрешения в program_id)."
+      },
+      "SettingsChange": {
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "title": "Revision"
+          },
+          "changes": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "object",
+            "title": "Changes"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "revision",
+          "changes"
+        ],
+        "title": "SettingsChange"
+      },
       "TokenResponse": {
         "properties": {
           "access_token": {
@@ -5652,6 +6734,25 @@
         "type": "object",
         "title": "TopicUpdate",
         "description": "Модель для обновления темы."
+      },
+      "UnmatchedSample": {
+        "properties": {
+          "faculty_name": {
+            "type": "string",
+            "title": "Faculty Name"
+          },
+          "program_name": {
+            "type": "string",
+            "title": "Program Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "faculty_name",
+          "program_name"
+        ],
+        "title": "UnmatchedSample",
+        "description": "Пример строки, не сопоставленной со справочником факультетов."
       },
       "UploadedDocumentResult": {
         "properties": {
