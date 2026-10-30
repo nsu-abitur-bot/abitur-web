@@ -6,6 +6,7 @@ const route = useRoute()
 const router = useRouter()
 const token = useAuthToken()
 const { isAdmin, isSuperadmin } = useRole()
+const { data: university } = useAsyncData("university", () => apiFetch<{ short_name: string, assistant_name: string, email: string, phone: string, address: string }>("/api/v1/university"))
 const open = ref(false)
 onKeyStroke("Escape", () => {
   open.value = false
@@ -58,6 +59,7 @@ async function logout() {
 
 <template lang="pug">
 header.admin-topbar
+  span(v-if="university" :title="[university.email, university.phone, university.address].filter(Boolean).join(' · ')") {{ university.short_name }} · {{ university.assistant_name }}
   u-button.admin-menu(icon="i-lucide-menu" color="neutral" variant="ghost" aria-label="Меню" :aria-expanded="open" aria-controls="admin-navigation" @click="open = !open")
   span.admin-muted Администрирование
   .admin-actions

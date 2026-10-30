@@ -263,7 +263,7 @@ div(class="space-y-4")
         u-input(
           v-model="url"
           class="flex-1"
-          placeholder="http://nsu.ru/document1.pdf"
+          placeholder="https://university.example/document.pdf"
           icon="i-heroicons-globe-alt"
           @keyup.enter="handleAdd"
         )
