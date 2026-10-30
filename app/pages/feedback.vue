@@ -144,12 +144,12 @@ ui-page(title="Обратная связь")
     ) Обновить
 
   ui-box(title="Фильтры")
-    div(class="admin-toolbar")
-      u-form-field(label="Статус" class="w-full sm:w-52")
+    div(class="feedback-filters")
+      u-form-field(label="Статус")
         u-select(v-model="statusFilter" :items="statusOptions" class="w-full")
-      u-form-field(label="Идентификатор пользователя" class="w-full sm:w-40")
+      u-form-field(label="ID пользователя")
         u-input(v-model="userIdFilter" type="number" placeholder="123456" class="w-full" @keydown.enter.prevent="applyFilters")
-      u-form-field(label="Идентификатор сессии" class="w-full sm:flex-1 min-w-64")
+      u-form-field(label="ID сессии")
         u-input(v-model="sessionIdFilter" placeholder="Введите идентификатор сессии" class="w-full" @keydown.enter.prevent="applyFilters")
       u-button(color="primary" @click="applyFilters") Применить
 
@@ -252,3 +252,30 @@ ui-page(title="Обратная связь")
           u-button(color="success" variant="soft" :loading="isUpdatingStatus" @click="updateStatus(selectedReport.id, 'reviewed')") Проверено
           u-button(color="neutral" variant="soft" :loading="isUpdatingStatus" @click="updateStatus(selectedReport.id, 'ignored')") Игнорировать
 </template>
+
+<style scoped>
+.feedback-filters {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) minmax(140px, 1fr) minmax(180px, 1.5fr) auto;
+  align-items: end;
+  gap: 16px 12px;
+}
+
+.feedback-filters > * {
+  min-width: 0;
+}
+@media (width <= 1000px) {
+  .feedback-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (width <= 600px) {
+  .feedback-filters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .feedback-filters > button {
+    justify-self: start;
+  }
+}
+</style>
