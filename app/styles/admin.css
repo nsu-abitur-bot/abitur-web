@@ -186,8 +186,13 @@
 }
 
 .admin-toolbar {
-  padding: 12px 16px;
+  align-items: flex-end;
+  padding: 12px 0;
   border-bottom: 1px solid var(--admin-rule);
+}
+
+.admin-table-wrap > .admin-toolbar {
+  padding-inline: 16px;
 }
 
 .admin-table-wrap {

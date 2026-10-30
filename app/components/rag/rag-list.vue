@@ -23,6 +23,10 @@ const query = computed({ get: () => String(route.query.q ?? ""), set: (q) => {
 const filter = computed({ get: () => String(route.query.status ?? "all"), set: (status) => {
   router.replace({ query: { ...route.query, status: status === "all" ? undefined : status } })
 } })
+function resetFilters() {
+  const { q: _q, status: _status, ...query } = route.query
+  router.replace({ query })
+}
 const state = (doc: RagDocument) => materialState(doc, diagnostics.value[doc.id])
 const visible = computed(() => documents.value.filter(doc => (doc.title || doc.id).toLowerCase().includes(query.value.toLowerCase()) && (filter.value === "all" || state(doc).key === filter.value)))
 const isAllSelected = computed(() => visible.value.length > 0 && visible.value.every(doc => selectedIds.value.has(doc.id)))
@@ -176,7 +180,7 @@ function openDiagnostics(doc: RagDocument) {
 <template lang="pug">
 .materials
   .admin-table-wrap
-    .admin-toolbar
+    .admin-toolbar(v-if="isLoading || loadError || documents.length")
       u-input(v-model="query" placeholder="Найти материал" aria-label="Поиск материалов" icon="i-lucide-search" class="materials-search")
       u-select(v-model="filter" aria-label="Состояние" :items="[{ label: 'Все состояния', value: 'all' }, { label: 'Обработаны', value: 'ready' }, { label: 'Требуют внимания', value: 'attention' }, { label: 'Не подтверждены', value: 'unknown' }]")
       u-button(color="neutral" variant="outline" :loading="busy" @click="check(false, true)") Проверить все
@@ -202,7 +206,7 @@ function openDiagnostics(doc: RagDocument) {
     .admin-empty(v-else-if="isLoading && !documents.length" role="status") Загрузка материалов…
     .admin-empty(v-else-if="!visible.length")
       p {{ documents.length ? 'Ничего не найдено' : 'Материалов пока нет' }}
-      u-button(v-if="documents.length" color="neutral" variant="ghost" @click="query = ''; filter = 'all'") Сбросить фильтры
+      u-button(v-if="documents.length" color="neutral" variant="ghost" @click="resetFilters") Сбросить фильтры
     table.admin-table.materials-table(v-else)
       thead
         tr
