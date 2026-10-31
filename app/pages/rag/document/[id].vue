@@ -25,10 +25,10 @@ ui-page(:title="doc?.title || docId")
       span.admin-muted(v-else) {{ doc ? 'Нет ссылки для проверки' : 'Источник не загружен' }}
     p.admin-muted(class="mt-3") {{ doc ? (doc.last_check_message || (doc.last_checked_at ? `Проверен: ${new Date(doc.last_checked_at).toLocaleString('ru-RU')}` : 'Источник не проверялся')) : 'Сведения о проверке недоступны' }}
   ui-box(title="Содержимое")
-    .admin-empty(v-if="pending" role="status") Загрузка…
-    .admin-empty(v-else-if="error" role="alert")
-      p {{ error.statusCode === 404 ? 'Документ не найден' : 'Не удалось загрузить содержимое' }}
-      u-button(class="mt-3" color="neutral" variant="outline" @click="refresh()") Повторить
+    ui-empty-state(v-if="pending" kind="loading" title="Загрузка содержимого…")
+    ui-empty-state(v-else-if="error" kind="error" :title="error.statusCode === 404 ? 'Документ не найден' : 'Не удалось загрузить содержимое'")
+      u-button(color="neutral" variant="outline" @click="refresh()") Повторить
+    ui-empty-state(v-else-if="!content?.content?.trim()" title="Содержимого пока нет")
     div(v-else class="pre-wrap-anywhere select-text leading-relaxed") {{ content?.content }}
   rag-diagnostics-modal(v-model:open="isDiagnosticsOpen" :doc-id="docId")
 </template>

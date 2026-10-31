@@ -54,6 +54,18 @@ const items = computed(() => {
     && (!q || `${m.user_id} ${m.username ?? ""} ${m.user_text} ${m.bot_response} ${m.session_id}`.toLocaleLowerCase("ru").includes(q)))
 })
 
+const hasFilters = computed(() => Boolean(search.value.trim() || channel.value !== "all" || fromDate.value || toDate.value || appliedUser.value !== undefined))
+function resetFilters() {
+  search.value = ""
+  channel.value = "all"
+  fromDate.value = null
+  toDate.value = null
+  userFilter.value = ""
+  userFilterError.value = ""
+  appliedUser.value = undefined
+  batchOffset.value = 0
+}
+
 const channels = computed(() => [
   { label: "Все каналы", value: "all" },
   ...[...new Set((messages.value ?? []).map(m => m.messenger).filter((m): m is string => !!m))]
@@ -197,16 +209,11 @@ div(class="space-y-4 min-w-0")
       u-select(v-model="channel" :items="channels" aria-label="Канал" class="w-44")
       span(class="admin-muted text-xs") Найдено: {{ items.length }}
 
-    div(v-if="status === 'pending' && !items.length" class="py-10 flex justify-center text-gray-500")
-      u-icon(name="i-heroicons-arrow-path" class="animate-spin w-12 h-12")
-
-    div(v-else-if="error" class="admin-empty" role="alert")
-      p Не удалось загрузить сообщения.
-      u-button(variant="outline" @click="() => refresh()") Повторить
-
-    div(v-else-if="items.length === 0" class="py-12 text-center text-gray-500 bg-gray-50 dark:bg-gray-800 rounded-lg mt-6")
-      u-icon(name="i-heroicons-chat-bubble-left-right" class="w-16 h-16 mx-auto text-gray-400 mb-3")
-      p Список сообщений пуст или нет данных по выбранному фильтру.
+    ui-empty-state(v-if="status === 'pending' && !items.length" kind="loading" title="Загрузка сообщений…")
+    ui-empty-state(v-else-if="error" kind="error" title="Не удалось загрузить сообщения")
+      u-button(color="neutral" variant="outline" @click="() => refresh()") Повторить
+    ui-empty-state(v-else-if="!items.length" :kind="hasFilters ? 'no-results' : 'empty'" :title="hasFilters ? 'Ничего не найдено' : batchOffset ? 'В этой выборке сообщений нет' : 'Сообщений пока нет'")
+      u-button(v-if="hasFilters" color="neutral" variant="outline" @click="resetFilters") Сбросить фильтры
 
     div(v-else class="admin-table-wrap")
       u-table(:data="pagedItems" :columns="columns" class="w-full messages-table admin-table")

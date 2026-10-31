@@ -200,13 +200,11 @@ function openDiagnostics(doc: RagDocument) {
         template(#footer="{ close }")
           u-button(color="neutral" variant="ghost" @click="close") Отмена
           u-button(color="error" @click="removeSelected(); close()") Удалить
-    .admin-empty(v-if="loadError" role="alert")
-      p Не удалось загрузить материалы
-      u-button(class="mt-3" color="neutral" variant="outline" @click="fetchDocuments") Повторить
-    .admin-empty(v-else-if="isLoading && !documents.length" role="status") Загрузка материалов…
-    .admin-empty(v-else-if="!visible.length")
-      p {{ documents.length ? 'Ничего не найдено' : 'Материалов пока нет' }}
-      u-button(v-if="documents.length" color="neutral" variant="ghost" @click="resetFilters") Сбросить фильтры
+    ui-empty-state(v-if="loadError" kind="error" title="Не удалось загрузить материалы")
+      u-button(color="neutral" variant="outline" @click="fetchDocuments") Повторить
+    ui-empty-state(v-else-if="isLoading && !documents.length" kind="loading" title="Загрузка материалов…")
+    ui-empty-state(v-else-if="!visible.length" :kind="documents.length ? 'no-results' : 'empty'" :title="documents.length ? 'Ничего не найдено' : 'Материалов пока нет'")
+      u-button(v-if="documents.length" color="neutral" variant="outline" @click="resetFilters") Сбросить фильтры
     table.admin-table.materials-table(v-else)
       thead
         tr

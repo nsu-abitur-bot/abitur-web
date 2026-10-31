@@ -77,9 +77,11 @@ const handleChangeRole = async (admin: AdminResponse, role: AdminRole) => {
       <div><h2 id="team-title" class="font-semibold">Участники</h2><p class="admin-muted text-sm">Доступ к администрированию и роли участников.</p></div>
       <u-button variant="ghost" color="neutral" :loading="status === 'pending'" @click="refresh()">Обновить</u-button>
     </header>
-    <div v-if="error" class="admin-empty" role="alert">Не удалось загрузить команду. Повторите запрос.</div>
-    <p v-else-if="status === 'pending' && !admins.length" class="admin-empty" role="status">Загрузка участников…</p>
-    <p v-else-if="!admins.length" class="admin-empty">Участников пока нет.</p>
+    <ui-empty-state v-if="error" kind="error" title="Не удалось загрузить команду">
+      <u-button color="neutral" variant="outline" @click="refresh()">Повторить</u-button>
+    </ui-empty-state>
+    <ui-empty-state v-else-if="status === 'pending' && !admins.length" kind="loading" title="Загрузка участников…" />
+    <ui-empty-state v-else-if="!admins.length" title="Участников пока нет" />
     <div v-else class="admin-table-wrap relative">
       <table class="admin-table w-full text-sm">
         <caption class="sr-only">Участники команды и права доступа</caption>

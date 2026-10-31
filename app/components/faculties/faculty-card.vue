@@ -181,8 +181,7 @@ div(class="admin-panel p-4" :class="{ 'opacity-70': !faculty.is_active }")
         @click="isAddingProgram = true"
       ) Добавить направление
 
-    div(v-if="programs.length === 0 && !isAddingProgram" class="text-sm text-gray-500 dark:text-gray-400 py-2")
-      | Направления пока не добавлены.
+    ui-empty-state(v-if="!programs.length && !isAddingProgram" title="Направлений пока нет")
 
     faculties-program-row(
       v-for="program in programs"

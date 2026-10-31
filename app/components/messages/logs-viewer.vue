@@ -60,17 +60,10 @@ const formatDate = (dateString: string) => {
 div(class="flex flex-col h-full")
   p(class="admin-muted text-xs mb-3") Последние 100 записей сессии.
   p(v-if="topicsError" class="admin-muted text-xs mb-3" role="status") {{ topicsError }}. Названия тем могут быть устаревшими.
-  div(v-if="status === 'pending'" class="flex flex-col items-center justify-center py-20 text-gray-500")
-    u-icon(name="i-heroicons-arrow-path" class="animate-spin w-8 h-8 mb-4")
-    p Загрузка логов...
-
-  div(v-else-if="error" class="admin-empty" role="alert")
-    p Не удалось загрузить логи сессии.
-    u-button(variant="outline" @click="() => refresh()") Повторить
-
-  div(v-else-if="!logs || logs.length === 0" class="flex flex-col items-center justify-center py-20 text-gray-500")
-    u-icon(name="i-heroicons-information-circle" class="w-12 h-12 mb-4 text-gray-300")
-    p Логов для этой сессии не найдено.
+  ui-empty-state(v-if="status === 'pending'" kind="loading" title="Загрузка логов…")
+  ui-empty-state(v-else-if="error" kind="error" title="Не удалось загрузить логи сессии")
+    u-button(color="neutral" variant="outline" @click="() => refresh()") Повторить
+  ui-empty-state(v-else-if="!logs.length" title="Логов сессии пока нет")
 
   div(v-else class="flex-1 overflow-y-auto overflow-x-hidden pr-2 custom-scrollbar min-w-0")
     div(class="space-y-3 pb-4")

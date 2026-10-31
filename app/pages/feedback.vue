@@ -47,6 +47,18 @@ const page = computed(() => Math.floor(offset.value / limit.value) + 1)
 const canGoBack = computed(() => offset.value > 0)
 const canGoForward = computed(() => offset.value + limit.value < total.value)
 
+const hasFilters = computed(() => statusFilter.value !== null || appliedUserId.value !== null || appliedSessionId.value !== null)
+async function resetFilters() {
+  userIdFilter.value = ""
+  sessionIdFilter.value = ""
+  filterError.value = ""
+  appliedUserId.value = null
+  appliedSessionId.value = null
+  statusFilter.value = null
+  offset.value = 0
+  await refresh()
+}
+
 const selectedReport = ref<FeedbackReportResponse | null>(null)
 const isDetailsOpen = ref(false)
 const isDetailsLoading = ref(false)
@@ -156,16 +168,11 @@ ui-page(title="Обратная связь")
   p(v-if="filterError" role="alert" class="text-error text-sm") {{ filterError }}
 
   ui-box(:title="`Обращения (${total})`")
-    div(v-if="status === 'pending' && !reports.length" class="py-10 flex justify-center text-gray-500")
-      u-icon(name="i-heroicons-arrow-path" class="animate-spin w-8 h-8")
-
-    div(v-else-if="error" class="admin-empty" role="alert")
-      p Не удалось загрузить обращения.
-      u-button(variant="outline" @click="() => refresh()") Повторить
-
-    div(v-else-if="!reports.length" class="admin-empty")
-      u-icon(name="i-heroicons-inbox" class="w-12 h-12 mx-auto text-gray-400 mb-3")
-      p Обращений не найдено.
+    ui-empty-state(v-if="status === 'pending' && !reports.length" kind="loading" title="Загрузка обращений…")
+    ui-empty-state(v-else-if="error" kind="error" title="Не удалось загрузить обращения")
+      u-button(color="neutral" variant="outline" @click="() => refresh()") Повторить
+    ui-empty-state(v-else-if="!reports.length" :kind="hasFilters ? 'no-results' : 'empty'" :title="hasFilters ? 'Ничего не найдено' : offset ? 'На этой странице обращений нет' : 'Обращений пока нет'")
+      u-button(v-if="hasFilters" color="neutral" variant="outline" @click="resetFilters") Сбросить фильтры
 
     div(v-else class="divide-y divide-gray-100 dark:divide-gray-800")
       div(v-for="report in reports" :key="report.id" class="py-3 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between")
@@ -205,9 +212,8 @@ ui-page(title="Обратная связь")
 
   u-slideover(v-model:open="isDetailsOpen" title="Обращение обратной связи")
     template(#body)
-      div(v-if="isDetailsLoading" class="py-20 flex justify-center text-gray-500")
-        u-icon(name="i-heroicons-arrow-path" class="animate-spin w-8 h-8")
-      div(v-else-if="detailsError" role="alert" class="admin-empty") Не удалось загрузить обращение. Откройте его повторно.
+      ui-empty-state(v-if="isDetailsLoading" kind="loading" title="Загрузка обращения…")
+      ui-empty-state(v-else-if="detailsError" kind="error" title="Не удалось загрузить обращение" description="Откройте его повторно.")
       div(v-else-if="selectedReport" class="space-y-5")
         div(class="flex items-center gap-2")
           u-badge(:color="getStatusMeta(selectedReport.status).color" variant="subtle")

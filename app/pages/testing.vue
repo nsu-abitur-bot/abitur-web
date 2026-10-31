@@ -97,6 +97,9 @@ ui-page(title="Тестирование" description="Автоматическа
       span(v-else) Оценка ещё не запускалась
     p(v-if="!error && (isRunning || awaitingStart)" class="admin-muted text-sm") Сервер не сообщает прогресс по вопросам. Статус обновляется автоматически.
 
+  ui-box(v-if="!error && status !== 'pending' && !result && !isRunning && !awaitingStart && !data?.error && !runError" title="Результаты")
+    ui-empty-state(title="Результатов оценки пока нет")
+
   template(v-if="result")
     ui-box(title="Последний результат")
       div(class="admin-stat-grid")
@@ -115,7 +118,7 @@ ui-page(title="Тестирование" description="Автоматическа
       p(class="admin-muted text-xs mt-2") Результат относится к последней сохранённой оценке.
 
     ui-box(:title="`Примеры (${cases.length})`")
-      p(v-if="!cases.length" class="admin-empty") Сервер не вернул подробные результаты примеров.
+      ui-empty-state(v-if="!cases.length" title="Подробных результатов нет" description="Сервер вернул только общий результат оценки.")
       div(v-else class="divide-y divide-default")
         details(v-for="(item, index) in cases" :key="String(item.id ?? index)" class="py-3")
           summary(class="cursor-pointer flex items-start gap-3 text-sm")

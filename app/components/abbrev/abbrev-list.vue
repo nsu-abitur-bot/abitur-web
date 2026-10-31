@@ -96,18 +96,12 @@ ui-box(:title="`Сокращения (${items.length})`")
     u-input(v-model="search" icon="i-lucide-search" placeholder="Поиск" aria-label="Поиск по справочнику" class="w-full sm:max-w-sm")
     u-button(color="neutral" variant="ghost" :loading="status === 'pending'" @click="() => refresh()") Обновить
 
-  div(v-if="status === 'pending'" class="py-10 flex justify-center text-gray-500")
-    u-icon(name="i-heroicons-arrow-path" class="animate-spin w-8 h-8")
-
-  div(v-else-if="error" class="admin-empty" role="alert")
-    p Не удалось загрузить справочник.
-    u-button(variant="outline" @click="() => refresh()") Повторить
-
-  div(v-else-if="items.length === 0" class="admin-empty")
-    u-icon(name="i-heroicons-book-open" class="w-12 h-12 mx-auto text-gray-400 mb-3")
-    p Нет добавленных аббревиатур. Создайте первую.
-
-  div(v-else-if="!filteredItems.length" class="admin-empty") Ничего не найдено.
+  ui-empty-state(v-if="status === 'pending'" kind="loading" title="Загрузка справочника…")
+  ui-empty-state(v-else-if="error" kind="error" title="Не удалось загрузить справочник")
+    u-button(color="neutral" variant="outline" @click="() => refresh()") Повторить
+  ui-empty-state(v-else-if="!items.length" title="Аббревиатур пока нет")
+  ui-empty-state(v-else-if="!filteredItems.length" kind="no-results" title="Ничего не найдено")
+    u-button(color="neutral" variant="outline" @click="search = ''") Сбросить поиск
 
   div(v-else class="divide-y divide-default")
     abbrev-item(

@@ -39,8 +39,9 @@ const data = computed(() => usersMap.value?.[period.value])
 ui-box(title="Новые пользователи" class="w-full min-w-0")
   template(#right)
     u-button(icon="i-lucide-refresh-cw" aria-label="Обновить пользователей" color="neutral" variant="ghost" :loading="status === 'pending'" @click="() => refresh()")
-  div(v-if="error" role="alert" class="admin-empty") Не удалось загрузить статистику пользователей.
-  div(v-else-if="status === 'pending'" class="admin-empty") Загрузка…
+  ui-empty-state(v-if="error" kind="error" title="Не удалось загрузить статистику пользователей")
+  ui-empty-state(v-else-if="status === 'pending'" kind="loading" title="Загрузка статистики…")
+  ui-empty-state(v-else-if="data == null" title="Нет данных за выбранный период")
   div(v-else class="admin-detail my-4")
     p(class="text-sm text-gray-500 dark:text-gray-400") Количество новых пользователей
     p(class="mt-2 text-3xl font-semibold text-gray-900 dark:text-gray-100") {{ data ?? '—' }}
