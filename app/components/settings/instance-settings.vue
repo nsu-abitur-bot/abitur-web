@@ -4,6 +4,7 @@ import { onBeforeRouteLeave } from "vue-router"
 import type { InstanceSettings } from "~/services/instance-settings"
 import { checkInstanceConnection, collectChanges, getInstanceSettings, isRevisionConflict, rebaseSettings, saveInstanceSettings } from "~/services/instance-settings"
 
+const { refresh: refreshUniversity } = useUniversityIdentity()
 const snapshot = ref<InstanceSettings | null>(null)
 const authToken = useAuthToken()
 const draft = reactive<Record<string, string>>({})
@@ -118,8 +119,12 @@ async function save() {
   error.value = ""
   message.value = ""
   try {
+    const universityChanged = Object.keys(changes.value).some(key => key.startsWith("UNIVERSITY_"))
     populate(await saveInstanceSettings(snapshot.value.revision, changes.value))
     message.value = "Настройки сохранены."
+    if (universityChanged) {
+      await refreshUniversity()
+    }
   } catch (err) {
     conflict.value = isRevisionConflict(err)
     error.value = conflict.value ? "Настройки изменены другим администратором. Черновик сохранён. Загрузите новую версию для сверки." : errorMessage(err)

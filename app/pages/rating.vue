@@ -48,7 +48,7 @@ type RatingData = {
   items: RatingCategory[]
 }
 
-const { data: ratingData, refresh } = await useFetch<RatingData>("/api/rating")
+const { data: ratingData, error: ratingError, refresh } = await useFetch<RatingData>("/api/rating")
 
 const expandedId = ref<string | null>(null)
 const toggleExpand = (id: string) => {
@@ -58,7 +58,7 @@ const toggleExpand = (id: string) => {
 let interval: ReturnType<typeof setInterval> | null = null
 onMounted(() => {
   interval = setInterval(() => {
-    refresh()
+    void refresh()
   }, 20000)
 })
 
@@ -70,7 +70,14 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div v-if="ratingData" class="nsu-mock-page">
+  <div v-if="ratingError" role="alert">
+    <p v-if="ratingError.statusCode === 404">Рейтинг недоступен для этого университета</p>
+    <template v-else>
+      <p>Не удалось загрузить рейтинг. Повторите попытку.</p>
+      <button type="button" @click="refresh()">Повторить</button>
+    </template>
+  </div>
+  <div v-else-if="ratingData" class="nsu-mock-page">
     <Head>
       <Title>Бакалавриат, специалитет - Мок Рейтинг</Title>
       <Link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700,800&display=swap" />

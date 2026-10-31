@@ -48,7 +48,7 @@ const onSubmit = async () => {
 <template lang="pug">
 u-form(:state="state" class="space-y-4" @submit="onSubmit")
   u-form-field(label="Аббревиатура" name="short" required class="w-full")
-    u-input(v-model="state.short" placeholder="Например: НГУ" class="w-full")
+    u-input(v-model="state.short" placeholder="Например: ИТ" class="w-full")
 
   u-form-field(label="Расшифровка" name="full" required class="w-full")
     u-input(v-model="state.full" placeholder="Например: Новосибирский государственный университет" class="w-full")

@@ -1,4 +1,6 @@
-import { defineEventHandler } from "h3"
+import { createError, defineEventHandler, setHeader } from "h3"
+
+import { getPublicUniversityProfile } from "../utils/university-profile"
 
 type Discipline = {
   name: string
@@ -323,7 +325,11 @@ const createRatingData = (): RatingData => {
   }
 }
 
-export default defineEventHandler(() => {
+export default defineEventHandler(async (event) => {
+  setHeader(event, "Cache-Control", "no-store")
+  if (await getPublicUniversityProfile() !== "nsu") {
+    throw createError({ statusCode: 404, statusMessage: "Rating disabled for this university" })
+  }
   const now = Date.now()
   if (cachedData && now - lastUpdate < 20000) {
     return cachedData

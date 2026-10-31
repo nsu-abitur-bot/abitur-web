@@ -1,6 +1,7 @@
 import { createServer } from "node:http"
 
 // Deliberately local, stateless fixtures. Unknown endpoints fail closed.
+let publicProfile = "nsu"
 const token = "e2e-local-admin-token"
 const server = createServer(async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "http://127.0.0.1:9464")
@@ -29,11 +30,27 @@ const server = createServer(async (req, res) => {
     reply(valid ? 200 : 401, valid ? { access_token: token, token_type: "bearer" } : { detail: "Incorrect username or password" })
     return
   }
+  if (req.url?.startsWith("/__test/profile/")) {
+    publicProfile = req.url.split("/").at(-1)
+    reply(200, { ok: true })
+    return
+  }
+  if (req.url === "/api/v1/university/profile") {
+    if (req.headers.authorization || req.headers.cookie) {
+      reply(400, { detail: "Public profile must not receive credentials" })
+    } else if (publicProfile === "unavailable" || publicProfile === "missing") {
+      reply(publicProfile === "missing" ? 404 : 503, { detail: "Unavailable" })
+    } else {
+      reply(200, { profile: publicProfile })
+    }
+    return
+  }
   if (req.headers.authorization !== `Bearer ${token}`) {
     reply(401, { detail: "Unauthenticated" })
     return
   }
   const fixtures = {
+    "/api/v1/university": { profile: "custom", short_name: "Тестовый вуз", full_name: "Тестовый университет", assistant_name: "Помощник", logo_url: "", website: "", email: "", phone: "", address: "" },
     "/api/v1/auth/me": { id: 1, username: "e2e-admin", role: "superadmin", is_active: true },
     "/api/v1/rag/docs": { documents: [{ id: "e2e-document", title: "Локальный тестовый источник", source_url: "https://example.invalid/admissions", chunks_count: 3, created_at: "2026-10-01T00:00:00Z" }] },
     "/api/v1/rag/docs/e2e-document/diagnostics": { id: "e2e-document", postgres_status: "indexed", lightrag_status: "processed", chunks_count: 3, entities_count: 0, relations_count: 0 },
