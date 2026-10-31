@@ -140,6 +140,61 @@ for (const [url, endpoint, item] of [
 
 const message = { id: 1, user_id: 42, user_text: "Правила приёма", bot_response: "Ответ", session_id: "local-session", created_at: "2026-10-01T10:00:00Z", messenger: "tg" }
 
+test("connections empty snapshot hides during held refresh, failure and retry", async ({ page, context }, testInfo) => {
+  const local = await fixture(context)
+  await page.setViewportSize({ width: 1049, height: 900 })
+  await page.goto("/settings?section=connections")
+  const empty = page.getByText("Настроек пока нет", { exact: true })
+  const loading = page.getByText("Загрузка настроек…", { exact: true })
+  await expect(empty).toBeVisible()
+  await page.screenshot({ path: testInfo.outputPath("connections-empty.png"), fullPage: true })
+
+  let release = () => {}
+  let pending = new Promise<void>((resolve) => {
+    release = resolve
+  })
+  let failed = true
+  let requests = 0
+  await page.route("**/api/v1/settings/instance", async (route) => {
+    requests++
+    await pending
+    await route.fulfill({
+      status: failed ? 503 : 200,
+      headers: { "Access-Control-Allow-Origin": "*" },
+      json: failed ? { detail: "Local fixture unavailable" } : { revision: 2, encryption_ready: true, settings: [] },
+    })
+  })
+  await page.getByRole("button", { name: "Обновить", exact: true }).click()
+  await expect.poll(() => requests).toBe(1)
+  await expect(empty).toHaveCount(0)
+  await expect(loading).toBeVisible()
+  await page.screenshot({ path: testInfo.outputPath("connections-refresh-pending.png"), fullPage: true })
+  release()
+  await expect(page.getByRole("alert")).toHaveText("Local fixture unavailable")
+  await expect(empty).toHaveCount(0)
+  await expect(loading).toHaveCount(0)
+  await expect(page.locator(".instance-workspace")).toHaveCount(0)
+  await page.screenshot({ path: testInfo.outputPath("connections-refresh-failed.png"), fullPage: true })
+
+  failed = false
+  const requestsBeforeRetry = requests
+  pending = new Promise<void>((resolve) => {
+    release = resolve
+  })
+  await page.getByRole("button", { name: "Загрузить настройки", exact: true }).click()
+  await expect.poll(() => requests).toBeGreaterThan(requestsBeforeRetry)
+  await expect(empty).toHaveCount(0)
+  await expect(page.getByRole("alert")).toHaveCount(0)
+  await expect(loading).toBeVisible()
+  await page.screenshot({ path: testInfo.outputPath("connections-retry-pending.png"), fullPage: true })
+  release()
+  await expect(empty).toBeVisible()
+  await expect(loading).toHaveCount(0)
+  await expect(page.getByRole("alert")).toHaveCount(0)
+  await page.screenshot({ path: testInfo.outputPath("connections-recovered.png"), fullPage: true })
+  expect(local.unexpected).toEqual([])
+})
+
 test("message filtering resets and empty session logs stay inside the detail panel", async ({ page, context }, testInfo) => {
   const local = await fixture(context)
   local.overrides["/api/v1/messages"] = [message]

@@ -176,10 +176,11 @@ await load()
       <u-button :loading="busy" @click="rebase">Загрузить версию и сверить черновик</u-button>
     </div>
     <p v-if="review.length" class="mb-4 text-sm" role="status">Проверьте пересекающиеся изменения: {{ review.join(', ') }}. Секреты нельзя сравнить: сервер не возвращает их значения.</p>
-    <ui-empty-state v-if="snapshot && !snapshot.settings.length" title="Настроек пока нет">
+    <ui-empty-state v-if="busy && !snapshot?.settings.length" kind="loading" title="Загрузка настроек…" />
+    <ui-empty-state v-else-if="snapshot && !snapshot.settings.length && !error" title="Настроек пока нет">
       <u-button color="neutral" variant="outline" :loading="busy" @click="load">Обновить</u-button>
     </ui-empty-state>
-    <div v-else-if="snapshot" class="instance-workspace">
+    <div v-else-if="snapshot?.settings.length" class="instance-workspace">
       <nav class="admin-subnav instance-groups" aria-label="Разделы подключений">
         <button v-for="group in groups" :key="group" type="button" :aria-current="selectedGroup === group ? 'page' : undefined" @click="selectedGroup = group">{{ group }}</button>
       </nav>
