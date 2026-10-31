@@ -99,9 +99,9 @@ const chartOptions = computed<ChartOptions<"line">>(() => ({
 ui-box(title="Количество запросов" class="w-full min-w-0")
   template(#right)
     u-button(icon="i-lucide-refresh-cw" aria-label="Обновить график" color="neutral" variant="ghost" :loading="status === 'pending'" @click="() => refresh()")
-  div(v-if="error" role="alert" class="admin-empty") Не удалось загрузить статистику.
-  div(v-else-if="status === 'pending'" class="admin-empty") Загрузка…
-  div(v-else-if="!statsData?.buckets?.length" class="admin-empty") Нет данных за выбранный период.
+  ui-empty-state(v-if="error" kind="error" title="Не удалось загрузить статистику")
+  ui-empty-state(v-else-if="status === 'pending'" kind="loading" title="Загрузка статистики…")
+  ui-empty-state(v-else-if="!statsData?.buckets?.length" title="Нет данных за выбранный период")
   div(v-else class="h-52 w-full")
     chart-line(v-if="chartData" :data="chartData" :options="chartOptions")
 

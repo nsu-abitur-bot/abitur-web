@@ -70,16 +70,10 @@ ui-page(title="Факультеты и направления")
             span(class="text-xs text-gray-500") Активен
           u-button(type="submit" color="primary" :loading="isCreating") Добавить факультет
 
-    div(v-if="status === 'pending'" class="py-10 flex justify-center text-gray-500")
-      u-icon(name="i-heroicons-arrow-path" class="animate-spin w-8 h-8")
-
-    div(v-else-if="error" class="admin-empty" role="alert")
-      p Не удалось загрузить факультеты.
-      u-button(variant="outline" @click="() => refresh()") Повторить
-
-    div(v-else-if="faculties.length === 0" class="admin-empty")
-      u-icon(name="i-heroicons-academic-cap" class="w-12 h-12 mx-auto text-gray-400 mb-3")
-      p Факультеты пока не добавлены. Создайте первый.
+    ui-empty-state(v-if="status === 'pending'" kind="loading" title="Загрузка факультетов…")
+    ui-empty-state(v-else-if="error" kind="error" title="Не удалось загрузить факультеты")
+      u-button(color="neutral" variant="outline" @click="() => refresh()") Повторить
+    ui-empty-state(v-else-if="!faculties.length" title="Факультетов пока нет")
 
     div(v-else class="space-y-4")
       faculties-faculty-card(

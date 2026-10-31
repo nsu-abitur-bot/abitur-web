@@ -117,16 +117,13 @@ section(class="admin-panel p-6")
       )
     u-button(color="primary" class="h-10" @click="addTopic") Добавить
 
-  div(v-if="isLoading && !topics.length" class="py-6 flex justify-center admin-muted")
-    u-icon(name="i-heroicons-arrow-path" class="animate-spin w-8 h-8")
-
-  div(v-else-if="loadError" role="alert" class="text-sm text-error")
-    p Не удалось загрузить темы.
-    u-button(variant="ghost" @click="refresh().then(() => loadError = false).catch(() => loadError = true)") Повторить
-
-  div(v-else-if="!topics.length" class="text-sm admin-muted") Темы пока не добавлены.
+  ui-empty-state(v-if="isLoading && !topics.length" kind="loading" title="Загрузка тем…")
+  ui-empty-state(v-else-if="loadError" kind="error" title="Не удалось загрузить темы")
+    u-button(color="neutral" variant="outline" @click="refresh().then(() => loadError = false).catch(() => loadError = true)") Повторить
+  ui-empty-state(v-else-if="!topics.length" title="Тем пока нет")
 
   div(v-else class="space-y-2")
+    ui-empty-state(v-if="!activeTopics.length" title="Активных тем пока нет")
     settings-topic-item(
       v-for="topic in activeTopics"
       :key="topic.id"

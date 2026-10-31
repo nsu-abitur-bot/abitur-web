@@ -89,9 +89,7 @@ ui-page(title="Инспектор RAG" description="Поиск и генерац
 
     u-alert(v-if="queryError" color="error" :title="queryError" role="alert")
 
-    div(v-if="isLoading" class="py-16 flex flex-col items-center justify-center text-gray-500")
-      u-icon(name="i-heroicons-arrow-path" class="animate-spin w-8 h-8 mb-3 text-primary")
-      p Выполняем запрос...
+    ui-empty-state(v-if="isLoading" kind="loading" title="Выполнение запроса…")
 
     template(v-else-if="result")
       ui-box(title="Ответ модели")
@@ -116,7 +114,7 @@ ui-page(title="Инспектор RAG" description="Поиск и генерац
             div(class="font-medium") {{ result.settings.min_rerank_score ?? "—" }}
 
       ui-box(:title="`Найденные чанки (${result.chunks.length})`")
-        div(v-if="result.chunks.length === 0" class="text-sm text-gray-500 py-4 text-center") Чанки не найдены.
+        ui-empty-state(v-if="!result.chunks.length" kind="no-results" title="Чанки не найдены")
         div(v-else class="space-y-2")
           details(
             v-for="chunk in result.chunks"
@@ -143,7 +141,7 @@ ui-page(title="Инспектор RAG" description="Поиск и генерац
               div(class="pre-wrap-anywhere text-sm text-gray-700 dark:text-gray-300") {{ chunk.content }}
 
       ui-box(:title="`Сущности (${result.entities.length})`")
-        div(v-if="result.entities.length === 0" class="text-sm text-gray-500 py-4 text-center") Сущности не найдены.
+        ui-empty-state(v-if="!result.entities.length" kind="no-results" title="Сущности не найдены")
         div(v-else class="space-y-2")
           div(
             v-for="(entity, idx) in result.entities"
@@ -156,7 +154,7 @@ ui-page(title="Инспектор RAG" description="Поиск и генерац
             p(v-if="entity.description" class="text-xs text-gray-500 mt-1 break-anywhere") {{ entity.description }}
 
       ui-box(:title="`Связи (${result.relations.length})`")
-        div(v-if="result.relations.length === 0" class="text-sm text-gray-500 py-4 text-center") Связи не найдены.
+        ui-empty-state(v-if="!result.relations.length" kind="no-results" title="Связи не найдены")
         div(v-else class="space-y-2")
           div(
             v-for="(relation, idx) in result.relations"
@@ -170,7 +168,7 @@ ui-page(title="Инспектор RAG" description="Поиск и генерац
             p(v-if="relation.description" class="text-xs text-gray-500 mt-1 break-anywhere") {{ relation.description }}
 
       ui-box(:title="`Источники ответа (${result.sources.length})`")
-        div(v-if="result.sources.length === 0" class="text-sm text-gray-500 py-4 text-center") Источники не найдены.
+        ui-empty-state(v-if="!result.sources.length" kind="no-results" title="Источники не найдены")
         div(v-else class="space-y-2")
           div(
             v-for="(source, idx) in result.sources"

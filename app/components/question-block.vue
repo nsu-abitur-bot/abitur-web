@@ -45,13 +45,10 @@ ui-box(title="Самые популярные вопросы" class="w-full min-
         class="w-20"
       )
 
-  div(v-if="status === 'pending'" class="py-6 text-sm text-gray-500 dark:text-gray-400") Загрузка...
-
-  div(v-else-if="error" class="admin-empty" role="alert")
-    p Не удалось загрузить популярные вопросы.
-    u-button(variant="outline" @click="() => refresh()") Повторить
-
-  div(v-else-if="!topQuestion" class="py-6 text-sm text-gray-500 dark:text-gray-400") Нет данных.
+  ui-empty-state(v-if="status === 'pending'" kind="loading" title="Загрузка вопросов…")
+  ui-empty-state(v-else-if="error" kind="error" title="Не удалось загрузить популярные вопросы")
+    u-button(color="neutral" variant="outline" @click="() => refresh()") Повторить
+  ui-empty-state(v-else-if="!topQuestion" title="Нет данных по вопросам")
 
   div(v-else class="space-y-4")
     blockquote(class="admin-detail text-sm")

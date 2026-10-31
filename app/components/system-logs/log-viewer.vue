@@ -114,14 +114,10 @@ div(class="space-y-4")
       @click="handleDownload"
     ) Скачать файл
 
-  div(v-if="filesError || loadError" role="alert" class="admin-empty") {{ filesError ? "Не удалось получить список файлов." : loadError }}
-
-  div(v-else-if="loadingFiles || isLoading" class="py-10 flex justify-center text-gray-500")
-    u-icon(name="i-heroicons-arrow-path" class="animate-spin w-8 h-8")
-
-  div(v-else-if="!logLines.length" class="py-12 text-center text-gray-500 bg-gray-50 dark:bg-gray-800 rounded-lg")
-    u-icon(name="i-heroicons-document-text" class="w-12 h-12 mx-auto text-gray-400 mb-3")
-    p {{ files.length ? "Файл пуст." : "Файлов логов нет." }}
+  ui-empty-state(v-if="loadingFiles || isLoading" kind="loading" title="Загрузка логов…")
+  ui-empty-state(v-else-if="filesError || loadError" kind="error" :title="filesError ? 'Не удалось получить список файлов' : loadError")
+    u-button(color="neutral" variant="outline" @click="filesError ? refreshFiles() : refreshLogs()") Повторить
+  ui-empty-state(v-else-if="!logLines.length" :title="files.length ? 'Файл пуст' : 'Файлов логов пока нет'")
 
   div(v-else class="admin-detail overflow-hidden")
     pre(class="text-xs font-mono leading-relaxed text-gray-700 dark:text-gray-200 p-4 overflow-x-hidden max-h-[70vh] overflow-y-auto pre-wrap-anywhere")

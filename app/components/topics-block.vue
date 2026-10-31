@@ -111,12 +111,11 @@ ui-box(title="Популярные темы" class="w-full min-w-0")
       @click="() => refresh()"
     )
 
-  div(v-if="error" role="alert" class="admin-empty") Не удалось загрузить статистику тем.
-  div(v-else-if="status === 'pending'" class="admin-empty") Загрузка…
+  ui-empty-state(v-if="error" kind="error" title="Не удалось загрузить статистику тем")
+  ui-empty-state(v-else-if="status === 'pending'" kind="loading" title="Загрузка статистики…")
+  ui-empty-state(v-else-if="!chartData" title="Нет данных по темам")
   div(v-else class="h-52 w-full")
-    chart-doughnut(v-if="chartData" :data="chartData" :options="chartOptions")
-    div(v-else class="h-full flex items-center justify-center text-sm text-gray-500 dark:text-gray-400")
-      | Нет данных для построения графика.
+    chart-doughnut(:data="chartData" :options="chartOptions")
 
   div(v-if="topicsData.length" class="mt-4 space-y-2")
     div(
