@@ -16,7 +16,11 @@ export default defineConfig({
     screenshot: "only-on-failure",
     video: "retain-on-failure",
   },
-  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
+  projects: [
+    { name: "chromium", testIgnore: "sidebar-scroll.spec.ts", use: { ...devices["Desktop Chrome"] } },
+    { name: "chromium-sidebar", testMatch: "sidebar-scroll.spec.ts", use: { ...devices["Desktop Chrome"], launchOptions: { ignoreDefaultArgs: ["--hide-scrollbars"], args: ["--disable-features=OverlayScrollbar"] } } },
+    { name: "webkit", testMatch: "sidebar-scroll.spec.ts", use: { ...devices["Desktop Safari"] } },
+  ],
   webServer: [
     {
       command: "node tests/e2e/fake-api.mjs",
