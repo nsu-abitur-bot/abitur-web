@@ -70,3 +70,15 @@ export function isRevisionConflict(error: unknown): boolean {
   const response = error as { status?: number, statusCode?: number, response?: { status?: number } }
   return response?.status === 409 || response?.statusCode === 409 || response?.response?.status === 409
 }
+
+/** Offer checks only for model purposes exposed by the server schema. */
+export function connectionPurposes(settings: InstanceSetting[], group: string) {
+  const purposes = [
+    { suffix: "MODEL", value: "chat", label: "ответы" },
+    { suffix: "GRAPH_MODEL", value: "graph", label: "граф" },
+    { suffix: "MODEL_VISION", value: "vision", label: "документы" },
+    { suffix: "EMBEDDING_MODEL", value: "embedding", label: "эмбеддинги FAQ" },
+    { suffix: "GRAPH_EMBEDDING_MODEL", value: "graph_embedding", label: "эмбеддинги графа" },
+  ]
+  return purposes.filter(purpose => settings.some(setting => setting.group === group && setting.key === `${group.toUpperCase()}_${purpose.suffix}`))
+}

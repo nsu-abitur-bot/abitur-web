@@ -2,7 +2,7 @@
 import { onBeforeRouteLeave } from "vue-router"
 
 import type { InstanceSettings } from "~/services/instance-settings"
-import { checkInstanceConnection, collectChanges, getInstanceSettings, isRevisionConflict, rebaseSettings, saveInstanceSettings } from "~/services/instance-settings"
+import { checkInstanceConnection, collectChanges, connectionPurposes, getInstanceSettings, isRevisionConflict, rebaseSettings, saveInstanceSettings } from "~/services/instance-settings"
 
 const { refresh: refreshUniversity } = useUniversityIdentity()
 const snapshot = ref<InstanceSettings | null>(null)
@@ -18,6 +18,7 @@ const error = ref("")
 const groups = computed(() => [...new Set(snapshot.value?.settings.map(s => s.group) ?? [])])
 const visibleSettings = computed(() => snapshot.value?.settings.filter(s => s.group === selectedGroup.value) ?? [])
 const changes = computed(() => collectChanges(snapshot.value?.settings ?? [], draft, removed))
+const availableChecks = computed(() => connectionPurposes(snapshot.value?.settings ?? [], selectedGroup.value))
 const changedCount = computed(() => Object.keys(changes.value).length)
 
 const leaveOpen = ref(false)
@@ -217,8 +218,8 @@ await load()
           <template v-if="selectedGroup === 'Telegram' || selectedGroup === 'MAX'">
             <u-button :disabled="busy" variant="soft" @click="check(selectedGroup === 'Telegram' ? 'telegram' : 'max')">Проверить бота</u-button>
           </template>
-          <template v-if="selectedGroup === 'OpenAI' || selectedGroup === 'Gemini'">
-            <u-button v-for="purpose in [{ value: 'chat', label: 'ответы' }, { value: 'graph', label: 'граф' }, { value: 'vision', label: 'документы' }, { value: 'embedding', label: 'эмбеддинги FAQ' }, { value: 'graph_embedding', label: 'эмбеддинги графа' }]" :key="purpose.value" :disabled="busy" variant="soft" @click="check(`${selectedGroup.toLowerCase()}:${purpose.value}`)">
+          <template v-if="availableChecks.length">
+            <u-button v-for="purpose in availableChecks" :key="purpose.value" :disabled="busy" variant="soft" @click="check(`${selectedGroup.toLowerCase()}:${purpose.value}`)">
               Проверить: {{ purpose.label }}
             </u-button>
           </template>
