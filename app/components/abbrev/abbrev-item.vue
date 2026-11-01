@@ -20,15 +20,17 @@ const handleUpdated = () => {
 
 <template lang="pug">
 div(class="py-3")
-  div(v-if="isEditing")
-    abbrev-form(:initial-data="item" @submit="handleUpdated" @cancel="isEditing = false")
+  ui-form-dialog(v-model:open="isEditing" title="Редактирование аббревиатуры")
+    template(#body)
+      abbrev-form(:initial-data="item" @submit="handleUpdated" @cancel="isEditing = false")
 
-  div(v-else class="flex items-center gap-4")
+  div(class="flex items-center gap-4")
     div(class="shrink-0")
       u-badge(color="primary" variant="subtle" size="lg" class="font-mono font-medium text-sm") {{ props.item.short }}
     div(class="flex-1 text-gray-700 dark:text-gray-300") {{ props.item.full }}
     div(class="flex gap-2 shrink-0")
       u-button(
+        aria-label="Редактировать"
         icon="i-heroicons-pencil-square"
         color="neutral"
         variant="ghost"

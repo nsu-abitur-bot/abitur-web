@@ -5,6 +5,7 @@ type AdminRole = components["schemas"]["AdminRole"]
 
 const toast = useToast()
 
+const open = ref(false)
 const role = ref<AdminRole>("admin")
 const expiresInHours = ref<number | null>(null)
 const isLoading = ref(false)
@@ -69,36 +70,38 @@ const copyCode = async () => {
 <template lang="pug">
 section(class="admin-panel p-5")
   h2(class="font-semibold mb-2") Пригласить участника
-  p(class="admin-muted text-sm mb-5") Создайте одноразовый код и передайте его участнику для регистрации.
-  div(class="space-y-4")
-    div(class="admin-form-grid")
-      u-form-field(label="Роль" class="flex-1 min-w-40")
-        u-select(v-model="role" :items="roleOptions" value-key="value" label-key="label")
+  u-button(@click="open = true") Создать приглашение
+  ui-form-dialog(v-model:open="open" title="Новое приглашение")
+    template(#body)
+      div(class="space-y-4")
+        div(class="admin-form-grid")
+          u-form-field(label="Роль" class="flex-1 min-w-40")
+            u-select(v-model="role" :items="roleOptions" value-key="value" label-key="label")
 
-      u-form-field(label="Срок действия (часов)")
-        u-input(
-          v-model.number="expiresInHours"
-          type="number"
-          placeholder="Без ограничений"
-          :min="1"
-        )
+          u-form-field(label="Срок действия (часов)")
+            u-input(
+              v-model.number="expiresInHours"
+              type="number"
+              placeholder="Без ограничений"
+              :min="1"
+            )
 
-    u-button(color="primary" :loading="isLoading" icon="i-heroicons-key" @click="handleCreate")
-      | Создать приглашение
+        u-button(color="primary" :loading="isLoading" icon="i-heroicons-key" @click="handleCreate")
+          | Создать приглашение
 
-    div(v-if="generatedCode" class="admin-detail mt-4 space-y-2")
-      p(class="text-sm font-medium") Приглашение создано
-      div(class="flex items-center gap-2")
-        code(class="flex-1 font-mono text-sm break-all") {{ generatedCode }}
-        u-button(
-          icon="i-heroicons-clipboard-document"
-          color="neutral"
-          variant="ghost"
-          size="sm"
-          aria-label="Скопировать код приглашения"
-          @click="copyCode"
-        )
-      p(v-if="generatedExpiry" class="admin-muted text-xs")
-        | Действует до: {{ new Date(generatedExpiry).toLocaleString("ru") }}
-      p(v-else class="admin-muted text-xs") Без ограничения по времени
+        div(v-if="generatedCode" class="admin-detail mt-4 space-y-2")
+          p(class="text-sm font-medium") Приглашение создано
+          div(class="flex items-center gap-2")
+            code(class="flex-1 font-mono text-sm break-all") {{ generatedCode }}
+            u-button(
+              icon="i-heroicons-clipboard-document"
+              color="neutral"
+              variant="ghost"
+              size="sm"
+              aria-label="Скопировать код приглашения"
+              @click="copyCode"
+            )
+          p(v-if="generatedExpiry" class="admin-muted text-xs")
+            | Действует до: {{ new Date(generatedExpiry).toLocaleString("ru") }}
+          p(v-else class="admin-muted text-xs") Без ограничения по времени
 </template>

@@ -34,6 +34,8 @@ export const useRagParserStore = defineStore("ragParser", () => {
   const pendingItems = useStorage<PendingItem[]>(RAG_PARSER_PENDING_KEY, [])
   const selectedIndices = useStorage<number[]>(RAG_PARSER_SELECTED_KEY, [])
 
+  const fileResults = ref<string[]>([])
+  const uploadingFiles = ref(false)
   const isUploading = ref(false)
   const isCsvUploading = ref(false)
   const isProcessingQueue = ref(false)
@@ -302,6 +304,7 @@ export const useRagParserStore = defineStore("ragParser", () => {
     addUrlItem,
     cleanupIndexedItems,
     confirmSelectedUpload,
+    fileResults,
     indexingStats,
     init,
     isCsvUploading,
@@ -314,6 +317,7 @@ export const useRagParserStore = defineStore("ragParser", () => {
     selectedIndices,
     toggleAll,
     toggleSelection,
+    uploadingFiles,
     url,
   }
 })

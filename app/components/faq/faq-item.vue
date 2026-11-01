@@ -26,10 +26,11 @@ const handleUpdated = () => {
 
 <template lang="pug">
 div(class="py-4")
-  div(v-if="isEditing")
-    faq-form(:initial-data="item" @submit="handleUpdated" @cancel="handleCancel")
+  ui-form-dialog(v-model:open="isEditing" title="Редактирование вопроса")
+    template(#body)
+      faq-form(:initial-data="item" @submit="handleUpdated" @cancel="handleCancel")
 
-  div(v-else class="flex flex-col gap-3")
+  div(class="flex flex-col gap-3")
     div(class="flex justify-between items-start gap-4")
       h3(class="text-sm font-semibold text-gray-900 dark:text-gray-100") {{ props.item.question }}
       div(class="flex gap-2 shrink-0")

@@ -12,12 +12,14 @@ const emit = defineEmits<{
 
 const store = useRagParserStore()
 const {
+  fileResults,
   indexingStats,
   isCsvUploading,
   isUploading,
   parsingStats,
   pendingItems,
   selectedIndices,
+  uploadingFiles,
   url,
 } = storeToRefs(store)
 
@@ -31,9 +33,10 @@ const manualTitle = ref("")
 const manualUrl = ref("")
 const manualText = ref("")
 const uploadInput = useTemplateRef("uploadInput")
-const uploadingFiles = ref(false)
-const fileResults = ref<string[]>([])
 async function handleFiles(event: Event) {
+  if (uploadingFiles.value) {
+    return
+  }
   const target = event.target as HTMLInputElement
   const { validFiles, rejectedFiles } = validateRagFiles(Array.from(target.files ?? []))
   fileResults.value = rejectedFiles.map(item => `${item.file.name}: ${item.reason}`)
@@ -44,10 +47,9 @@ async function handleFiles(event: Event) {
   uploadingFiles.value = true
   try {
     const result = await uploadRagDocuments({ files: validFiles })
-    fileResults.value.push(...result.results.map(item => `${item.filename}: ${item.message}`))
-    emit("success")
+    fileResults.value.push(...result.results.map(item => `${item.filename}: ${item.status === "indexed" ? "Загружен" : "Пропущен"}. ${item.message}`))
   } catch {
-    fileResults.value.push("Не удалось загрузить файлы")
+    fileResults.value.push(...validFiles.map(file => `${file.name}: Не удалось загрузить файл. Результат неизвестен — проверьте список материалов перед повторной загрузкой.`))
   } finally {
     uploadingFiles.value = false
   }
@@ -145,7 +147,7 @@ const resetManualForm = () => {
 
 const handleManualPreprocess = async () => {
   const text = manualText.value.trim()
-  if (!text) {
+  if (!text || isManualProcessing.value || isUploading.value) {
     return
   }
 
@@ -170,7 +172,7 @@ const handleManualPreprocess = async () => {
 }
 
 const handleManualUpload = async () => {
-  if (!manualTitle.value || !manualText.value || isManualProcessing.value) {
+  if (!manualTitle.value || !manualText.value || isManualProcessing.value || isUploading.value) {
     return
   }
 
@@ -237,10 +239,12 @@ div(class="space-y-4")
       input(ref="uploadInput" type="file" multiple :accept="RAG_ACCEPTED_EXTENSIONS.join(',')" class="hidden" @change="handleFiles")
       u-button(color="neutral" variant="outline" icon="i-lucide-upload" :loading="uploadingFiles" @click="uploadInput?.click()") Загрузить файлы
       span.admin-muted До 10 МБ на файл. CSV здесь загружается как текст.
-    ul(v-if="fileResults.length" class="mt-3 space-y-2")
-      li(v-for="(result, index) in fileResults" :key="index" class="break-anywhere") {{ result }}
+    div(v-if="fileResults.length" role="status" class="mt-3 space-y-2")
+      ul(class="space-y-2")
+        li(v-for="(result, index) in fileResults" :key="index" class="break-anywhere") {{ result }}
+      p.admin-muted Проверьте результаты каждого файла. Можно выбрать файлы повторно через «Загрузить файлы» или закрыть окно и проверить список материалов.
   // Main Logic View
-  div(v-if="editingIndex === null" class="admin-detail space-y-4")
+  div(class="admin-detail space-y-4")
     // CSV Upload
     div(class="space-y-3 pb-4 border-b dark:border-gray-800")
       div(class="flex flex-wrap items-center justify-between gap-2")
@@ -282,54 +286,53 @@ div(class="space-y-4")
         @click="isManualMode = !isManualMode"
       ) {{ isManualMode ? "Скрыть ручное добавление" : "Добавить текст вручную" }}
 
-    div(v-if="isManualMode" class="space-y-4 border-t pt-4 dark:border-gray-800")
-      u-form-field(label="Название" class="w-full" required)
-        u-input(
-          v-model="manualTitle"
-          class="w-full"
-          placeholder="Введите название документа..."
-        )
+    ui-form-dialog(v-model:open="isManualMode" title="Новый документ")
+      template(#body)
+        u-form-field(label="Название" class="w-full" required)
+          u-input(
+            v-model="manualTitle"
+            class="w-full"
+            placeholder="Введите название документа..."
+          )
 
-      u-form-field(label="Ссылка на источник (опционально)" class="w-full")
-        u-input(
-          v-model="manualUrl"
-          class="w-full"
-          placeholder="https://..."
-          icon="i-heroicons-link"
-        )
+        u-form-field(label="Ссылка на источник (опционально)" class="w-full")
+          u-input(
+            v-model="manualUrl"
+            class="w-full"
+            placeholder="https://..."
+            icon="i-heroicons-link"
+          )
 
-      u-form-field(label="Содержимое" class="w-full" required)
-        u-textarea(
-          v-model="manualText"
-          autoresize
-          :rows="8"
-          class="w-full font-mono text-sm"
-          style="overflow: hidden"
-          placeholder="Скопируйте или напишите текст документа здесь..."
-        )
+        u-form-field(label="Содержимое" class="w-full" required)
+          u-textarea(
+            v-model="manualText"
+                  :rows="8"
+            class="w-full font-mono text-sm"
+              placeholder="Скопируйте или напишите текст документа здесь..."
+          )
 
-      div(class="flex flex-wrap justify-end gap-3 pt-2")
-        u-button(
-          variant="ghost"
-          color="neutral"
-          :disabled="isManualProcessing"
-          @click="resetManualForm"
-        ) Отмена
-        u-button(
-          color="neutral"
-          variant="outline"
-          icon="i-heroicons-sparkles"
-          :loading="isManualProcessing"
-          :disabled="!manualText || isManualProcessing || isUploading"
-          @click="handleManualPreprocess"
-        ) Обработать текст
-        u-button(
-          color="primary"
-          icon="i-heroicons-cloud-arrow-up"
-          :loading="isUploading"
-          :disabled="!manualTitle || !manualText || isUploading || isManualProcessing"
-          @click="handleManualUpload"
-        ) Добавить в базу знаний
+        div(class="flex flex-wrap justify-end gap-3 pt-2")
+          u-button(
+            variant="ghost"
+            color="neutral"
+            :disabled="isManualProcessing"
+            @click="resetManualForm"
+          ) Отмена
+          u-button(
+            color="neutral"
+            variant="outline"
+            icon="i-heroicons-sparkles"
+            :loading="isManualProcessing"
+            :disabled="!manualText || isManualProcessing || isUploading"
+            @click="handleManualPreprocess"
+          ) Обработать текст
+          u-button(
+            color="primary"
+            icon="i-heroicons-cloud-arrow-up"
+            :loading="isUploading"
+            :disabled="!manualTitle || !manualText || isUploading || isManualProcessing"
+            @click="handleManualUpload"
+          ) Добавить в базу знаний
 
     // Pending List
     div(v-if="pendingItems.length > 0" class="space-y-4 border-t pt-4 dark:border-gray-800")
@@ -416,32 +419,26 @@ div(class="space-y-4")
       ) Добавить выбранные
 
   // Editor View
-  div(v-else class="admin-detail space-y-6 animate-in fade-in slide-in-from-right-4")
-    div(class="flex items-center justify-between border-b pb-4 dark:border-gray-800")
-      h3(class="text-lg font-semibold flex items-center gap-2")
-        u-icon(name="i-heroicons-eye" class="text-primary-500")
-        | Просмотр результата
-      u-button(icon="i-heroicons-x-mark" color="neutral" variant="ghost" size="sm" @click="closeEditor")
+  ui-form-dialog(:open="editingIndex !== null" title="Редактирование результата" @update:open="value => { if (!value) closeEditor() }")
+    template(#body)
+      div(class="space-y-4")
+        u-form-field(label="Название")
+          u-input(v-model="editingTitle" class="w-full")
 
-    div(class="space-y-4")
-      u-form-field(label="Название")
-        u-input(v-model="editingTitle" class="w-full")
+        u-form-field(label="Источник")
+          u-input(:model-value="currentEditingItem?.url" disabled class="w-full")
 
-      u-form-field(label="Источник")
-        u-input(:model-value="currentEditingItem?.url" disabled class="w-full")
+        u-form-field(label="Предобработанный текст")
+          u-textarea(
+            v-model="editingText"
+                  :rows="14"
+            class="w-full font-mono text-xs"
+          )
 
-      u-form-field(label="Предобработанный текст")
-        u-textarea(
-          v-model="editingText"
-          autoresize
-          :rows="14"
-          class="w-full font-mono text-xs"
-        )
+        div(v-if="currentEditingItem?.error" class="p-3 bg-error-50 dark:bg-error-900/10 border border-error-100 dark:border-error-900/50 text-error-600 dark:text-error-400 rounded-md text-sm")
+          span(class="font-semibold block mb-1") Ошибка препроцессинга:
+          | {{ currentEditingItem.error }}
 
-      div(v-if="currentEditingItem?.error" class="p-3 bg-error-50 dark:bg-error-900/10 border border-error-100 dark:border-error-900/50 text-error-600 dark:text-error-400 rounded-md text-sm")
-        span(class="font-semibold block mb-1") Ошибка препроцессинга:
-        | {{ currentEditingItem.error }}
-
-    div(class="flex justify-end gap-3 pt-4 border-t dark:border-gray-800")
-      u-button(variant="ghost" color="neutral" @click="closeEditor") Назад к списку
+      div(class="flex justify-end gap-3 pt-4 border-t dark:border-gray-800")
+        u-button(variant="ghost" color="neutral" @click="closeEditor") Назад к списку
 </template>
