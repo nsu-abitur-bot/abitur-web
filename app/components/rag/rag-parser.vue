@@ -12,12 +12,14 @@ const emit = defineEmits<{
 
 const store = useRagParserStore()
 const {
+  fileResults,
   indexingStats,
   isCsvUploading,
   isUploading,
   parsingStats,
   pendingItems,
   selectedIndices,
+  uploadingFiles,
   url,
 } = storeToRefs(store)
 
@@ -31,9 +33,10 @@ const manualTitle = ref("")
 const manualUrl = ref("")
 const manualText = ref("")
 const uploadInput = useTemplateRef("uploadInput")
-const uploadingFiles = ref(false)
-const fileResults = ref<string[]>([])
 async function handleFiles(event: Event) {
+  if (uploadingFiles.value) {
+    return
+  }
   const target = event.target as HTMLInputElement
   const { validFiles, rejectedFiles } = validateRagFiles(Array.from(target.files ?? []))
   fileResults.value = rejectedFiles.map(item => `${item.file.name}: ${item.reason}`)
@@ -44,10 +47,9 @@ async function handleFiles(event: Event) {
   uploadingFiles.value = true
   try {
     const result = await uploadRagDocuments({ files: validFiles })
-    fileResults.value.push(...result.results.map(item => `${item.filename}: ${item.message}`))
-    emit("success")
+    fileResults.value.push(...result.results.map(item => `${item.filename}: ${item.status === "indexed" ? "Загружен" : "Пропущен"}. ${item.message}`))
   } catch {
-    fileResults.value.push("Не удалось загрузить файлы")
+    fileResults.value.push(...validFiles.map(file => `${file.name}: Не удалось загрузить файл. Результат неизвестен — проверьте список материалов перед повторной загрузкой.`))
   } finally {
     uploadingFiles.value = false
   }
@@ -237,8 +239,10 @@ div(class="space-y-4")
       input(ref="uploadInput" type="file" multiple :accept="RAG_ACCEPTED_EXTENSIONS.join(',')" class="hidden" @change="handleFiles")
       u-button(color="neutral" variant="outline" icon="i-lucide-upload" :loading="uploadingFiles" @click="uploadInput?.click()") Загрузить файлы
       span.admin-muted До 10 МБ на файл. CSV здесь загружается как текст.
-    ul(v-if="fileResults.length" class="mt-3 space-y-2")
-      li(v-for="(result, index) in fileResults" :key="index" class="break-anywhere") {{ result }}
+    div(v-if="fileResults.length" role="status" class="mt-3 space-y-2")
+      ul(class="space-y-2")
+        li(v-for="(result, index) in fileResults" :key="index" class="break-anywhere") {{ result }}
+      p.admin-muted Проверьте результаты каждого файла. Можно выбрать файлы повторно через «Загрузить файлы» или закрыть окно и проверить список материалов.
   // Main Logic View
   div(class="admin-detail space-y-4")
     // CSV Upload
