@@ -3,7 +3,7 @@ const props = defineProps<{
   sessionId: string
 }>()
 
-const { data, status, error, refresh } = await useApi("/api/v1/logs/session/{session_id}", {
+const { data, status, error, refresh } = useApi("/api/v1/logs/session/{session_id}", {
   path: {
     session_id: props.sessionId,
   },
@@ -57,7 +57,7 @@ const formatDate = (dateString: string) => {
 </script>
 
 <template lang="pug">
-div(class="flex flex-col h-full")
+div(class="min-w-0")
   p(class="admin-muted text-xs mb-3") Последние 100 записей сессии.
   p(v-if="topicsError" class="admin-muted text-xs mb-3" role="status") {{ topicsError }}. Названия тем могут быть устаревшими.
   ui-empty-state(v-if="status === 'pending'" kind="loading" title="Загрузка логов…")
@@ -65,7 +65,7 @@ div(class="flex flex-col h-full")
     u-button(color="neutral" variant="outline" @click="() => refresh()") Повторить
   ui-empty-state(v-else-if="!logs.length" title="Логов сессии пока нет")
 
-  div(v-else class="flex-1 overflow-y-auto overflow-x-hidden pr-2 custom-scrollbar min-w-0")
+  div(v-else class="min-w-0")
     div(class="space-y-3 pb-4")
       div(v-for="log in logs" :key="log.id" class="relative pl-6 border-l-2" :class="`border-${getLogTypeColor(log.message_type)}-500` ")
         div(class="absolute -left-[9px] top-0 w-4 h-4 rounded-full border-2 bg-white dark:bg-gray-900" :class="`border-${getLogTypeColor(log.message_type)}-500` ")
@@ -94,22 +94,3 @@ div(class="flex flex-col h-full")
               pre(class="mt-2 text-[10px] bg-black/5 dark:bg-black/20 p-2 rounded overflow-x-hidden font-mono text-gray-600 dark:text-gray-400 pre-wrap-anywhere")
                 | {{ JSON.stringify(log.message_metadata, null, 2) }}
 </template>
-
-<style scoped>
-.custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #e2e8f0;
-  border-radius: 10px;
-}
-
-.dark .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #334155;
-}
-</style>

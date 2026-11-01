@@ -210,8 +210,8 @@ ui-page(title="Обратная связь")
         u-button(color="neutral" variant="soft" size="sm" :disabled="!canGoBack" @click="goBack") Назад
         u-button(color="neutral" variant="soft" size="sm" :disabled="!canGoForward" @click="goForward") Вперед
 
-  u-slideover(v-model:open="isDetailsOpen" title="Обращение обратной связи")
-    template(#body)
+  ui-detail-dialog(v-model:open="isDetailsOpen" title="Обращение обратной связи")
+    template(#default)
       ui-empty-state(v-if="isDetailsLoading" kind="loading" title="Загрузка обращения…")
       ui-empty-state(v-else-if="detailsError" kind="error" title="Не удалось загрузить обращение" description="Откройте его повторно.")
       div(v-else-if="selectedReport" class="space-y-5")
