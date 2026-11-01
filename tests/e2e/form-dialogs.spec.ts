@@ -42,8 +42,11 @@ for (const mobile of [false, true]) {
       await expect(dialog).toBeVisible()
       await expect(dialog).toContainText("Новый вопрос")
       if (mobile) {
-        await expect.poll(async () => Math.round((await dialog.boundingBox())!.width)).toBe(390)
-        await expect.poll(async () => Math.round((await dialog.boundingBox())!.height)).toBe(844)
+        const box = (await dialog.boundingBox())!
+        expect(box.x).toBeGreaterThanOrEqual(12)
+        expect(box.width).toBeLessThanOrEqual(366)
+        expect(box.height).toBeLessThanOrEqual(820)
+        expect(Math.abs(box.y + box.height / 2 - 422)).toBeLessThan(2)
       }
       await page.keyboard.press("Shift+Tab")
       await expect.poll(() => dialog.evaluate(el => el.contains(document.activeElement))).toBe(true)

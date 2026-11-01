@@ -64,9 +64,10 @@ async function centered(page: Page, dialog: Locator, width: number) {
     return Math.abs(box.x + box.width / 2 - width / 2)
   }).toBeLessThan(2)
   const box = (await dialog.boundingBox())!
-  expect(box.x).toBeGreaterThanOrEqual(15)
-  expect(box.width).toBeLessThanOrEqual(width - 30)
-  expect(box.height).toBeLessThanOrEqual(849)
+  const inset = width <= 600 ? 12 : 16
+  expect(box.x).toBeGreaterThanOrEqual(inset)
+  expect(box.width).toBeLessThanOrEqual(width - inset * 2)
+  expect(box.height).toBeLessThanOrEqual(881 - (width <= 600 ? 24 : 48))
   expect(Math.abs(box.y + box.height / 2 - 881 / 2)).toBeLessThan(2)
   expect(await dialog.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true)
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width)

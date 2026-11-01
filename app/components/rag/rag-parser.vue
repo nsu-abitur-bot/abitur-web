@@ -311,7 +311,8 @@ div(class="space-y-4")
               placeholder="Скопируйте или напишите текст документа здесь..."
           )
 
-        div(class="flex flex-wrap justify-end gap-3 pt-2")
+      template(#footer)
+        div(class="flex flex-wrap justify-end gap-3 w-full")
           u-button(
             variant="ghost"
             color="neutral"
@@ -439,6 +440,7 @@ div(class="space-y-4")
           span(class="font-semibold block mb-1") Ошибка препроцессинга:
           | {{ currentEditingItem.error }}
 
-      div(class="flex justify-end gap-3 pt-4 border-t dark:border-gray-800")
+    template(#footer)
+      div(class="flex justify-end gap-3 w-full")
         u-button(variant="ghost" color="neutral" @click="closeEditor") Назад к списку
 </template>

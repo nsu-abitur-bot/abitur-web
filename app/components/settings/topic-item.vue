@@ -44,14 +44,17 @@ const onCancel = () => {
 
 <template lang="pug">
 div(class="flex flex-wrap items-center gap-3 rounded-lg border border-gray-200 dark:border-gray-800 p-3")
-  ui-form-dialog(v-model:open="isEditing" title="Редактирование темы")
+  ui-form-dialog(v-model:open="isEditing" size="compact" title="Редактирование темы")
     template(#body)
       div(class="space-y-4")
-        u-input(v-model="draftLabel" class="w-full" placeholder="Название темы" aria-label="Название темы")
-        u-input(v-model="draftDescription" class="w-full" placeholder="Описание (опционально)" aria-label="Описание темы")
-        div(class="flex gap-2")
-          u-button(color="primary" :loading="saving" @click="onSave") Сохранить
-          u-button(color="neutral" variant="ghost" @click="onCancel") Отмена
+        u-form-field(label="Название темы")
+          u-input(v-model="draftLabel" class="w-full" placeholder="Название темы" aria-label="Название темы")
+        u-form-field(label="Описание")
+          u-input(v-model="draftDescription" class="w-full" placeholder="Опционально" aria-label="Описание темы")
+    template(#footer)
+      div(class="flex justify-end gap-2 w-full")
+        u-button(color="neutral" variant="ghost" :disabled="saving" @click="onCancel") Отмена
+        u-button(color="primary" :loading="saving" @click="onSave") Сохранить
 
   div(class="contents")
     div(class="flex-1 min-w-0")

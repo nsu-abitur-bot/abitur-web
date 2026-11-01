@@ -20,7 +20,7 @@ const handleUpdated = () => {
 
 <template lang="pug">
 div(class="py-3")
-  ui-form-dialog(v-model:open="isEditing" title="Редактирование аббревиатуры")
+  ui-form-dialog(v-model:open="isEditing" size="compact" title="Редактирование аббревиатуры")
     template(#body)
       abbrev-form(:initial-data="item" @submit="handleUpdated" @cancel="isEditing = false")
 

@@ -210,53 +210,45 @@ ui-page(title="Обратная связь")
         u-button(color="neutral" variant="soft" size="sm" :disabled="!canGoBack" @click="goBack") Назад
         u-button(color="neutral" variant="soft" size="sm" :disabled="!canGoForward" @click="goForward") Вперед
 
-  ui-detail-dialog(v-model:open="isDetailsOpen" title="Обращение обратной связи")
+  ui-detail-dialog(v-model:open="isDetailsOpen" title="Обращение обратной связи" size="regular")
     template(#default)
       ui-empty-state(v-if="isDetailsLoading" kind="loading" title="Загрузка обращения…")
       ui-empty-state(v-else-if="detailsError" kind="error" title="Не удалось загрузить обращение" description="Откройте его повторно.")
       div(v-else-if="selectedReport" class="space-y-5")
-        div(class="flex items-center gap-2")
-          u-badge(:color="getStatusMeta(selectedReport.status).color" variant="subtle")
-            | {{ getStatusMeta(selectedReport.status).label }}
-          span(class="text-sm text-gray-500") {{ `#${selectedReport.id}` }}
-
-        div(class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm")
-          div
-            div(class="text-xs text-gray-500") Идентификатор пользователя
-            div(class="font-medium") {{ selectedReport.user_id }}
-          div
-            div(class="text-xs text-gray-500") Канал
-            div(class="font-medium") {{ selectedReport.channel }}
-          div(class="sm:col-span-2")
-            div(class="text-xs text-gray-500") Идентификатор сессии
-            div(class="font-mono text-xs break-all") {{ selectedReport.session_id }}
-          div
-            div(class="text-xs text-gray-500") Создано
-            div(class="font-medium") {{ formatDate(selectedReport.created_at) }}
-          div(v-if="selectedReport.reviewed_at")
-            div(class="text-xs text-gray-500") Проверено
-            div(class="font-medium") {{ formatDate(selectedReport.reviewed_at) }}
-
-        div
-          div(class="text-xs text-gray-500 mb-1") Комментарий
-          div(class="rounded-lg admin-detail pre-wrap-anywhere text-sm") {{ selectedReport.comment }}
-
-        div(v-if="selectedReport.question")
-          div(class="text-xs text-gray-500 mb-1") Вопрос
-          div(class="rounded-lg admin-detail pre-wrap-anywhere text-sm") {{ selectedReport.question }}
-
-        div(v-if="selectedReport.bot_response")
-          div(class="text-xs text-gray-500 mb-1") Ответ бота
-          div(class="rounded-lg admin-detail pre-wrap-anywhere text-sm") {{ selectedReport.bot_response }}
-
-        div(v-if="selectedReport.logs_snapshot?.length")
-          div(class="text-xs text-gray-500 mb-1") Снимок логов
-          pre(class="rounded-lg bg-gray-950 text-gray-100 p-3 overflow-x-hidden text-xs pre-wrap-anywhere") {{ JSON.stringify(selectedReport.logs_snapshot, null, 2) }}
-
-        div(class="flex flex-wrap gap-2 pt-2")
-          u-button(color="warning" variant="soft" :loading="isUpdatingStatus" @click="updateStatus(selectedReport.id, 'open')") Открыто
-          u-button(color="success" variant="soft" :loading="isUpdatingStatus" @click="updateStatus(selectedReport.id, 'reviewed')") Проверено
-          u-button(color="neutral" variant="soft" :loading="isUpdatingStatus" @click="updateStatus(selectedReport.id, 'ignored')") Игнорировать
+        div(class="flex flex-wrap items-center gap-3 text-xs admin-muted")
+          span {{ '#' + selectedReport.id }}
+          span {{ getStatusMeta(selectedReport.status).label }}
+          span {{ selectedReport.channel }}
+          span {{ formatDate(selectedReport.created_at) }}
+        section.feedback-copy
+          h3 Комментарий
+          p {{ selectedReport.comment }}
+        section.feedback-copy(v-if="selectedReport.question")
+          h3 Вопрос
+          p {{ selectedReport.question }}
+        section.feedback-copy(v-if="selectedReport.bot_response")
+          h3 Ответ бота
+          p {{ selectedReport.bot_response }}
+        details.modal-disclosure
+          summary Данные сессии
+          dl(class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3")
+            div
+              dt Пользователь
+              dd {{ selectedReport.user_id }}
+            div
+              dt Сессия
+              dd(class="font-mono break-anywhere") {{ selectedReport.session_id }}
+            div(v-if="selectedReport.reviewed_at")
+              dt Проверено
+              dd {{ formatDate(selectedReport.reviewed_at) }}
+        details.modal-disclosure(v-if="selectedReport.logs_snapshot?.length")
+          summary Снимок логов
+          pre {{ JSON.stringify(selectedReport.logs_snapshot, null, 2) }}
+    template(v-if="selectedReport && !isDetailsLoading && !detailsError" #footer)
+      div(class="flex flex-wrap items-center justify-end gap-2 w-full")
+        u-button(v-if="selectedReport.status !== 'open'" color="neutral" variant="ghost" :loading="isUpdatingStatus" @click="updateStatus(selectedReport.id, 'open')") Открыть снова
+        u-button(color="neutral" variant="ghost" :disabled="selectedReport.status === 'ignored'" :loading="isUpdatingStatus" @click="updateStatus(selectedReport.id, 'ignored')") Игнорировать
+        u-button(color="primary" :disabled="selectedReport.status === 'reviewed'" :loading="isUpdatingStatus" @click="updateStatus(selectedReport.id, 'reviewed')") Проверено
 </template>
 
 <style scoped>

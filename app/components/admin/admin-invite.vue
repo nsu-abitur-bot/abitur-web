@@ -71,23 +71,21 @@ const copyCode = async () => {
 section(class="admin-panel p-5")
   h2(class="font-semibold mb-2") Пригласить участника
   u-button(@click="open = true") Создать приглашение
-  ui-form-dialog(v-model:open="open" title="Новое приглашение")
+  ui-form-dialog(v-model:open="open" size="compact" title="Новое приглашение")
     template(#body)
       div(class="space-y-4")
         div(class="admin-form-grid")
           u-form-field(label="Роль" class="flex-1 min-w-40")
-            u-select(v-model="role" :items="roleOptions" value-key="value" label-key="label")
+            u-select(v-model="role" class="w-full" :items="roleOptions" value-key="value" label-key="label")
 
           u-form-field(label="Срок действия (часов)")
             u-input(
               v-model.number="expiresInHours"
+              class="w-full"
               type="number"
               placeholder="Без ограничений"
               :min="1"
             )
-
-        u-button(color="primary" :loading="isLoading" icon="i-heroicons-key" @click="handleCreate")
-          | Создать приглашение
 
         div(v-if="generatedCode" class="admin-detail mt-4 space-y-2")
           p(class="text-sm font-medium") Приглашение создано
@@ -104,4 +102,8 @@ section(class="admin-panel p-5")
           p(v-if="generatedExpiry" class="admin-muted text-xs")
             | Действует до: {{ new Date(generatedExpiry).toLocaleString("ru") }}
           p(v-else class="admin-muted text-xs") Без ограничения по времени
+    template(#footer)
+      div(class="flex justify-end gap-2 w-full")
+        u-button(color="neutral" variant="ghost" :disabled="isLoading" @click="open = false") Закрыть
+        u-button(color="primary" :loading="isLoading" @click="handleCreate") Создать приглашение
 </template>

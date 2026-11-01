@@ -135,7 +135,7 @@ div(class="admin-panel p-4" :class="{ 'opacity-70': !faculty.is_active }")
             u-input(v-model="facultyState.name" class="w-full")
           u-form-field(label="Аббревиатуры (через запятую)" name="aliases" class="flex-1 min-w-48")
             u-input(v-model="facultyState.aliases" placeholder="ФИТ, Факультет ИТ" class="w-full")
-        div(class="flex items-center justify-between gap-3")
+        div.admin-modal-form-actions(class="flex items-center justify-between gap-3")
           div(class="flex items-center gap-2")
             u-switch(v-model="facultyState.is_active")
             span(class="text-xs text-gray-500") Активен
@@ -201,7 +201,7 @@ div(class="admin-panel p-4" :class="{ 'opacity-70': !faculty.is_active }")
               u-input(v-model="programState.code" placeholder="09.03.04" class="w-full")
             u-form-field(label="Уровень" name="level" class="w-44")
               u-select(v-model="programState.level" :items="EDUCATION_LEVELS" value-key="value" label-key="label" class="w-full")
-          div(class="flex justify-end gap-2")
+          div.admin-modal-form-actions(class="flex justify-end gap-2")
             u-button(color="neutral" variant="soft" :disabled="isSavingProgram" @click="isAddingProgram = false") Отмена
             u-button(type="submit" color="primary" :loading="isSavingProgram") Добавить
 </template>

@@ -30,16 +30,6 @@ const getTopicLabel = (topicId?: number | null): string | null => {
   return topic ? topic.label : `Тема #${topicId}`
 }
 
-const getLogTypeColor = (type: string) => {
-  switch (type) {
-    case "user_input": return "primary"
-    case "rag_context": return "success"
-    case "llm_response": return "secondary"
-    case "faq_match": return "warning"
-    default: return "neutral"
-  }
-}
-
 const getLogTypeLabel = (type: string) => {
   switch (type) {
     case "user_input": return "Вопрос"
@@ -58,39 +48,20 @@ const formatDate = (dateString: string) => {
 
 <template lang="pug">
 div(class="min-w-0")
-  p(class="admin-muted text-xs mb-3") Последние 100 записей сессии.
+  p(class="admin-muted text-xs mb-5") Последние 100 записей сессии.
   p(v-if="topicsError" class="admin-muted text-xs mb-3" role="status") {{ topicsError }}. Названия тем могут быть устаревшими.
   ui-empty-state(v-if="status === 'pending'" kind="loading" title="Загрузка логов…")
   ui-empty-state(v-else-if="error" kind="error" title="Не удалось загрузить логи сессии")
     u-button(color="neutral" variant="outline" @click="() => refresh()") Повторить
   ui-empty-state(v-else-if="!logs.length" title="Логов сессии пока нет")
-
-  div(v-else class="min-w-0")
-    div(class="space-y-3 pb-4")
-      div(v-for="log in logs" :key="log.id" class="relative pl-6 border-l-2" :class="`border-${getLogTypeColor(log.message_type)}-500` ")
-        div(class="absolute -left-[9px] top-0 w-4 h-4 rounded-full border-2 bg-white dark:bg-gray-900" :class="`border-${getLogTypeColor(log.message_type)}-500` ")
-
-        div(class="flex items-center gap-2 mb-2 flex-wrap")
-          u-badge(:color="getLogTypeColor(log.message_type)" variant="subtle" size="sm")
-            | {{ getLogTypeLabel(log.message_type) }}
-          u-badge(
-            v-if="getTopicLabel(log.topic_id)"
-            color="neutral"
-            variant="outline"
-            size="sm"
-          ) {{ getTopicLabel(log.topic_id) }}
-          span(class="text-xs text-gray-400 font-mono")
-            | {{ formatDate(log.created_at) }}
-
-        div(class="admin-detail text-sm min-w-0")
-          div(class="pre-wrap-anywhere leading-relaxed text-gray-700 dark:text-gray-300 mb-3")
-            | {{ log.content }}
-
-          div(v-if="log.message_metadata && Object.keys(log.message_metadata).length > 0" class="mt-2")
-            details(class="group border-t border-gray-200 dark:border-gray-700 pt-2 mt-2")
-              summary(class="text-xs text-gray-500 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300 transition-colors list-none flex items-center gap-1 min-w-0")
-                u-icon(name="i-heroicons-chevron-right" class="w-3 h-3 transition-transform group-open:rotate-90")
-                span Метаданные
-              pre(class="mt-2 text-[10px] bg-black/5 dark:bg-black/20 p-2 rounded overflow-x-hidden font-mono text-gray-600 dark:text-gray-400 pre-wrap-anywhere")
-                | {{ JSON.stringify(log.message_metadata, null, 2) }}
+  div(v-else)
+    article.session-log(v-for="log in logs" :key="log.id")
+      header.session-log-heading
+        h3(class="font-semibold text-sm") {{ getLogTypeLabel(log.message_type) }}
+        span(v-if="getTopicLabel(log.topic_id)" class="admin-muted text-xs") {{ getTopicLabel(log.topic_id) }}
+        time(:datetime="log.created_at") {{ formatDate(log.created_at) }}
+      div.session-log-content {{ log.content }}
+      details.modal-disclosure(v-if="log.message_metadata && Object.keys(log.message_metadata).length")
+        summary Метаданные
+        pre {{ JSON.stringify(log.message_metadata, null, 2) }}
 </template>

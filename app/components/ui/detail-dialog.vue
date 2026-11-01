@@ -1,14 +1,15 @@
 <script setup lang="ts">
-defineProps<{
+withDefaults(defineProps<{
   title: string
   description?: string
-}>()
+  size?: "compact" | "regular" | "wide"
+}>(), { size: "wide" })
 
 const open = defineModel<boolean>("open", { default: false })
 </script>
 
 <template lang="pug">
-u-modal(v-model:open="open" :title="title" :description="description" :ui="{ content: 'w-[calc(100%-2rem)] sm:max-w-5xl max-h-[calc(100dvh-2rem)]', header: 'shrink-0 min-w-0', description: 'break-anywhere', body: 'overflow-y-auto min-h-0 min-w-0 break-anywhere', footer: 'shrink-0' }")
+u-modal(v-model:open="open" :title="title" :description="description" :ui="{ overlay: 'admin-modal-overlay', content: `admin-modal admin-modal-${size}`, header: 'admin-modal-header', title: 'admin-modal-title', description: 'admin-modal-description', close: 'admin-modal-close', body: 'admin-modal-body', footer: 'admin-modal-footer' }")
   template(#body)
     slot
   template(v-if="$slots.footer" #footer="{ close }")

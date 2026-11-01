@@ -110,7 +110,7 @@ section(class="admin-panel p-6")
     | Темы используются для классификации сообщений и в разделе статистики.
 
   u-button(class="mb-4" @click="createOpen = true") Добавить тему
-  ui-form-dialog(v-model:open="createOpen" title="Новая тема")
+  ui-form-dialog(v-model:open="createOpen" size="compact" title="Новая тема")
     template(#body)
       div(class="space-y-4")
         u-form-field(label="Новая тема" class="w-full sm:w-auto flex-1 min-w-40")
@@ -126,7 +126,10 @@ section(class="admin-panel p-6")
             placeholder="Опционально"
             class="w-full"
           )
-        u-button(color="primary" class="h-10" :loading="saving" @click="addTopic") Добавить
+    template(#footer)
+      div(class="flex justify-end gap-2 w-full")
+        u-button(color="neutral" variant="ghost" :disabled="saving" @click="createOpen = false") Отмена
+        u-button(color="primary" :loading="saving" @click="addTopic") Добавить
 
   ui-empty-state(v-if="isLoading && !topics.length" kind="loading" title="Загрузка тем…")
   ui-empty-state(v-else-if="loadError" kind="error" title="Не удалось загрузить темы")

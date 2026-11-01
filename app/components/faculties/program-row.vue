@@ -88,7 +88,7 @@ div(class="border-t border-default py-3" :class="{ 'opacity-60': !program.is_act
             u-input(v-model="state.code" placeholder="09.03.04" class="w-full")
           u-form-field(label="Уровень" name="level" class="w-44")
             u-select(v-model="state.level" :items="EDUCATION_LEVELS" value-key="value" label-key="label" class="w-full")
-        div(class="flex items-center justify-between gap-3")
+        div.admin-modal-form-actions(class="flex items-center justify-between gap-3")
           div(class="flex items-center gap-2")
             u-switch(v-model="state.is_active")
             span(class="text-xs text-gray-500") Активно
