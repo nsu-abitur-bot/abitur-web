@@ -2,10 +2,11 @@ import { mkdir } from "node:fs/promises"
 
 import { expect, test } from "@playwright/test"
 
-for (const mobile of [false, true]) {
+for (const width of [1399, 1049, 390]) {
+  const mobile = width === 390
   for (const colorScheme of ["light", "dark"] as const) {
-    test(`form dialogs ${mobile ? "mobile" : "desktop"} ${colorScheme}`, async ({ page, context }, testInfo) => {
-      await page.setViewportSize(mobile ? { width: 390, height: 844 } : { width: 1440, height: 1000 })
+    test(`form dialogs ${width}px ${colorScheme}`, async ({ page, context }, testInfo) => {
+      await page.setViewportSize({ width, height: 844 })
       await page.emulateMedia({ colorScheme })
       await context.addCookies([{ name: "abitur-token", value: "e2e-session", domain: "127.0.0.1", path: "/" }])
       let writes = 0
@@ -41,6 +42,8 @@ for (const mobile of [false, true]) {
       const dialog = page.getByRole("dialog")
       await expect(dialog).toBeVisible()
       await expect(dialog).toContainText("Новый вопрос")
+      expect(await dialog.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true)
+      expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width)
       if (mobile) {
         const box = (await dialog.boundingBox())!
         expect(box.x).toBeGreaterThanOrEqual(12)
@@ -60,8 +63,8 @@ for (const mobile of [false, true]) {
       await dialog.getByRole("textbox").nth(0).fill("Как подать документы?")
       await dialog.getByRole("textbox").last().fill("Ответ о поступлении. ".repeat(100))
       await mkdir("/tmp/abitur-dialogs-36", { recursive: true })
-      await page.screenshot({ path: `/tmp/abitur-dialogs-36/faq-${mobile ? "mobile" : "desktop"}-${colorScheme}.png` })
-      await testInfo.attach("FAQ", { path: `/tmp/abitur-dialogs-36/faq-${mobile ? "mobile" : "desktop"}-${colorScheme}.png`, contentType: "image/png" })
+      await page.screenshot({ path: `/tmp/abitur-dialogs-36/faq-${width}-${colorScheme}.png` })
+      await testInfo.attach("FAQ", { path: `/tmp/abitur-dialogs-36/faq-${width}-${colorScheme}.png`, contentType: "image/png" })
       fail = true
       await dialog.getByRole("button", { name: "Создать", exact: true }).click()
       await expect(page.getByText("Произошла ошибка при сохранении", { exact: true })).toBeVisible()
@@ -122,15 +125,15 @@ for (const mobile of [false, true]) {
       await manual.getByRole("textbox").last().fill("Документы для поступления. ".repeat(100))
       await manual.getByRole("button", { name: "Добавить в базу знаний" }).scrollIntoViewIfNeeded()
       await expect(manual.getByRole("button", { name: "Добавить в базу знаний" })).toBeInViewport()
-      await page.screenshot({ path: `/tmp/abitur-dialogs-36/document-${mobile ? "mobile" : "desktop"}-${colorScheme}.png` })
+      await page.screenshot({ path: `/tmp/abitur-dialogs-36/document-${width}-${colorScheme}.png` })
       if (mobile) {
         await page.setViewportSize({ width: 390, height: 440 })
         await manual.getByRole("textbox").last().focus()
-        await manual.getByRole("button", { name: "Добавить в базу знаний" }).scrollIntoViewIfNeeded()
         await expect(manual.getByRole("button", { name: "Добавить в базу знаний" })).toBeInViewport()
+        expect(await manual.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true)
         await page.setViewportSize({ width: 390, height: 844 })
       }
-      await testInfo.attach("Document", { path: `/tmp/abitur-dialogs-36/document-${mobile ? "mobile" : "desktop"}-${colorScheme}.png`, contentType: "image/png" })
+      await testInfo.attach("Document", { path: `/tmp/abitur-dialogs-36/document-${width}-${colorScheme}.png`, contentType: "image/png" })
       await page.keyboard.press("Escape")
       await expect(manual).toBeHidden()
       await page.keyboard.press("Escape")

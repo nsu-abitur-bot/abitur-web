@@ -79,9 +79,9 @@ ui-detail-dialog(v-model:open="open" title="Диагностика докуме�
 
     div(v-if="!isLoading && !errorMessage && data" class="space-y-4")
       div
-        div(class="text-xs text-gray-500") Название
+        div(class="text-xs admin-muted") Название
         div(class="font-medium text-gray-900 dark:text-white break-anywhere") {{ data.title || "—" }}
-        div(class="text-[11px] text-gray-400 break-anywhere mt-0.5") ID: {{ data.id }}
+        div(class="text-[11px] admin-muted break-anywhere mt-0.5") ID: {{ data.id }}
 
       u-alert(
         v-if="hasNoEntities"
@@ -103,22 +103,22 @@ ui-detail-dialog(v-model:open="open" title="Диагностика докуме�
 
       div.diagnostic-facts(class="text-sm")
         div
-          div(class="text-xs text-gray-500") Статус Postgres
+          div(class="text-xs admin-muted") Статус Postgres
           div(class="font-medium break-anywhere") {{ data.postgres_status }}
         div
-          div(class="text-xs text-gray-500") Статус LightRAG
+          div(class="text-xs admin-muted") Статус LightRAG
           div(class="font-medium" :class="hasLightragProblem ? 'text-error-600 dark:text-error-400' : ''") {{ getLightragLabel(data.lightrag_status) }}
         div
-          div(class="text-xs text-gray-500") Чанки
+          div(class="text-xs admin-muted") Чанки
           div(class="font-medium") {{ data.chunks_count }}
         div
-          div(class="text-xs text-gray-500") Сущности
+          div(class="text-xs admin-muted") Сущности
           div(class="font-medium" :class="hasNoEntities ? 'text-error-600 dark:text-error-400' : ''") {{ data.entities_count }}
         div
-          div(class="text-xs text-gray-500") Связи
+          div(class="text-xs admin-muted") Связи
           div(class="font-medium") {{ data.relations_count }}
         div
-          div(class="text-xs text-gray-500") Длина контента
+          div(class="text-xs admin-muted") Длина контента
           div(class="font-medium") {{ data.content_length ?? "—" }}
 
       div(v-if="hasError" class="rounded-lg border border-error-200 dark:border-error-900 bg-error-50 dark:bg-error-950/30 p-3")

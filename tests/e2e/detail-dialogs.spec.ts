@@ -35,7 +35,7 @@ async function fixture(context: BrowserContext, mode: string) {
     }
     if (route.request().method() === "PATCH") {
       updated = true
-      return reply({ ...report, status: "reviewed" })
+      return reply({ ...report, status: route.request().postDataJSON().status })
     }
     const fixtures: Record<string, unknown> = {
       "/api/v1/auth/me": { id: 1, username: "e2e-admin", role: "superadmin", is_active: true },
@@ -100,6 +100,9 @@ for (const width of [1399, 1049, 390]) {
       await feedbackTrigger.click()
       await expect(dialog.getByText("Снимок логов", { exact: true })).toBeVisible()
       await centered(page, dialog, width)
+      await dialog.locator("summary").filter({ hasText: "Снимок логов" }).click()
+      await expect(dialog.locator("pre")).toBeVisible()
+      expect(await dialog.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true)
       await dialog.getByRole("button", { name: "Игнорировать", exact: true }).scrollIntoViewIfNeeded()
       await expect(dialog.getByRole("button", { name: "Игнорировать", exact: true })).toBeInViewport()
       await screenshot(page, testInfo, `feedback-${width}-${mode}`)
@@ -143,6 +146,13 @@ test("detail loading, errors, retry and feedback actions survive", async ({ page
   await dialog.getByRole("button", { name: "Проверено", exact: true }).click()
   await expect.poll(local.updated).toBe(true)
   await expect(dialog.getByText("Проверено", { exact: true }).first()).toBeVisible()
+  await expect(dialog.getByRole("button", { name: "Проверено", exact: true })).toBeDisabled()
+  await dialog.getByRole("button", { name: "Открыть снова", exact: true }).click()
+  await expect(dialog.getByText("Открыто", { exact: true })).toBeVisible()
+  await expect(dialog.getByRole("button", { name: "Открыть снова", exact: true })).toHaveCount(0)
+  await dialog.getByRole("button", { name: "Игнорировать", exact: true }).click()
+  await expect(dialog.getByText("Игнорируется", { exact: true })).toBeVisible()
+  await expect(dialog.getByRole("button", { name: "Игнорировать", exact: true })).toBeDisabled()
   await page.keyboard.press("Escape")
   await page.goto("/")
   local.fail(true)

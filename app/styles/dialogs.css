@@ -84,7 +84,7 @@
 
 .admin-modal-form input,
 .admin-modal-form textarea {
-  padding: 10px 12px;
+  padding-block: 10px;
   background: var(--admin-canvas);
   font-size: 14px;
   line-height: 1.5;
