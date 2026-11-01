@@ -155,7 +155,7 @@ function openEditDocument(doc: RagDocument) {
   editForm.sourceUrl = doc.url ?? ""
 }
 async function handleUpdateDocument() {
-  if (!editingDocument.value) {
+  if (!editingDocument.value || isSavingDocument.value) {
     return
   }
   isSavingDocument.value = true
@@ -234,7 +234,7 @@ function openDiagnostics(doc: RagDocument) {
     summary Результаты операции ({{ operationMessages.length }})
     ul(class="mt-3 space-y-2")
       li(v-for="(message, index) in operationMessages" :key="index" class="break-anywhere") {{ message }}
-  u-slideover(v-model:open="isEditDocumentOpen" title="Редактирование документа")
+  ui-form-dialog(v-model:open="isEditDocumentOpen" title="Редактирование документа")
     template(#body)
       div(v-if="editingDocument" class="space-y-4")
         u-form-field(label="Название")

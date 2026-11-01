@@ -43,7 +43,7 @@ const parseAliases = (value: string): string[] =>
 
 const onSaveFaculty = async () => {
   const name = facultyState.name.trim()
-  if (!name) {
+  if (!name || isSavingFaculty.value) {
     return
   }
   isSavingFaculty.value = true
@@ -98,7 +98,7 @@ const resetProgramForm = () => {
 
 const onCreateProgram = async () => {
   const name = programState.name.trim()
-  if (!name) {
+  if (!name || isSavingProgram.value) {
     return
   }
   isSavingProgram.value = true
@@ -127,22 +127,23 @@ const onCreateProgram = async () => {
 
 <template lang="pug">
 div(class="admin-panel p-4" :class="{ 'opacity-70': !faculty.is_active }")
-  div(v-if="isEditing")
-    u-form(:state="facultyState" class="space-y-3" @submit="onSaveFaculty")
-      div(class="flex flex-wrap items-end gap-3")
-        u-form-field(label="Название факультета" name="name" required class="flex-1 min-w-56")
-          u-input(v-model="facultyState.name" class="w-full")
-        u-form-field(label="Аббревиатуры (через запятую)" name="aliases" class="flex-1 min-w-48")
-          u-input(v-model="facultyState.aliases" placeholder="ФИТ, Факультет ИТ" class="w-full")
-      div(class="flex items-center justify-between gap-3")
-        div(class="flex items-center gap-2")
-          u-switch(v-model="facultyState.is_active")
-          span(class="text-xs text-gray-500") Активен
-        div(class="flex gap-2")
-          u-button(color="neutral" variant="soft" :disabled="isSavingFaculty" @click="isEditing = false") Отмена
-          u-button(type="submit" color="primary" :loading="isSavingFaculty") Сохранить
+  ui-form-dialog(v-model:open="isEditing" title="Редактирование факультета")
+    template(#body)
+      u-form(:state="facultyState" class="space-y-3" @submit="onSaveFaculty")
+        div(class="flex flex-wrap items-end gap-3")
+          u-form-field(label="Название факультета" name="name" required class="flex-1 min-w-56")
+            u-input(v-model="facultyState.name" class="w-full")
+          u-form-field(label="Аббревиатуры (через запятую)" name="aliases" class="flex-1 min-w-48")
+            u-input(v-model="facultyState.aliases" placeholder="ФИТ, Факультет ИТ" class="w-full")
+        div(class="flex items-center justify-between gap-3")
+          div(class="flex items-center gap-2")
+            u-switch(v-model="facultyState.is_active")
+            span(class="text-xs text-gray-500") Активен
+          div(class="flex gap-2")
+            u-button(color="neutral" variant="soft" :disabled="isSavingFaculty" @click="isEditing = false") Отмена
+            u-button(type="submit" color="primary" :loading="isSavingFaculty") Сохранить
 
-  div(v-else)
+  div
     div(class="flex items-start gap-3")
       div(class="flex-1 min-w-0")
         div(class="flex items-center gap-2 flex-wrap")
@@ -190,16 +191,17 @@ div(class="admin-panel p-4" :class="{ 'opacity-70': !faculty.is_active }")
       @changed="emit('changed')"
     )
 
-    div(v-if="isAddingProgram" class="rounded-lg border border-dashed border-gray-300 dark:border-gray-700 p-3")
-      u-form(:state="programState" class="space-y-3" @submit="onCreateProgram")
-        div(class="flex flex-wrap items-end gap-3")
-          u-form-field(label="Название" name="name" required class="flex-1 min-w-48")
-            u-input(v-model="programState.name" placeholder="Например: Программная инженерия" class="w-full")
-          u-form-field(label="Код" name="code" class="w-32")
-            u-input(v-model="programState.code" placeholder="09.03.04" class="w-full")
-          u-form-field(label="Уровень" name="level" class="w-44")
-            u-select(v-model="programState.level" :items="EDUCATION_LEVELS" value-key="value" label-key="label" class="w-full")
-        div(class="flex justify-end gap-2")
-          u-button(color="neutral" variant="soft" :disabled="isSavingProgram" @click="isAddingProgram = false") Отмена
-          u-button(type="submit" color="primary" :loading="isSavingProgram") Добавить
+    ui-form-dialog(v-model:open="isAddingProgram" title="Новое направление")
+      template(#body)
+        u-form(:state="programState" class="space-y-3" @submit="onCreateProgram")
+          div(class="flex flex-wrap items-end gap-3")
+            u-form-field(label="Название" name="name" required class="flex-1 min-w-48")
+              u-input(v-model="programState.name" placeholder="Например: Программная инженерия" class="w-full")
+            u-form-field(label="Код" name="code" class="w-32")
+              u-input(v-model="programState.code" placeholder="09.03.04" class="w-full")
+            u-form-field(label="Уровень" name="level" class="w-44")
+              u-select(v-model="programState.level" :items="EDUCATION_LEVELS" value-key="value" label-key="label" class="w-full")
+          div(class="flex justify-end gap-2")
+            u-button(color="neutral" variant="soft" :disabled="isSavingProgram" @click="isAddingProgram = false") Отмена
+            u-button(type="submit" color="primary" :loading="isSavingProgram") Добавить
 </template>

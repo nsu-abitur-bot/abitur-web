@@ -100,7 +100,6 @@ u-form(:state="state" class="space-y-4" @submit="onSubmit")
     u-textarea(
       v-model="state.answer"
       :rows="5"
-      autoresize
       placeholder="Напишите ответ..."
       class="w-full"
     )

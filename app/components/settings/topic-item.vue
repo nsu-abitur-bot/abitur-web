@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import type { Topic } from "~/services/topics"
 
-const props = defineProps<{ topic: Topic }>()
+const props = defineProps<{ topic: Topic, save: (id: number, label: string, description: string | null) => Promise<boolean> }>()
 
 const emit = defineEmits<{
-  (e: "save", id: number, label: string, description: string | null): void
   (e: "remove", id: number): void
 }>()
 
+const saving = ref(false)
 const isEditing = ref(false)
 const draftLabel = ref(props.topic.label)
 const draftDescription = ref(props.topic.description ?? "")
@@ -20,13 +20,19 @@ watch(() => props.topic, (next) => {
   draftDescription.value = next.description ?? ""
 })
 
-const onSave = () => {
+const onSave = async () => {
   const label = draftLabel.value.trim()
-  if (!label) {
+  if (!label || saving.value) {
     return
   }
-  emit("save", props.topic.id, label, draftDescription.value.trim() || null)
-  isEditing.value = false
+  saving.value = true
+  try {
+    if (await props.save(props.topic.id, label, draftDescription.value.trim() || null)) {
+      isEditing.value = false
+    }
+  } finally {
+    saving.value = false
+  }
 }
 
 const onCancel = () => {
@@ -38,14 +44,16 @@ const onCancel = () => {
 
 <template lang="pug">
 div(class="flex flex-wrap items-center gap-3 rounded-lg border border-gray-200 dark:border-gray-800 p-3")
-  template(v-if="isEditing")
-    u-input(v-model="draftLabel" class="flex-1 min-w-40" placeholder="Название темы" aria-label="Название темы")
-    u-input(v-model="draftDescription" class="flex-1 min-w-40" placeholder="Описание (опционально)" aria-label="Описание темы")
-    div(class="flex gap-2")
-      u-button(color="primary" @click="onSave") Сохранить
-      u-button(color="neutral" variant="ghost" @click="onCancel") Отмена
+  ui-form-dialog(v-model:open="isEditing" title="Редактирование темы")
+    template(#body)
+      div(class="space-y-4")
+        u-input(v-model="draftLabel" class="w-full" placeholder="Название темы" aria-label="Название темы")
+        u-input(v-model="draftDescription" class="w-full" placeholder="Описание (опционально)" aria-label="Описание темы")
+        div(class="flex gap-2")
+          u-button(color="primary" :loading="saving" @click="onSave") Сохранить
+          u-button(color="neutral" variant="ghost" @click="onCancel") Отмена
 
-  template(v-else)
+  div(class="contents")
     div(class="flex-1 min-w-0")
       div(class="text-sm font-medium text-gray-800 dark:text-gray-200") {{ topic.label }}
       div(v-if="topic.description" class="text-xs text-gray-500") {{ topic.description }}

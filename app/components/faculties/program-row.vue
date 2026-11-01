@@ -36,7 +36,7 @@ const startEdit = () => {
 
 const onSave = async () => {
   const name = state.name.trim()
-  if (!name) {
+  if (!name || isSaving.value) {
     return
   }
   isSaving.value = true
@@ -78,24 +78,25 @@ const onDelete = async () => {
 
 <template lang="pug">
 div(class="border-t border-default py-3" :class="{ 'opacity-60': !program.is_active }")
-  div(v-if="isEditing")
-    u-form(:state="state" class="space-y-3" @submit="onSave")
-      div(class="flex flex-wrap items-end gap-3")
-        u-form-field(label="Название" name="name" required class="flex-1 min-w-48")
-          u-input(v-model="state.name" class="w-full")
-        u-form-field(label="Код" name="code" class="w-32")
-          u-input(v-model="state.code" placeholder="09.03.04" class="w-full")
-        u-form-field(label="Уровень" name="level" class="w-44")
-          u-select(v-model="state.level" :items="EDUCATION_LEVELS" value-key="value" label-key="label" class="w-full")
-      div(class="flex items-center justify-between gap-3")
-        div(class="flex items-center gap-2")
-          u-switch(v-model="state.is_active")
-          span(class="text-xs text-gray-500") Активно
-        div(class="flex gap-2")
-          u-button(color="neutral" variant="soft" :disabled="isSaving" @click="isEditing = false") Отмена
-          u-button(type="submit" color="primary" :loading="isSaving") Сохранить
+  ui-form-dialog(v-model:open="isEditing" title="Редактирование направления")
+    template(#body)
+      u-form(:state="state" class="space-y-3" @submit="onSave")
+        div(class="flex flex-wrap items-end gap-3")
+          u-form-field(label="Название" name="name" required class="flex-1 min-w-48")
+            u-input(v-model="state.name" class="w-full")
+          u-form-field(label="Код" name="code" class="w-32")
+            u-input(v-model="state.code" placeholder="09.03.04" class="w-full")
+          u-form-field(label="Уровень" name="level" class="w-44")
+            u-select(v-model="state.level" :items="EDUCATION_LEVELS" value-key="value" label-key="label" class="w-full")
+        div(class="flex items-center justify-between gap-3")
+          div(class="flex items-center gap-2")
+            u-switch(v-model="state.is_active")
+            span(class="text-xs text-gray-500") Активно
+          div(class="flex gap-2")
+            u-button(color="neutral" variant="soft" :disabled="isSaving" @click="isEditing = false") Отмена
+            u-button(type="submit" color="primary" :loading="isSaving") Сохранить
 
-  div(v-else class="flex items-center gap-3")
+  div( class="flex items-center gap-3")
     div(class="flex-1 min-w-0")
       div(class="flex items-center gap-2 flex-wrap")
         span(class="text-sm font-medium text-gray-800 dark:text-gray-200") {{ program.name }}

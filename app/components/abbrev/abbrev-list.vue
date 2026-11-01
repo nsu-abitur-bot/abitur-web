@@ -112,7 +112,7 @@ ui-box(:title="`Сокращения (${items.length})`")
       @updated="refresh"
     )
 
-  u-slideover(v-model:open="isCreateModalOpen" title="Новая аббревиатура")
+  ui-form-dialog(v-model:open="isCreateModalOpen" title="Новая аббревиатура")
     template(#body)
       abbrev-form(
         @submit="handleCreated"

@@ -27,6 +27,8 @@ async function remove(id: number) {
   topics.value = topics.value.map(item => item.id === id ? { ...item, is_active: false } : item)
 }
 
+const createOpen = ref(false)
+const saving = ref(false)
 const newTopicLabel = ref("")
 const newTopicDescription = ref("")
 const toast = useToast()
@@ -49,21 +51,25 @@ const inactiveTopics = computed(() => topics.value.filter(t => !t.is_active))
 
 const addTopic = async () => {
   const label = newTopicLabel.value.trim()
-  if (!label) {
+  if (!label || saving.value) {
     return
   }
 
+  saving.value = true
   try {
     await create({
       label,
       description: newTopicDescription.value.trim() || null,
       is_active: true,
     })
+    createOpen.value = false
     newTopicLabel.value = ""
     newTopicDescription.value = ""
     toast.add({ title: "Тема добавлена", color: "success" })
   } catch {
     toast.add({ title: "Ошибка", description: "Не удалось добавить тему", color: "error" })
+  } finally {
+    saving.value = false
   }
 }
 
@@ -71,8 +77,10 @@ const saveTopic = async (id: number, label: string, description?: string | null)
   try {
     await update(id, { label, description: description ?? null })
     toast.add({ title: "Тема обновлена", color: "success" })
+    return true
   } catch {
     toast.add({ title: "Ошибка", description: "Не удалось обновить тему", color: "error" })
+    return false
   }
 }
 
@@ -101,21 +109,24 @@ section(class="admin-panel p-6")
   p(class="text-sm admin-muted mb-4")
     | Темы используются для классификации сообщений и в разделе статистики.
 
-  div(class="flex flex-wrap items-end gap-3 mb-4")
-    u-form-field(label="Новая тема" class="w-full sm:w-auto flex-1 min-w-40")
-      u-input(
-        v-model="newTopicLabel"
-        placeholder="Например: Общежитие"
-        class="w-full"
-        @keydown.enter.prevent="addTopic"
-      )
-    u-form-field(label="Описание" class="w-full sm:w-auto flex-1 min-w-40")
-      u-input(
-        v-model="newTopicDescription"
-        placeholder="Опционально"
-        class="w-full"
-      )
-    u-button(color="primary" class="h-10" @click="addTopic") Добавить
+  u-button(class="mb-4" @click="createOpen = true") Добавить тему
+  ui-form-dialog(v-model:open="createOpen" title="Новая тема")
+    template(#body)
+      div(class="space-y-4")
+        u-form-field(label="Новая тема" class="w-full sm:w-auto flex-1 min-w-40")
+          u-input(
+            v-model="newTopicLabel"
+            placeholder="Например: Общежитие"
+            class="w-full"
+            @keydown.enter.prevent="addTopic"
+          )
+        u-form-field(label="Описание" class="w-full sm:w-auto flex-1 min-w-40")
+          u-input(
+            v-model="newTopicDescription"
+            placeholder="Опционально"
+            class="w-full"
+          )
+        u-button(color="primary" class="h-10" :loading="saving" @click="addTopic") Добавить
 
   ui-empty-state(v-if="isLoading && !topics.length" kind="loading" title="Загрузка тем…")
   ui-empty-state(v-else-if="loadError" kind="error" title="Не удалось загрузить темы")
@@ -128,7 +139,7 @@ section(class="admin-panel p-6")
       v-for="topic in activeTopics"
       :key="topic.id"
       :topic="topic"
-      @save="saveTopic"
+      :save="saveTopic"
       @remove="deactivateTopic"
     )
 

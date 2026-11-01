@@ -6,8 +6,9 @@ const adding = ref(false)
 <template lang="pug">
 ui-page(title="Материалы")
   template(#actions)
-    u-button(icon="i-lucide-plus" @click="adding = !adding") {{ adding ? 'Закрыть' : 'Добавить материал' }}
-  ui-box(v-show="adding" title="Добавить материал")
-    rag-parser(@success="refreshTrigger++")
+    u-button(icon="i-lucide-plus" @click="adding = true") Добавить материал
+  ui-form-dialog(v-model:open="adding" title="Добавить материал")
+    template(#body)
+      rag-parser(@success="refreshTrigger++; adding = false")
   rag-list(:refresh-trigger="refreshTrigger")
 </template>

@@ -114,7 +114,7 @@ ui-box(:title="`Вопросы (${items.length})`")
     )
 
   // Modal for Creation
-  u-slideover(v-model:open="isCreateModalOpen" title="Новый вопрос")
+  ui-form-dialog(v-model:open="isCreateModalOpen" title="Новый вопрос")
     template(#body)
       faq-form(
         @submit="handleFaqCreated"
