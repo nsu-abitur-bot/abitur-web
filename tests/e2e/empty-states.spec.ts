@@ -15,7 +15,7 @@ async function fixture(context: BrowserContext) {
     "/api/v1/faq": { items: [], total: 0 },
     "/api/v1/abbrev": { items: [], total: 0 },
     "/api/v1/faculties": [],
-    "/api/v1/messages": [],
+    "/api/v1/messages/page": { items: [], total: 0, limit: 25, offset: 0 },
     "/api/v1/logs/session/local-session": { logs: [] },
     "/api/v1/feedback": { reports: [], total: 0 },
     "/api/v1/topics/": { topics: [] },
@@ -51,6 +51,12 @@ async function fixture(context: BrowserContext) {
       return route.fulfill({ status: 503, headers, json: { detail: "Local fixture unavailable" } })
     }
     if (route.request().method() === "GET" && Object.hasOwn(fixtures, url.pathname)) {
+      if (url.pathname === "/api/v1/messages/page") {
+        const result = (overrides[url.pathname] ?? fixtures[url.pathname]) as { items: { user_text: string }[] }
+        const search = url.searchParams.get("search")?.toLowerCase()
+        const items = result.items.filter(item => !search || item.user_text.toLowerCase().includes(search))
+        return route.fulfill({ headers, json: { items, total: items.length, limit: 25, offset: 0 } })
+      }
       return route.fulfill({ headers, json: overrides[url.pathname] ?? fixtures[url.pathname] })
     }
     if (url.pathname === "/api/v1/rag/debug/query" && route.request().method() === "POST") {
@@ -100,7 +106,7 @@ for (const [url, endpoint, title] of [
   ["/faq", "/api/v1/faq", "Вопросов пока нет"],
   ["/abbrev", "/api/v1/abbrev", "Аббревиатур пока нет"],
   ["/faculties", "/api/v1/faculties", "Факультетов пока нет"],
-  ["/messages", "/api/v1/messages", "Сообщений пока нет"],
+  ["/messages", "/api/v1/messages/page", "Сообщений пока нет"],
   ["/feedback", "/api/v1/feedback", "Обращений пока нет"],
   ["/system-logs", "/api/v1/system-logs/files", "Файлов логов пока нет"],
   ["/settings?section=topics", "/api/v1/topics/", "Тем пока нет"],
@@ -197,7 +203,7 @@ test("connections empty snapshot hides during held refresh, failure and retry", 
 
 test("message filtering resets and empty session logs stay inside the detail panel", async ({ page, context }, testInfo) => {
   const local = await fixture(context)
-  local.overrides["/api/v1/messages"] = [message]
+  local.overrides["/api/v1/messages/page"] = { items: [message], total: 1, limit: 25, offset: 0 }
   await page.goto("/messages")
   await page.getByRole("textbox", { name: "Поиск сообщений" }).fill("несуществующее")
   await expect(page.getByText("Ничего не найдено", { exact: true })).toBeVisible()
