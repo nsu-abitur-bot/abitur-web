@@ -174,7 +174,6 @@ div(class="admin-panel p-4" :class="{ 'opacity-70': !faculty.is_active }")
     div(class="flex items-center justify-between")
       span(class="text-sm font-medium text-gray-600 dark:text-gray-400") Направления подготовки ({{ programs.length }})
       u-button(
-        v-if="!isAddingProgram"
         icon="i-heroicons-plus"
         color="primary"
         variant="soft"
