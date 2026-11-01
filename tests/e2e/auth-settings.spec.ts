@@ -233,3 +233,43 @@ for (const mobile of [false, true]) {
     })
   }
 }
+
+test("DeepSeek exposes only chat and graph checks without saving the secret draft", async ({ page, context }, testInfo) => {
+  const fixture = await mockSettings(context)
+  const checks: { revision: number, changes: Record<string, string | null>, target: string }[] = []
+  await context.route("**/api/v1/settings/instance", route => route.fulfill({ json: {
+    revision: 7,
+    encryption_ready: true,
+    settings: [
+      { key: "DEEPSEEK_API_KEY", label: "API-ключ", group: "DeepSeek", choices: [], kind: "text", secret: true, configured: true, value: null },
+      { key: "DEEPSEEK_BASE_URL", label: "Адрес API", group: "DeepSeek", choices: [], kind: "url", secret: false, configured: false, value: "" },
+      { key: "DEEPSEEK_MODEL", label: "Ответы и обработка текста", group: "DeepSeek", choices: [], kind: "text", secret: false, configured: true, value: "deepseek-flash" },
+      { key: "DEEPSEEK_GRAPH_MODEL", label: "Построение графа", group: "DeepSeek", choices: [], kind: "text", secret: false, configured: true, value: "deepseek-flash" },
+    ],
+  } }))
+  await context.route("**/api/v1/settings/instance/check", (route) => {
+    checks.push(route.request().postDataJSON())
+    return route.fulfill({ json: { message: "Подключение и доступ к модели проверены" } })
+  })
+  await page.goto("/settings?section=connections")
+  await expect(page.locator("#instance-DEEPSEEK_API_KEY")).toHaveValue("")
+  await expect(page.locator("#instance-DEEPSEEK_API_KEY")).toHaveAttribute("type", "password")
+  await page.locator("#instance-DEEPSEEK_API_KEY").fill("local-test-deepseek-draft")
+  const chat = page.getByRole("button", { name: "Проверить: ответы", exact: true })
+  const graph = page.getByRole("button", { name: "Проверить: граф", exact: true })
+  await expect(chat).toBeVisible()
+  await expect(graph).toBeVisible()
+  await expect(page.getByRole("button", { name: /Проверить: (документы|эмбеддинги)/ })).toHaveCount(0)
+  await chat.click()
+  await expect(page.getByText(/Изменения пока не сохранены/)).toBeVisible()
+  await graph.click()
+  await expect.poll(() => checks.length).toBe(2)
+  expect(checks).toEqual(["deepseek:chat", "deepseek:graph"].map(target => ({
+    revision: 7,
+    changes: { DEEPSEEK_API_KEY: "local-test-deepseek-draft" },
+    target,
+  })))
+  expect(fixture.puts).toEqual([])
+  await expect(page.locator("#instance-DEEPSEEK_API_KEY")).toHaveValue("local-test-deepseek-draft")
+  await page.screenshot({ path: testInfo.outputPath("deepseek-settings.png"), fullPage: true })
+})

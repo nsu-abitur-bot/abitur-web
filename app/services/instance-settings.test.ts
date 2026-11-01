@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import type { InstanceSetting, InstanceSettings } from "./instance-settings"
-import { collectChanges, isRevisionConflict, rebaseSettings } from "./instance-settings"
+import { collectChanges, connectionPurposes, isRevisionConflict, rebaseSettings } from "./instance-settings"
 
 const settings: InstanceSetting[] = [
   { key: "BOT_TOKEN", label: "Token", group: "Telegram", kind: "text", choices: [], secret: true, configured: true, value: null },
@@ -46,5 +46,22 @@ describe("revision rebase", () => {
       expect(isRevisionConflict(error)).toBe(true)
     }
     expect(isRevisionConflict(new Error("network"))).toBe(false)
+  })
+})
+
+describe("connectionPurposes", () => {
+  const model = (group: string, suffix: string): InstanceSetting => ({ key: `${group.toUpperCase()}_${suffix}`, group, label: suffix, kind: "text", choices: [], secret: false, configured: true, value: "model" })
+
+  it("offers DeepSeek chat and graph without unsupported vision or embeddings", () => {
+    const schema = [model("DeepSeek", "MODEL"), model("DeepSeek", "GRAPH_MODEL"), model("Gemini", "MODEL_VISION")]
+    expect(connectionPurposes(schema, "DeepSeek").map(purpose => purpose.value)).toEqual(["chat", "graph"])
+  })
+
+  it("preserves all checks for Gemini and OpenAI when exposed by the schema", () => {
+    for (const group of ["Gemini", "OpenAI"]) {
+      const schema = ["MODEL", "GRAPH_MODEL", "MODEL_VISION", "EMBEDDING_MODEL", "GRAPH_EMBEDDING_MODEL"].map(suffix => model(group, suffix))
+      expect(connectionPurposes(schema, group).map(purpose => purpose.value)).toEqual(["chat", "graph", "vision", "embedding", "graph_embedding"])
+      expect(connectionPurposes(schema, "Telegram")).toEqual([])
+    }
   })
 })
