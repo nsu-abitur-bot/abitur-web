@@ -76,8 +76,8 @@ const hasAnyProblem = computed(() => hasLightragProblem.value || hasNoEntities.v
 </script>
 
 <template lang="pug">
-u-modal(v-model:open="open" title="Диагностика документа")
-  template(#body)
+ui-detail-dialog(v-model:open="open" title="Диагностика документа")
+  template(#default)
     div(v-if="isLoading" class="py-10 flex justify-center text-gray-500")
       u-icon(name="i-heroicons-arrow-path" class="animate-spin w-8 h-8")
 

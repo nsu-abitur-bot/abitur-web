@@ -251,9 +251,8 @@ div(class="space-y-4 min-w-0")
     div(v-if="total > pageSize" class="messages-pagination")
       u-pagination(v-model:page="page" :items-per-page="pageSize" :total="total" :disabled="status === 'pending'" :sibling-count="1")
 
-    u-slideover(v-model:open="isLogsOpen" title="Детальные логи сессии" :description="selectedSessionId ?? ''")
-      template(#body)
-        messages-logs-viewer(v-if="selectedSessionId" :key="selectedSessionId" :session-id="selectedSessionId")
+    ui-detail-dialog(v-model:open="isLogsOpen" title="Детальные логи сессии" :description="selectedSessionId ?? ''")
+      messages-logs-viewer(v-if="selectedSessionId" :key="selectedSessionId" :session-id="selectedSessionId")
 </template>
 
 <style scoped>
