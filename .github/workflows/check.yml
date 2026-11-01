@@ -25,7 +25,7 @@ jobs:
       - run: task check
       - run: task types:verify
       - run: task build
-      - run: bunx --no-install playwright install --with-deps chromium
+      - run: bunx --no-install playwright install --with-deps chromium webkit
       - run: task e2e
       - uses: actions/upload-artifact@v4
         if: always()

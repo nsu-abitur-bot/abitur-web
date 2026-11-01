@@ -50,6 +50,13 @@
   background: var(--admin-sidebar);
   border-right: 1px solid var(--admin-rule);
   overflow-y: auto;
+
+  /* Keep native wheel, touch and keyboard scrolling without a system gutter. */
+  scrollbar-width: none;
+}
+
+.admin-sidebar::-webkit-scrollbar {
+  display: none;
 }
 
 .admin-brand {
