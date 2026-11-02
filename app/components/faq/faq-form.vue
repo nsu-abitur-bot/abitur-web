@@ -68,35 +68,6 @@ u-form(:state="state" class="space-y-4" @submit="onSubmit")
   u-form-field(label="Вопрос" name="question" required class="w-full")
     u-input(v-model="state.question" placeholder="Например: Как подать документы?" class="w-full")
 
-  u-form-field(label="Синонимы" name="aliases" help="Помогает боту лучше понимать похожие вопросы" class="w-full")
-    div(class="flex flex-wrap gap-2 mb-2")
-      u-badge(
-        v-for="alias in state.aliases"
-        :key="alias"
-        color="primary"
-        variant="subtle"
-        class="flex items-center gap-1"
-      )
-        span {{ alias }}
-        u-button(
-          :aria-label="`Удалить синоним ${alias}`"
-          icon="i-heroicons-x-mark"
-          color="neutral"
-          variant="link"
-          size="xs"
-          :padded="false"
-          @click="removeAlias(alias)"
-        )
-
-    div(class="flex gap-2")
-      u-input(
-        v-model="newAlias"
-        placeholder="Добавить синоним..."
-        class="flex-1"
-        @keydown.enter.prevent="addAlias"
-      )
-      u-button(color="neutral" variant="outline" @click="addAlias") Добавить
-
   u-form-field(label="Ответ" name="answer" required class="w-full")
     u-textarea(
       v-model="state.answer"
@@ -104,6 +75,37 @@ u-form(:state="state" class="space-y-4" @submit="onSubmit")
       placeholder="Напишите ответ..."
       class="w-full"
     )
+
+  details
+    summary(class="cursor-pointer text-sm admin-muted") Другие формулировки вопроса ({{ state.aliases?.length ?? 0 }})
+    u-form-field(label="Синонимы" name="aliases" class="w-full mt-3")
+      div(class="flex flex-wrap gap-2 mb-2")
+        u-badge(
+          v-for="alias in state.aliases"
+          :key="alias"
+          color="primary"
+          variant="subtle"
+          class="flex items-center gap-1"
+        )
+          span {{ alias }}
+          u-button(
+            :aria-label="`Удалить синоним ${alias}`"
+            icon="i-heroicons-x-mark"
+            color="neutral"
+            variant="link"
+            size="xs"
+            :padded="false"
+            @click="removeAlias(alias)"
+          )
+
+      div(class="flex gap-2")
+        u-input(
+          v-model="newAlias"
+          placeholder="Добавить синоним..."
+          class="flex-1"
+          @keydown.enter.prevent="addAlias"
+        )
+        u-button(color="neutral" variant="outline" @click="addAlias") Добавить
 
   div.admin-modal-form-actions(class="flex justify-end gap-3 pt-2")
     u-button(color="neutral" variant="soft" :disabled="isLoading" @click="emit('cancel')") Отмена

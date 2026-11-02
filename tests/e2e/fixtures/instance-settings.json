@@ -1,0 +1,916 @@
+{
+  "revision": 7,
+  "encryption_ready": true,
+  "settings": [
+    {
+      "key": "UNIVERSITY_PROFILE",
+      "label": "Профиль вуза",
+      "group": "Вуз",
+      "choices": [
+        "nsu",
+        "custom"
+      ],
+      "kind": "text",
+      "secret": false,
+      "configured": true,
+      "value": "nsu"
+    },
+    {
+      "key": "UNIVERSITY_SHORT_NAME",
+      "label": "Краткое название",
+      "group": "Вуз",
+      "choices": [],
+      "kind": "text",
+      "secret": false,
+      "configured": false,
+      "value": ""
+    },
+    {
+      "key": "UNIVERSITY_FULL_NAME",
+      "label": "Полное название",
+      "group": "Вуз",
+      "choices": [],
+      "kind": "text",
+      "secret": false,
+      "configured": false,
+      "value": ""
+    },
+    {
+      "key": "ASSISTANT_NAME",
+      "label": "Имя помощника",
+      "group": "Вуз",
+      "choices": [],
+      "kind": "text",
+      "secret": false,
+      "configured": false,
+      "value": ""
+    },
+    {
+      "key": "UNIVERSITY_WEBSITE",
+      "label": "Сайт",
+      "group": "Вуз",
+      "choices": [],
+      "kind": "url",
+      "secret": false,
+      "configured": false,
+      "value": ""
+    },
+    {
+      "key": "ADMISSIONS_EMAIL",
+      "label": "Почта приёмной комиссии",
+      "group": "Вуз",
+      "choices": [],
+      "kind": "text",
+      "secret": false,
+      "configured": false,
+      "value": ""
+    },
+    {
+      "key": "ADMISSIONS_PHONE",
+      "label": "Телефон приёмной комиссии",
+      "group": "Вуз",
+      "choices": [],
+      "kind": "text",
+      "secret": false,
+      "configured": false,
+      "value": ""
+    },
+    {
+      "key": "ADMISSIONS_ADDRESS",
+      "label": "Адрес приёмной комиссии",
+      "group": "Вуз",
+      "choices": [],
+      "kind": "text",
+      "secret": false,
+      "configured": false,
+      "value": ""
+    },
+    {
+      "key": "UNIVERSITY_LOGO_URL",
+      "label": "Логотип",
+      "group": "Вуз",
+      "choices": [],
+      "kind": "url",
+      "secret": false,
+      "configured": false,
+      "value": ""
+    },
+    {
+      "key": "UNIVERSITY_ACCENT_COLOR",
+      "label": "Акцентный цвет",
+      "group": "Вуз",
+      "choices": [],
+      "kind": "text",
+      "secret": false,
+      "configured": true,
+      "value": "#4b4bd2"
+    },
+    {
+      "key": "OPENAI_API_KEY",
+      "label": "API-ключ",
+      "group": "OpenAI",
+      "choices": [],
+      "kind": "text",
+      "secret": true,
+      "configured": true,
+      "value": null
+    },
+    {
+      "key": "OPENAI_BASE_URL",
+      "label": "Адрес API (пусто — официальный)",
+      "group": "OpenAI",
+      "choices": [],
+      "kind": "url",
+      "secret": false,
+      "configured": false,
+      "value": ""
+    },
+    {
+      "key": "OPENAI_MODEL",
+      "label": "Ответы и обработка текста",
+      "group": "OpenAI",
+      "choices": [],
+      "kind": "text",
+      "secret": false,
+      "configured": true,
+      "value": "gpt-4o-mini"
+    },
+    {
+      "key": "OPENAI_GRAPH_MODEL",
+      "label": "Построение графа",
+      "group": "OpenAI",
+      "choices": [],
+      "kind": "text",
+      "secret": false,
+      "configured": true,
+      "value": "gpt-4o-mini"
+    },
+    {
+      "key": "OPENAI_MODEL_VISION",
+      "label": "Обработка PDF и изображений",
+      "group": "OpenAI",
+      "choices": [],
+      "kind": "text",
+      "secret": false,
+      "configured": true,
+      "value": "gpt-5.4-mini"
+    },
+    {
+      "key": "OPENAI_EMBEDDING_MODEL",
+      "label": "Эмбеддинги FAQ",
+      "group": "OpenAI",
+      "choices": [],
+      "kind": "text",
+      "secret": false,
+      "configured": true,
+      "value": "text-embedding-3-small"
+    },
+    {
+      "key": "OPENAI_GRAPH_EMBEDDING_MODEL",
+      "label": "Эмбеддинги графа",
+      "group": "OpenAI",
+      "choices": [],
+      "kind": "text",
+      "secret": false,
+      "configured": true,
+      "value": "text-embedding-3-small"
+    },
+    {
+      "key": "OPENAI_TEMPERATURE",
+      "label": "Температура",
+      "group": "OpenAI",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "0.2"
+    },
+    {
+      "key": "OPENAI_TIMEOUT_SECONDS",
+      "label": "Таймаут, секунд",
+      "group": "OpenAI",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "60"
+    },
+    {
+      "key": "OPENAI_MAX_TOKENS",
+      "label": "Максимум токенов по умолчанию",
+      "group": "OpenAI",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "1024"
+    },
+    {
+      "key": "GEMINI_API_KEY",
+      "label": "API-ключ",
+      "group": "Gemini",
+      "choices": [],
+      "kind": "text",
+      "secret": true,
+      "configured": true,
+      "value": null
+    },
+    {
+      "key": "GEMINI_BASE_URL",
+      "label": "Адрес API (пусто — официальный)",
+      "group": "Gemini",
+      "choices": [],
+      "kind": "url",
+      "secret": false,
+      "configured": false,
+      "value": ""
+    },
+    {
+      "key": "GEMINI_MODEL",
+      "label": "Ответы и обработка текста",
+      "group": "Gemini",
+      "choices": [],
+      "kind": "text",
+      "secret": false,
+      "configured": true,
+      "value": "gemini-3.1-flash-lite-preview"
+    },
+    {
+      "key": "GEMINI_GRAPH_MODEL",
+      "label": "Построение графа",
+      "group": "Gemini",
+      "choices": [],
+      "kind": "text",
+      "secret": false,
+      "configured": true,
+      "value": "gemini-3.1-flash-lite-preview"
+    },
+    {
+      "key": "GEMINI_MODEL_VISION",
+      "label": "Обработка PDF и изображений",
+      "group": "Gemini",
+      "choices": [],
+      "kind": "text",
+      "secret": false,
+      "configured": true,
+      "value": "gemini-2.5-flash"
+    },
+    {
+      "key": "GEMINI_EMBEDDING_MODEL",
+      "label": "Эмбеддинги FAQ",
+      "group": "Gemini",
+      "choices": [],
+      "kind": "text",
+      "secret": false,
+      "configured": true,
+      "value": "gemini-embedding-2-preview"
+    },
+    {
+      "key": "GEMINI_GRAPH_EMBEDDING_MODEL",
+      "label": "Эмбеддинги графа",
+      "group": "Gemini",
+      "choices": [],
+      "kind": "text",
+      "secret": false,
+      "configured": true,
+      "value": "gemini-embedding-2-preview"
+    },
+    {
+      "key": "GEMINI_TEMPERATURE",
+      "label": "Температура",
+      "group": "Gemini",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "0.2"
+    },
+    {
+      "key": "GEMINI_TIMEOUT_SECONDS",
+      "label": "Таймаут, секунд",
+      "group": "Gemini",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "60"
+    },
+    {
+      "key": "DEEPSEEK_API_KEY",
+      "label": "API-ключ",
+      "group": "DeepSeek",
+      "choices": [],
+      "kind": "text",
+      "secret": true,
+      "configured": true,
+      "value": null
+    },
+    {
+      "key": "DEEPSEEK_BASE_URL",
+      "label": "Адрес API (пусто — официальный)",
+      "group": "DeepSeek",
+      "choices": [],
+      "kind": "url",
+      "secret": false,
+      "configured": false,
+      "value": ""
+    },
+    {
+      "key": "DEEPSEEK_MODEL",
+      "label": "Ответы и обработка текста",
+      "group": "DeepSeek",
+      "choices": [],
+      "kind": "text",
+      "secret": false,
+      "configured": true,
+      "value": "deepseek-flash"
+    },
+    {
+      "key": "DEEPSEEK_GRAPH_MODEL",
+      "label": "Построение графа",
+      "group": "DeepSeek",
+      "choices": [],
+      "kind": "text",
+      "secret": false,
+      "configured": true,
+      "value": "deepseek-flash"
+    },
+    {
+      "key": "DEEPSEEK_TEMPERATURE",
+      "label": "Температура",
+      "group": "DeepSeek",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "0.2"
+    },
+    {
+      "key": "DEEPSEEK_TIMEOUT_SECONDS",
+      "label": "Таймаут, секунд",
+      "group": "DeepSeek",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "60"
+    },
+    {
+      "key": "DEEPSEEK_MAX_TOKENS",
+      "label": "Максимум токенов по умолчанию",
+      "group": "DeepSeek",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "1024"
+    },
+    {
+      "key": "OPENAI_SOCKS5_PROXY",
+      "label": "Прокси OpenAI",
+      "group": "OpenAI",
+      "choices": [],
+      "kind": "proxy",
+      "secret": true,
+      "configured": true,
+      "value": null
+    },
+    {
+      "key": "LLM_PROVIDER",
+      "label": "Ответы и обработка текста",
+      "group": "Назначение моделей",
+      "choices": [
+        "openai",
+        "gemini",
+        "deepseek"
+      ],
+      "kind": "text",
+      "secret": false,
+      "configured": true,
+      "value": "gemini"
+    },
+    {
+      "key": "FAQ_EMBEDDING_PROVIDER",
+      "label": "Эмбеддинги FAQ",
+      "group": "Назначение моделей",
+      "choices": [
+        "openai",
+        "gemini"
+      ],
+      "kind": "text",
+      "secret": false,
+      "configured": true,
+      "value": "gemini"
+    },
+    {
+      "key": "LIGHTRAG_LLM_PROVIDER",
+      "label": "Построение графа",
+      "group": "Назначение моделей",
+      "choices": [
+        "openai",
+        "gemini",
+        "deepseek"
+      ],
+      "kind": "text",
+      "secret": false,
+      "configured": true,
+      "value": "gemini"
+    },
+    {
+      "key": "LIGHTRAG_EMBEDDING_PROVIDER",
+      "label": "Эмбеддинги графа",
+      "group": "Назначение моделей",
+      "choices": [
+        "openai",
+        "gemini"
+      ],
+      "kind": "text",
+      "secret": false,
+      "configured": true,
+      "value": "gemini"
+    },
+    {
+      "key": "PDF_PARSER_PROVIDER",
+      "label": "Документы и изображения",
+      "group": "Назначение моделей",
+      "choices": [
+        "openai",
+        "gemini"
+      ],
+      "kind": "text",
+      "secret": false,
+      "configured": true,
+      "value": "openai"
+    },
+    {
+      "key": "BOT_TOKEN",
+      "label": "Токен бота",
+      "group": "Telegram",
+      "choices": [],
+      "kind": "text",
+      "secret": true,
+      "configured": true,
+      "value": null
+    },
+    {
+      "key": "TELEGRAM_ENABLED",
+      "label": "Канал включён",
+      "group": "Telegram",
+      "choices": [],
+      "kind": "boolean",
+      "secret": false,
+      "configured": true,
+      "value": "false"
+    },
+    {
+      "key": "MAX_BOT_TOKEN",
+      "label": "Токен бота",
+      "group": "MAX",
+      "choices": [],
+      "kind": "text",
+      "secret": true,
+      "configured": true,
+      "value": null
+    },
+    {
+      "key": "MAX_ENABLED",
+      "label": "Канал включён",
+      "group": "MAX",
+      "choices": [],
+      "kind": "boolean",
+      "secret": false,
+      "configured": true,
+      "value": "false"
+    },
+    {
+      "key": "TELEGRAM_SOCKS5_PROXY",
+      "label": "Прокси Telegram",
+      "group": "Telegram",
+      "choices": [],
+      "kind": "proxy",
+      "secret": true,
+      "configured": true,
+      "value": null
+    },
+    {
+      "key": "SEED_ADMISSION_SCORES",
+      "label": "Загрузка проходных баллов НГУ при старте",
+      "group": "Обработка и источники",
+      "choices": [],
+      "kind": "boolean",
+      "secret": false,
+      "configured": true,
+      "value": "true"
+    },
+    {
+      "key": "SEED_FACULTIES",
+      "label": "Загрузка справочника НГУ при старте",
+      "group": "Обработка и источники",
+      "choices": [],
+      "kind": "boolean",
+      "secret": false,
+      "configured": true,
+      "value": "true"
+    },
+    {
+      "key": "SEED_ADMISSION_SCORES_FORCE",
+      "label": "Принудительная загрузка баллов при старте",
+      "group": "Обработка и источники",
+      "choices": [],
+      "kind": "boolean",
+      "secret": false,
+      "configured": true,
+      "value": "false"
+    },
+    {
+      "key": "SEED_FACULTIES_FORCE",
+      "label": "Принудительная загрузка справочника при старте",
+      "group": "Обработка и источники",
+      "choices": [],
+      "kind": "boolean",
+      "secret": false,
+      "configured": true,
+      "value": "false"
+    },
+    {
+      "key": "ADMISSION_SCORES_MAX_AGE_HOURS",
+      "label": "Период обновления баллов, часов",
+      "group": "Обработка и источники",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "24"
+    },
+    {
+      "key": "ADMISSION_SCORES_URL",
+      "label": "Источник проходных баллов",
+      "group": "Обработка и источники",
+      "choices": [],
+      "kind": "url",
+      "secret": false,
+      "configured": true,
+      "value": "https://www.nsu.ru/n/education/apply-info/itogi-priema/"
+    },
+    {
+      "key": "MAX_DOCUMENT_SIZE",
+      "label": "Максимальный размер документа, байт",
+      "group": "Обработка и источники",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "52428800"
+    },
+    {
+      "key": "MAX_DOCUMENT_PAGES",
+      "label": "Максимум страниц PDF",
+      "group": "Обработка и источники",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "50"
+    },
+    {
+      "key": "SCHEDULER_ENABLED",
+      "label": "Планировщик списков включён",
+      "group": "Обработка и источники",
+      "choices": [],
+      "kind": "boolean",
+      "secret": false,
+      "configured": true,
+      "value": "true"
+    },
+    {
+      "key": "RATING_POLL_MIN_SECONDS",
+      "label": "Минимальный интервал, секунд",
+      "group": "Обработка и источники",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "300"
+    },
+    {
+      "key": "RATING_POLL_MAX_SECONDS",
+      "label": "Максимальный интервал, секунд",
+      "group": "Обработка и источники",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "1800"
+    },
+    {
+      "key": "RATING_POLL_START_SECONDS",
+      "label": "Начальный интервал, секунд",
+      "group": "Обработка и источники",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "1800"
+    },
+    {
+      "key": "RATING_REQUEST_DELAY",
+      "label": "Пауза между запросами, секунд",
+      "group": "Обработка и источники",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "0.3"
+    },
+    {
+      "key": "RATING_DEGREE",
+      "label": "Уровень обучения",
+      "group": "Обработка и источники",
+      "choices": [],
+      "kind": "text",
+      "secret": false,
+      "configured": true,
+      "value": "bachelor"
+    },
+    {
+      "key": "RATING_TYPES",
+      "label": "Типы конкурсных списков",
+      "group": "Обработка и источники",
+      "choices": [],
+      "kind": "text",
+      "secret": false,
+      "configured": true,
+      "value": "30"
+    },
+    {
+      "key": "RATING_FAILED_LISTS_THRESHOLD",
+      "label": "Допустимая доля ошибок",
+      "group": "Обработка и источники",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "0.2"
+    },
+    {
+      "key": "RATING_MAX_SESSION_REFRESHES",
+      "label": "Повторы сессии",
+      "group": "Обработка и источники",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "3"
+    },
+    {
+      "key": "RATING_USE_MOCK",
+      "label": "Тестовый источник списков",
+      "group": "Обработка и источники",
+      "choices": [],
+      "kind": "boolean",
+      "secret": false,
+      "configured": true,
+      "value": "false"
+    },
+    {
+      "key": "MOCK_RATING_URL",
+      "label": "Адрес тестового источника",
+      "group": "Обработка и источники",
+      "choices": [],
+      "kind": "url",
+      "secret": false,
+      "configured": true,
+      "value": "http://localhost:8001"
+    },
+    {
+      "key": "NOTIFY_SEND_DELAY",
+      "label": "Пауза отправки уведомлений, секунд",
+      "group": "Обработка и источники",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "0.035"
+    },
+    {
+      "key": "BOT_RESTART_DELAY_SECONDS",
+      "label": "Пауза перезапуска канала, секунд",
+      "group": "Обработка и источники",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "5"
+    },
+    {
+      "key": "LIGHTRAG_EMBEDDING_WORKERS",
+      "label": "Параллельные эмбеддинги",
+      "group": "Обработка и источники",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "2"
+    },
+    {
+      "key": "LIGHTRAG_LLM_WORKERS",
+      "label": "Параллельные запросы графа",
+      "group": "Обработка и источники",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "1"
+    },
+    {
+      "key": "PROFILE_CHAT_MAX_TOKENS",
+      "label": "Ответы: Максимум токенов",
+      "group": "Параметры вызовов",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "1500"
+    },
+    {
+      "key": "PROFILE_CHAT_TIMEOUT",
+      "label": "Ответы: Таймаут, секунд",
+      "group": "Параметры вызовов",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "45"
+    },
+    {
+      "key": "PROFILE_CHAT_TEMPERATURE",
+      "label": "Ответы: Температура",
+      "group": "Параметры вызовов",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "0.2"
+    },
+    {
+      "key": "PROFILE_GRAPH_MAX_TOKENS",
+      "label": "Граф знаний: Максимум токенов",
+      "group": "Параметры вызовов",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "8192"
+    },
+    {
+      "key": "PROFILE_GRAPH_TIMEOUT",
+      "label": "Граф знаний: Таймаут, секунд",
+      "group": "Параметры вызовов",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "180"
+    },
+    {
+      "key": "PROFILE_GRAPH_TEMPERATURE",
+      "label": "Граф знаний: Температура",
+      "group": "Параметры вызовов",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "0.1"
+    },
+    {
+      "key": "PROFILE_PARSER_MAX_TOKENS",
+      "label": "Подготовка текста: Максимум токенов",
+      "group": "Параметры вызовов",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "4000"
+    },
+    {
+      "key": "PROFILE_PARSER_TIMEOUT",
+      "label": "Подготовка текста: Таймаут, секунд",
+      "group": "Параметры вызовов",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "90"
+    },
+    {
+      "key": "PROFILE_PARSER_TEMPERATURE",
+      "label": "Подготовка текста: Температура",
+      "group": "Параметры вызовов",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "0.1"
+    },
+    {
+      "key": "PROFILE_VISION_MAX_TOKENS",
+      "label": "Документы: Максимум токенов",
+      "group": "Параметры вызовов",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "8192"
+    },
+    {
+      "key": "PROFILE_VISION_TIMEOUT",
+      "label": "Документы: Таймаут, секунд",
+      "group": "Параметры вызовов",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "240"
+    },
+    {
+      "key": "PROFILE_VISION_TEMPERATURE",
+      "label": "Документы: Температура",
+      "group": "Параметры вызовов",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "0.1"
+    },
+    {
+      "key": "PROFILE_INTENT_MAX_TOKENS",
+      "label": "Классификация: Максимум токенов",
+      "group": "Параметры вызовов",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "50"
+    },
+    {
+      "key": "PROFILE_INTENT_TIMEOUT",
+      "label": "Классификация: Таймаут, секунд",
+      "group": "Параметры вызовов",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "15"
+    },
+    {
+      "key": "PROFILE_INTENT_TEMPERATURE",
+      "label": "Классификация: Температура",
+      "group": "Параметры вызовов",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "0"
+    },
+    {
+      "key": "PROFILE_TITLE_MAX_TOKENS",
+      "label": "Заголовки: Максимум токенов",
+      "group": "Параметры вызовов",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "100"
+    },
+    {
+      "key": "PROFILE_TITLE_TIMEOUT",
+      "label": "Заголовки: Таймаут, секунд",
+      "group": "Параметры вызовов",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "20"
+    },
+    {
+      "key": "PROFILE_TITLE_TEMPERATURE",
+      "label": "Заголовки: Температура",
+      "group": "Параметры вызовов",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "0.2"
+    },
+    {
+      "key": "PROFILE_EMBEDDING_TIMEOUT",
+      "label": "Эмбеддинги: Таймаут, секунд",
+      "group": "Параметры вызовов",
+      "choices": [],
+      "kind": "number",
+      "secret": false,
+      "configured": true,
+      "value": "60"
+    }
+  ]
+}

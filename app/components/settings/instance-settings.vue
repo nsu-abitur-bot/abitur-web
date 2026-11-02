@@ -3,6 +3,8 @@ import { onBeforeRouteLeave } from "vue-router"
 
 import type { InstanceSettings } from "~/services/instance-settings"
 import { checkInstanceConnection, collectChanges, connectionPurposes, getInstanceSettings, isRevisionConflict, rebaseSettings, saveInstanceSettings } from "~/services/instance-settings"
+import type { InstanceSection } from "~/utils/instance-settings-layout"
+import { instanceGroup, instanceSection, instanceSections, isAdvancedSetting, isBrandingSetting } from "~/utils/instance-settings-layout"
 
 const { refresh: refreshUniversity } = useUniversityIdentity()
 const { refresh: refreshBranding } = useBranding()
@@ -12,20 +14,23 @@ const snapshot = ref<InstanceSettings | null>(null)
 const authToken = useAuthToken()
 const draft = ref<Record<string, string>>({})
 const removed = reactive(new Set<string>())
-const selectedGroup = ref("Назначение моделей")
+const selectedSection = ref<InstanceSection>("Модели")
 const busy = ref(false)
 const conflict = ref(false)
 const review = ref<string[]>([])
 const message = ref("")
 const error = ref("")
-const brandKeys = new Set(["UNIVERSITY_SHORT_NAME", "UNIVERSITY_FULL_NAME", "UNIVERSITY_LOGO_URL", "UNIVERSITY_ACCENT_COLOR"])
-function groupFor(key: string, group: string) {
-  return brandKeys.has(key) ? "Оформление вуза" : key === "UNIVERSITY_PROFILE" ? "Технический профиль" : group === "Вуз" || group === "Университет" ? "" : group
+const groups = computed(() => [...new Set(snapshot.value?.settings.filter(s => instanceSection(s) === selectedSection.value && !isBrandingSetting(s)).map(instanceGroup) ?? [])].sort((a, b) => Number(b === "Назначение моделей") - Number(a === "Назначение моделей")))
+function isCollapsible(group: string) {
+  return selectedSection.value === "Дополнительно" || (selectedSection.value === "Модели" && group !== "Назначение моделей") || group === "Контакты и помощник"
 }
-const groups = computed(() => [...new Set(snapshot.value?.settings.map(s => groupFor(s.key, s.group)).filter(Boolean) ?? [])].sort((a, b) => Number(b === "Оформление вуза") - Number(a === "Оформление вуза") || Number(a === "Технический профиль") - Number(b === "Технический профиль")))
-const visibleSettings = computed(() => snapshot.value?.settings.filter(s => groupFor(s.key, s.group) === selectedGroup.value) ?? [])
+function settingsFor(group: string, advanced = false) {
+  return snapshot.value?.settings.filter(s => instanceSection(s) === selectedSection.value && instanceGroup(s) === group && !isBrandingSetting(s) && (selectedSection.value === "Дополнительно" ? !advanced : isAdvancedSetting(s) === advanced)) ?? []
+}
 const changes = computed(() => collectChanges(snapshot.value?.settings ?? [], draft.value, removed))
-const availableChecks = computed(() => connectionPurposes(snapshot.value?.settings ?? [], selectedGroup.value))
+function groupChanges(group: string) {
+  return snapshot.value?.settings.filter(s => instanceGroup(s) === group && Object.hasOwn(changes.value, s.key)).length ?? 0
+}
 const changedCount = computed(() => Object.keys(changes.value).length + Number(Boolean(logoFile.value || removeLogo.value)))
 
 const leaveOpen = ref(false)
@@ -65,8 +70,8 @@ function populate(data: InstanceSettings, keepLogo = false) {
     removeLogo.value = false
   }
   snapshot.value = data
-  if (!data.settings.some(setting => groupFor(setting.key, setting.group) === selectedGroup.value)) {
-    selectedGroup.value = groups.value[0] ?? ""
+  if (!data.settings.some(setting => instanceSection(setting) === selectedSection.value)) {
+    selectedSection.value = instanceSections.find(section => data.settings.some(setting => instanceSection(setting) === section)) ?? "Модели"
   }
   for (const key of Object.keys(draft.value)) {
     delete draft.value[key]
@@ -181,12 +186,8 @@ await load()
 
 <template>
   <section class="admin-panel instance-editor" aria-label="Настройки подключений">
-    <p v-if="!['Оформление вуза', 'Технический профиль'].includes(selectedGroup)" class="mb-4 text-sm admin-muted">
-      Модели, Telegram и MAX настраиваются здесь. Сохранённые ключи не отображаются.
-      Проверка модели выполняет небольшой запрос к провайдеру и может расходовать токены.
-    </p>
-    <p v-if="snapshot && !snapshot.encryption_ready && !['Оформление вуза', 'Технический профиль'].includes(selectedGroup)" class="mb-4 text-sm text-amber-700" role="status">
-      Ключ шифрования не настроен. Для сохранения секретов задайте SETTINGS_ENCRYPTION_KEY на сервере.
+    <p v-if="snapshot && !snapshot.encryption_ready && ['Модели', 'Боты'].includes(selectedSection)" class="mb-4 text-sm text-amber-700" role="status">
+      Сохранение секретов недоступно: на сервере не настроен ключ шифрования.
     </p>
     <p v-if="error" class="mb-4 text-sm text-error" role="alert">{{ error }}</p>
     <p v-if="message" class="mb-4 text-sm admin-muted" role="status">{{ message }}</p>
@@ -199,59 +200,48 @@ await load()
       <u-button color="neutral" variant="outline" :loading="busy" @click="load">Обновить</u-button>
     </ui-empty-state>
     <div v-else-if="snapshot?.settings.length" class="instance-workspace">
-      <nav class="admin-subnav instance-groups" aria-label="Разделы подключений">
-        <button v-for="group in groups" :key="group" type="button" :aria-current="selectedGroup === group ? 'page' : undefined" @click="selectedGroup = group">{{ group }}</button>
+      <nav class="instance-sections" aria-label="Разделы подключений">
+        <button v-for="section in instanceSections" :key="section" type="button" :aria-current="selectedSection === section ? 'page' : undefined" @click="selectedSection = section">{{ section }}</button>
       </nav>
-      <div class="space-y-5 min-w-0">
-        <header class="admin-section-header"><h2>{{ selectedGroup }}</h2><span class="admin-muted text-xs">Версия {{ snapshot.revision }}</span></header>
-        <fieldset :disabled="busy" class="space-y-4">
-          <settings-university-branding v-if="selectedGroup === 'Оформление вуза'" v-model:draft="draft" v-model:file="logoFile" v-model:remove="removeLogo" />
-          <p v-if="selectedGroup === 'Технический профиль'" class="text-sm admin-muted">Профиль влияет на стартовое наполнение и возможности НГУ. Смена не удаляет загруженные данные; для другого вуза нужен отдельный экземпляр с чистой базой.</p>
-          <div v-for="setting in selectedGroup === 'Оформление вуза' ? [] : visibleSettings" :key="setting.key" class="instance-field">
-            <label :for="`instance-${setting.key}`" class="block text-sm font-medium">{{ setting.label }}</label>
-            <select v-if="setting.choices.length" :id="`instance-${setting.key}`" v-model="draft[setting.key]" class="instance-control w-full">
-              <option v-for="choice in setting.choices" :key="choice" :value="choice">{{ choice }}</option>
-            </select>
-            <select v-else-if="setting.kind === 'boolean'" :id="`instance-${setting.key}`" v-model="draft[setting.key]" class="instance-control w-full">
-              <option value="true">Включено</option>
-              <option value="false">Выключено</option>
-            </select>
-            <div v-else class="flex flex-wrap gap-2">
-              <input
-                :id="`instance-${setting.key}`" v-model="draft[setting.key]"
-                :type="setting.secret ? 'password' : setting.kind === 'number' ? 'number' : setting.kind === 'url' ? 'url' : 'text'"
-                :step="setting.kind === 'number' ? 'any' : undefined" :disabled="removed.has(setting.key)"
-                :placeholder="setting.secret && setting.configured ? 'Задан — оставьте пустым, чтобы сохранить' : 'Не задан'"
-                :autocomplete="setting.secret ? 'new-password' : 'off'"
-                class="instance-control min-w-40 flex-1"
-              >
-              <u-button v-if="setting.secret && setting.configured" color="neutral" variant="soft" @click="toggleRemoval(setting.key)">
-                {{ removed.has(setting.key) ? 'Отменить удаление' : 'Удалить ключ' }}
-              </u-button>
-            </div>
-            <p v-if="setting.secret" class="text-xs admin-muted">{{ setting.configured ? "Секрет задан. Пустое поле оставляет его без изменений." : "Секрет не задан." }}</p>
-            <p v-if="removed.has(setting.key)" class="text-sm text-amber-700">Ключ будет удалён после сохранения.</p>
-          </div>
+      <div class="instance-content">
+        <header class="instance-heading"><h2>{{ selectedSection }}</h2><span class="admin-muted text-xs" role="status">{{ changedCount ? `Не сохранено: ${changedCount}` : 'Изменений нет' }}</span></header>
+        <fieldset :disabled="busy" class="instance-fields">
+          <settings-university-branding v-if="selectedSection === 'Оформление' && snapshot.settings.some(isBrandingSetting)" v-model:draft="draft" v-model:file="logoFile" v-model:remove="removeLogo" />
+          <template v-for="group in groups" :key="group">
+            <component :is="isCollapsible(group) ? 'details' : 'section'" class="instance-group">
+              <component :is="isCollapsible(group) ? 'summary' : 'h3'" class="instance-group-title">
+                {{ group }}<span v-if="groupChanges(group)" class="instance-draft-mark">Изменено: {{ groupChanges(group) }}</span>
+              </component>
+              <div class="instance-group-body">
+                <p v-if="group === 'Профиль вуза'" class="text-sm admin-muted">Смена профиля не удаляет данные. Для другого вуза нужен отдельный экземпляр с чистой базой.</p>
+                <div class="instance-field-grid">
+                  <settings-instance-field v-for="setting in settingsFor(group)" :key="setting.key" v-model="draft[setting.key]!" :setting="setting" :removed="removed.has(setting.key)" @remove="toggleRemoval(setting.key)" />
+                </div>
+                <details v-if="settingsFor(group, true).length" class="instance-advanced">
+                  <summary>Дополнительно</summary>
+                  <div class="instance-field-grid">
+                    <settings-instance-field v-for="setting in settingsFor(group, true)" :key="setting.key" v-model="draft[setting.key]!" :setting="setting" :removed="removed.has(setting.key)" @remove="toggleRemoval(setting.key)" />
+                  </div>
+                </details>
+                <div v-if="connectionPurposes(snapshot.settings, group).length || ['Telegram', 'MAX'].includes(group)" class="instance-checks">
+                  <p v-if="connectionPurposes(snapshot.settings, group).length" class="text-xs admin-muted">Проверка отправит запрос к модели и может расходовать токены.</p>
+                  <div class="flex flex-wrap gap-2">
+                    <u-button v-if="group === 'Telegram' || group === 'MAX'" :disabled="busy" color="neutral" variant="outline" @click="check(group === 'Telegram' ? 'telegram' : 'max')">Проверить бота</u-button>
+                    <u-button v-for="purpose in connectionPurposes(snapshot.settings, group)" :key="purpose.value" :disabled="busy" color="neutral" variant="outline" @click="check(`${group.toLowerCase()}:${purpose.value}`)">Проверить: {{ purpose.label }}</u-button>
+                  </div>
+                </div>
+                <p v-if="group === 'Назначение моделей'" class="text-xs admin-muted">Смена пространства эмбеддингов при наполненной базе заблокирована до переиндексации.</p>
+              </div>
+            </component>
+          </template>
         </fieldset>
-        <div class="flex flex-wrap gap-2">
-          <template v-if="selectedGroup === 'Telegram' || selectedGroup === 'MAX'">
-            <u-button :disabled="busy" variant="soft" @click="check(selectedGroup === 'Telegram' ? 'telegram' : 'max')">Проверить бота</u-button>
-          </template>
-          <template v-if="availableChecks.length">
-            <u-button v-for="purpose in availableChecks" :key="purpose.value" :disabled="busy" variant="soft" @click="check(`${selectedGroup.toLowerCase()}:${purpose.value}`)">
-              Проверить: {{ purpose.label }}
-            </u-button>
-          </template>
-        </div>
         <div class="admin-toolbar instance-savebar">
           <u-button :disabled="busy || !changedCount || conflict" :loading="busy" @click="save">Сохранить изменения{{ changedCount ? ` (${changedCount})` : '' }}</u-button>
           <u-modal title="Отменить изменения?" description="Несохранённый черновик будет заменён текущими значениями сервера.">
             <u-button variant="ghost" color="neutral" :disabled="busy || !changedCount">Отменить правки</u-button>
             <template #footer="{ close }"><u-button color="neutral" variant="ghost" @click="close">Продолжить редактирование</u-button><u-button @click="load(); close()">Отменить правки</u-button></template>
           </u-modal>
-          <span class="admin-muted text-xs">{{ changedCount ? 'Есть несохранённые изменения' : 'Изменений нет' }}</span>
         </div>
-        <p v-if="!['Оформление вуза', 'Технический профиль'].includes(selectedGroup)" class="text-sm admin-muted">Смену пространства эмбеддингов при наполненной базе система блокирует до переиндексации. CRAG, FAQ и лимиты запросов доступны в разделе «Правила и лимиты».</p>
       </div>
     </div>
     <u-button v-else :loading="busy" variant="soft" @click="load">Загрузить настройки</u-button>
@@ -262,18 +252,7 @@ await load()
 </template>
 
 <style>
-.instance-editor {
-  padding: 24px;
-}
-
-.instance-field {
-  display: grid;
-  gap: 6px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid var(--ui-border);
-}
-
-.instance-control {
+.instance-editor .instance-control {
   background: var(--ui-bg);
   color: var(--ui-text);
   border: 1px solid var(--ui-border);
@@ -281,43 +260,116 @@ await load()
   padding: 8px 10px;
   font-size: 14px;
 }
+</style>
 
-.instance-workspace {
+<style scoped>
+.instance-editor {
+  padding: 24px;
+}
+
+.instance-workspace,
+.instance-content,
+.instance-fields {
   display: grid;
-  grid-template-columns: 200px minmax(0, 1fr);
-  gap: 28px;
+  gap: 24px;
+  min-width: 0;
 }
 
-.instance-groups {
+.instance-sections {
   display: flex;
-  flex-direction: column;
-  align-self: start;
+  flex-wrap: wrap;
   gap: 4px;
+  border-bottom: 1px solid var(--ui-border);
+  padding-bottom: 12px;
 }
 
-.instance-groups button {
-  text-align: left;
-  padding: 10px 12px;
+.instance-sections button {
+  padding: 8px 12px;
   border-radius: 8px;
   font-size: 14px;
 }
 
-.instance-groups button[aria-current="page"] {
+.instance-sections button[aria-current="page"] {
   color: var(--ui-primary);
   background: var(--ui-bg-elevated);
+  font-weight: 600;
+}
+
+.instance-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.instance-heading h2 {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.instance-group {
+  min-width: 0;
+  border-bottom: 1px solid var(--ui-border);
+  padding-bottom: 20px;
+}
+
+.instance-group-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+summary {
+  cursor: pointer;
+}
+
+.instance-group-body {
+  display: grid;
+  gap: 20px;
+  padding-top: 20px;
+}
+
+.instance-field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px 24px;
+}
+
+.instance-advanced {
+  color: var(--ui-text-muted);
+  font-size: 14px;
+}
+
+.instance-advanced .instance-field-grid {
+  padding-top: 20px;
+  color: var(--ui-text);
+}
+
+.instance-checks {
+  display: grid;
+  gap: 10px;
+}
+
+.instance-draft-mark {
+  display: inline-block;
+  margin-left: 12px;
+  font-size: 12px;
+  color: var(--ui-primary);
+  font-weight: 400;
 }
 
 .instance-savebar {
-  border-top: 1px solid var(--ui-border);
-  padding-top: 20px;
+  border: 0;
+  padding: 0;
 }
+
 @media (width < 768px) {
-  .instance-workspace {
-    grid-template-columns: 1fr;
+  .instance-editor {
+    padding: 16px;
   }
 
-  .instance-groups {
-    flex-flow: row wrap;
+  .instance-field-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 </style>
