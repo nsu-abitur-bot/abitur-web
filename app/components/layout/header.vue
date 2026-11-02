@@ -37,6 +37,7 @@ const groups = computed<{ title?: string, items: NavItem[] }[]>(() => [
         ["Готовые ответы", "/faq", "i-lucide-messages-square"],
         ["Сокращения", "/abbrev", "i-lucide-text"],
         ["Факультеты", "/faculties", "i-lucide-graduation-cap"],
+        ["Проходные баллы", "/admission-scores", "i-lucide-chart-column"],
       ]
     : [] },
   { items: isAdmin.value ? [["Проверка ответа", "/rag/inspector", "i-lucide-search"], ["Автооценка", "/testing", "i-lucide-flask-conical"]] : [] },
