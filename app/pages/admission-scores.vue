@@ -100,8 +100,8 @@ ui-page(title="Проходные баллы прошлых лет")
   div(class="space-y-4")
     ui-box(title="Добавить или обновить балл")
       p(class="text-sm text-gray-500 mb-4") Выберите направление из справочника. Повторная запись для того же года и формы обновит балл.
-      div(v-if="facultiesStatus === 'pending'" class="text-sm text-gray-500") Загружаем направления…
-      div(v-else-if="facultiesError" class="admin-empty" role="alert") Не удалось загрузить направления.
+      ui-empty-state(v-if="facultiesStatus === 'pending'" kind="loading" title="Загружаем направления…")
+      ui-empty-state(v-else-if="facultiesError" kind="error" title="Не удалось загрузить направления.")
       u-form(v-else :state="state" class="space-y-4" @submit="saveScore")
         div(class="grid gap-3 md:grid-cols-2")
           u-form-field(label="Факультет" name="faculty_id" required)
@@ -121,11 +121,10 @@ ui-page(title="Проходные баллы прошлых лет")
           u-button(type="submit" color="primary" :loading="isSaving") Сохранить балл
 
     ui-box(title="Сохранённые баллы")
-      div(v-if="scoresStatus === 'pending'" class="text-sm text-gray-500") Загружаем баллы…
-      div(v-else-if="scoresError" class="admin-empty" role="alert")
-        p Не удалось загрузить баллы.
+      ui-empty-state(v-if="scoresStatus === 'pending'" kind="loading" title="Загружаем баллы…")
+      ui-empty-state(v-else-if="scoresError" kind="error" title="Не удалось загрузить баллы.")
         u-button(variant="outline" @click="() => refresh()") Повторить
-      div(v-else-if="scores.length === 0" class="admin-empty") Баллы пока не добавлены.
+      ui-empty-state(v-else-if="scores.length === 0" title="Баллы пока не добавлены.")
       div(v-else class="max-h-[36rem] overflow-auto")
         table(class="w-full text-sm text-left")
           thead(class="sticky top-0 bg-white dark:bg-gray-900")

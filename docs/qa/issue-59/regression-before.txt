@@ -1,0 +1,33 @@
+Baseline: origin/main 5374974; production build; local fake API only.
+Four new parity tests failed before the fix (1399/390 px, light/dark).
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 6
+
+      Object {
+        "actions": 0,
+        "color": "rgb(100, 108, 124)",
+    -   "frames": Array [],
+    +   "frames": Array [
+    +     Object {
+    +       "background": "rgb(255, 255, 255)",
+    +       "border": "1px solid rgb(226, 229, 236)",
+    +     },
+    +   ],
+        "gap": "12px",
+        "height": 208,
+        "icon": "iconify i-lucide-inbox admin-empty-icon",
+        "padding": "32px 16px",
+      }
+
+      360 |         await page.screenshot({ path: testInfo.outputPath(`${name}-${theme}-${width}.png`), fullPage: true })
+      361 |       }
+    > 362 |       expect(presentations[0]).toEqual(presentations[1])
+          |                                ^
+      363 |       expect(local.unexpected).toEqual([])
+      364 |     })
+      365 |   }
+        at tests/e2e/empty-states.spec.ts:362:32
+

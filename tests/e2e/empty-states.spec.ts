@@ -2,7 +2,7 @@ import type { BrowserContext } from "@playwright/test"
 import { expect, test } from "@playwright/test"
 
 // Every API response is local; unknown endpoints and mutations fail closed.
-async function fixture(context: BrowserContext) {
+async function fixture(context: BrowserContext, theme = "light") {
   const overrides: Record<string, unknown> = {}
   const failures = new Set<string>()
   const unexpected: string[] = []
@@ -16,6 +16,7 @@ async function fixture(context: BrowserContext) {
     "/api/v1/faq": { items: [], total: 0 },
     "/api/v1/abbrev": { items: [], total: 0 },
     "/api/v1/faculties": [],
+    "/api/v1/admission-scores": [],
     "/api/v1/messages/page": { items: [], total: 0, limit: 25, offset: 0 },
     "/api/v1/logs/session/local-session": { logs: [] },
     "/api/v1/feedback": { reports: [], total: 0 },
@@ -35,7 +36,7 @@ async function fixture(context: BrowserContext) {
     "/api/v1/stats/topics": [],
   }
   await context.addCookies([{ name: "abitur-token", value: "e2e-session", domain: "127.0.0.1", path: "/" }])
-  await context.addInitScript(() => localStorage.setItem("nuxt-color-mode", "light"))
+  await context.addInitScript(theme => localStorage.setItem("nuxt-color-mode", theme), theme)
   await context.route("**/*", async (route) => {
     const url = new URL(route.request().url())
     if (url.hostname !== "127.0.0.1" || !["9464", "9465"].includes(url.port)) {
@@ -83,6 +84,7 @@ const routes = [
   ["evaluation", "/testing", "Результатов оценки пока нет"],
   ["stats", "/stats", "Нет данных по вопросам"],
   ["document", "/rag/document/empty", "Содержимого пока нет"],
+  ["scores", "/admission-scores", "Баллы пока не добавлены."],
 ] as const
 
 for (const width of [1399, 1049, 390]) {
@@ -322,4 +324,74 @@ test("neutral empty states follow the existing dark theme", async ({ page, conte
   await page.getByRole("button", { name: "Переключиться на тёмный режим" }).click()
   await expect(page.locator("html")).toHaveClass(/dark/)
   await page.screenshot({ path: testInfo.outputPath("empty-dark-1049.png"), fullPage: true })
+})
+
+for (const width of [1399, 390]) {
+  for (const theme of ["light", "dark"]) {
+    test(`materials and faculties share empty presentation at ${width}px in ${theme}`, async ({ page, context }, testInfo) => {
+      const local = await fixture(context, theme)
+      await page.setViewportSize({ width, height: 900 })
+      const presentations = []
+      for (const [name, url, title] of [routes[0], routes[3]]) {
+        await page.goto(url)
+        await expect(page.locator("html")).toHaveClass(new RegExp(theme))
+        const empty = page.locator(".admin-empty")
+        await expect(empty).toHaveText(title)
+        await expect(empty.locator(".admin-empty-icon")).toBeVisible()
+        presentations.push(await empty.evaluate((element) => {
+          const style = getComputedStyle(element)
+          const frames = []
+          for (let parent = element.parentElement; parent && !parent.matches(".admin-page"); parent = parent.parentElement) {
+            const css = getComputedStyle(parent)
+            if (css.borderTopWidth !== "0px") {
+              frames.push({ border: css.borderTop, background: css.backgroundColor })
+            }
+          }
+          return {
+            frames,
+            height: element.getBoundingClientRect().height,
+            padding: style.padding,
+            gap: style.gap,
+            color: style.color,
+            icon: element.querySelector(".admin-empty-icon")?.className,
+            actions: element.querySelector(".admin-empty-actions")?.getBoundingClientRect().height ?? 0,
+          }
+        }))
+        await expect(page.locator(".admin-page-header").getByRole("button", { name: /Добавить/ })).toBeVisible()
+        expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width)
+        await page.screenshot({ path: testInfo.outputPath(`${name}-${theme}-${width}.png`), fullPage: true })
+      }
+      expect(presentations[0]).toEqual(presentations[1])
+      expect(local.unexpected).toEqual([])
+    })
+  }
+}
+
+for (const width of [1399, 390]) {
+  test(`analogous empty routes in dark theme at ${width}px`, async ({ page, context }, testInfo) => {
+    const local = await fixture(context, "dark")
+    await page.setViewportSize({ width, height: 900 })
+    for (const [name, url, title] of routes) {
+      await page.goto(url)
+      await expect(page.locator("html")).toHaveClass(/dark/)
+      await expect(page.locator(".admin-empty-title", { hasText: title })).toBeVisible()
+      expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width)
+      await page.screenshot({ path: testInfo.outputPath(`${name}-dark-${width}.png`), fullPage: true })
+    }
+    expect(local.unexpected).toEqual([])
+  })
+}
+
+test("admission scores reuse the error action and recover to empty", async ({ page, context }) => {
+  const local = await fixture(context)
+  local.failures.add("/api/v1/admission-scores")
+  await page.goto("/admission-scores")
+  const error = page.locator(".admin-empty[data-state=error]")
+  await expect(error.locator(".admin-empty-title")).toHaveText("Не удалось загрузить баллы.")
+  await expect(error.locator(".admin-empty-actions").getByRole("button", { name: "Повторить" })).toBeVisible()
+  local.failures.clear()
+  await error.getByRole("button", { name: "Повторить" }).click()
+  await expect(page.locator(".admin-empty[data-state=empty] .admin-empty-title")).toHaveText("Баллы пока не добавлены.")
+  await expect(page.getByRole("button", { name: "Сохранить балл" })).toBeVisible()
+  expect(local.unexpected).toEqual([])
 })
