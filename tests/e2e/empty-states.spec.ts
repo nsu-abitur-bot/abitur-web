@@ -7,6 +7,7 @@ async function fixture(context: BrowserContext) {
   const failures = new Set<string>()
   const unexpected: string[] = []
   const fixtures: Record<string, unknown> = {
+    "/api/v1/branding": { revision: 1, short_name: "Тестовый вуз", full_name: "Тестовый университет", logo_url: "", favicon_url: "", accent_color: "#4b4bd2" },
     "/api/v1/auth/me": { id: "admin", username: "e2e-admin", role: "superadmin", is_active: true },
     "/api/v1/university": { profile: "custom", short_name: "Тестовый вуз", assistant_name: "Помощник" },
     "/api/v1/rag/docs": { documents: [] },

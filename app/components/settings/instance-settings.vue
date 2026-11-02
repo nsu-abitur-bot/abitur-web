@@ -5,9 +5,12 @@ import type { InstanceSettings } from "~/services/instance-settings"
 import { checkInstanceConnection, collectChanges, connectionPurposes, getInstanceSettings, isRevisionConflict, rebaseSettings, saveInstanceSettings } from "~/services/instance-settings"
 
 const { refresh: refreshUniversity } = useUniversityIdentity()
+const { refresh: refreshBranding } = useBranding()
+const logoFile = ref<File | null>(null)
+const removeLogo = ref(false)
 const snapshot = ref<InstanceSettings | null>(null)
 const authToken = useAuthToken()
-const draft = reactive<Record<string, string>>({})
+const draft = ref<Record<string, string>>({})
 const removed = reactive(new Set<string>())
 const selectedGroup = ref("Назначение моделей")
 const busy = ref(false)
@@ -15,11 +18,15 @@ const conflict = ref(false)
 const review = ref<string[]>([])
 const message = ref("")
 const error = ref("")
-const groups = computed(() => [...new Set(snapshot.value?.settings.map(s => s.group) ?? [])])
-const visibleSettings = computed(() => snapshot.value?.settings.filter(s => s.group === selectedGroup.value) ?? [])
-const changes = computed(() => collectChanges(snapshot.value?.settings ?? [], draft, removed))
+const brandKeys = new Set(["UNIVERSITY_SHORT_NAME", "UNIVERSITY_FULL_NAME", "UNIVERSITY_LOGO_URL", "UNIVERSITY_ACCENT_COLOR"])
+function groupFor(key: string, group: string) {
+  return brandKeys.has(key) ? "Оформление вуза" : key === "UNIVERSITY_PROFILE" ? "Технический профиль" : group === "Вуз" || group === "Университет" ? "" : group
+}
+const groups = computed(() => [...new Set(snapshot.value?.settings.map(s => groupFor(s.key, s.group)).filter(Boolean) ?? [])].sort((a, b) => Number(b === "Оформление вуза") - Number(a === "Оформление вуза") || Number(a === "Технический профиль") - Number(b === "Технический профиль")))
+const visibleSettings = computed(() => snapshot.value?.settings.filter(s => groupFor(s.key, s.group) === selectedGroup.value) ?? [])
+const changes = computed(() => collectChanges(snapshot.value?.settings ?? [], draft.value, removed))
 const availableChecks = computed(() => connectionPurposes(snapshot.value?.settings ?? [], selectedGroup.value))
-const changedCount = computed(() => Object.keys(changes.value).length)
+const changedCount = computed(() => Object.keys(changes.value).length + Number(Boolean(logoFile.value || removeLogo.value)))
 
 const leaveOpen = ref(false)
 let resolveLeave: ((leave: boolean) => void) | undefined
@@ -52,19 +59,23 @@ onBeforeUnmount(() => {
   resolveLeave?.(false)
 })
 
-function populate(data: InstanceSettings) {
-  snapshot.value = data
-  if (!data.settings.some(setting => setting.group === selectedGroup.value)) {
-    selectedGroup.value = data.settings[0]?.group ?? ""
+function populate(data: InstanceSettings, keepLogo = false) {
+  if (!keepLogo) {
+    logoFile.value = null
+    removeLogo.value = false
   }
-  for (const key of Object.keys(draft)) {
-    delete draft[key]
+  snapshot.value = data
+  if (!data.settings.some(setting => groupFor(setting.key, setting.group) === selectedGroup.value)) {
+    selectedGroup.value = groups.value[0] ?? ""
+  }
+  for (const key of Object.keys(draft.value)) {
+    delete draft.value[key]
   }
   removed.clear()
   conflict.value = false
   review.value = []
   for (const setting of data.settings) {
-    draft[setting.key] = setting.secret ? "" : setting.value ?? ""
+    draft.value[setting.key] = setting.secret ? "" : setting.value ?? ""
   }
 }
 
@@ -80,13 +91,18 @@ async function rebase() {
   busy.value = true
   try {
     const latest = await getInstanceSettings()
-    const result = rebaseSettings(snapshot.value, latest, draft, removed)
+    const result = rebaseSettings(snapshot.value, latest, draft.value, removed)
     if (result.missing.length) {
       error.value = `Поля исчезли из схемы: ${result.missing.join(", ")}. Черновик сохранён; скопируйте значения перед отменой правок.`
       return
     }
-    populate(latest)
-    Object.assign(draft, result.draft)
+    const oldLogo = snapshot.value.settings.find(s => s.key === "UNIVERSITY_LOGO_URL")?.value
+    if ((logoFile.value || removeLogo.value) && oldLogo !== latest.settings.find(s => s.key === "UNIVERSITY_LOGO_URL")?.value) {
+      result.conflicts.push("Логотип")
+    }
+    populate(latest, true)
+    await Promise.all([refreshUniversity(), refreshBranding()])
+    Object.assign(draft.value, result.draft)
     for (const key of result.removed) {
       removed.add(key)
     }
@@ -104,7 +120,11 @@ async function load() {
   busy.value = true
   error.value = ""
   try {
+    const alreadyLoaded = Boolean(snapshot.value)
     populate(await getInstanceSettings())
+    if (alreadyLoaded) {
+      await Promise.all([refreshUniversity(), refreshBranding()])
+    }
   } catch (err) {
     error.value = errorMessage(err)
   } finally {
@@ -120,12 +140,9 @@ async function save() {
   error.value = ""
   message.value = ""
   try {
-    const universityChanged = Object.keys(changes.value).some(key => key.startsWith("UNIVERSITY_"))
-    populate(await saveInstanceSettings(snapshot.value.revision, changes.value))
+    populate(await saveInstanceSettings(snapshot.value.revision, changes.value, logoFile.value, removeLogo.value))
     message.value = "Настройки сохранены."
-    if (universityChanged) {
-      await refreshUniversity()
-    }
+    await Promise.all([refreshUniversity(), refreshBranding()])
   } catch (err) {
     conflict.value = isRevisionConflict(err)
     error.value = conflict.value ? "Настройки изменены другим администратором. Черновик сохранён. Загрузите новую версию для сверки." : errorMessage(err)
@@ -164,11 +181,11 @@ await load()
 
 <template>
   <section class="admin-panel instance-editor" aria-label="Настройки подключений">
-    <p class="mb-4 text-sm admin-muted">
+    <p v-if="!['Оформление вуза', 'Технический профиль'].includes(selectedGroup)" class="mb-4 text-sm admin-muted">
       Модели, Telegram и MAX настраиваются здесь. Сохранённые ключи не отображаются.
       Проверка модели выполняет небольшой запрос к провайдеру и может расходовать токены.
     </p>
-    <p v-if="snapshot && !snapshot.encryption_ready" class="mb-4 text-sm text-amber-700" role="status">
+    <p v-if="snapshot && !snapshot.encryption_ready && !['Оформление вуза', 'Технический профиль'].includes(selectedGroup)" class="mb-4 text-sm text-amber-700" role="status">
       Ключ шифрования не настроен. Для сохранения секретов задайте SETTINGS_ENCRYPTION_KEY на сервере.
     </p>
     <p v-if="error" class="mb-4 text-sm text-error" role="alert">{{ error }}</p>
@@ -188,7 +205,9 @@ await load()
       <div class="space-y-5 min-w-0">
         <header class="admin-section-header"><h2>{{ selectedGroup }}</h2><span class="admin-muted text-xs">Версия {{ snapshot.revision }}</span></header>
         <fieldset :disabled="busy" class="space-y-4">
-          <div v-for="setting in visibleSettings" :key="setting.key" class="instance-field">
+          <settings-university-branding v-if="selectedGroup === 'Оформление вуза'" v-model:draft="draft" v-model:file="logoFile" v-model:remove="removeLogo" />
+          <p v-if="selectedGroup === 'Технический профиль'" class="text-sm admin-muted">Профиль влияет на стартовое наполнение и возможности НГУ. Смена не удаляет загруженные данные; для другого вуза нужен отдельный экземпляр с чистой базой.</p>
+          <div v-for="setting in selectedGroup === 'Оформление вуза' ? [] : visibleSettings" :key="setting.key" class="instance-field">
             <label :for="`instance-${setting.key}`" class="block text-sm font-medium">{{ setting.label }}</label>
             <select v-if="setting.choices.length" :id="`instance-${setting.key}`" v-model="draft[setting.key]" class="instance-control w-full">
               <option v-for="choice in setting.choices" :key="choice" :value="choice">{{ choice }}</option>
@@ -232,7 +251,7 @@ await load()
           </u-modal>
           <span class="admin-muted text-xs">{{ changedCount ? 'Есть несохранённые изменения' : 'Изменений нет' }}</span>
         </div>
-        <p class="text-sm admin-muted">Смену пространства эмбеддингов при наполненной базе система блокирует до переиндексации. CRAG, FAQ и лимиты запросов доступны в разделе «Правила и лимиты».</p>
+        <p v-if="!['Оформление вуза', 'Технический профиль'].includes(selectedGroup)" class="text-sm admin-muted">Смену пространства эмбеддингов при наполненной базе система блокирует до переиндексации. CRAG, FAQ и лимиты запросов доступны в разделе «Правила и лимиты».</p>
       </div>
     </div>
     <u-button v-else :loading="busy" variant="soft" @click="load">Загрузить настройки</u-button>
@@ -242,7 +261,7 @@ await load()
   </section>
 </template>
 
-<style scoped>
+<style>
 .instance-editor {
   padding: 24px;
 }

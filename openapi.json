@@ -293,6 +293,65 @@
         }
       }
     },
+    "/api/v1/branding": {
+      "get": {
+        "tags": [
+          "branding"
+        ],
+        "summary": "Get Branding",
+        "operationId": "get_branding_api_v1_branding_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BrandingResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/branding/media/{filename}": {
+      "get": {
+        "tags": [
+          "branding"
+        ],
+        "summary": "Get Media",
+        "operationId": "get_media_api_v1_branding_media__filename__get",
+        "parameters": [
+          {
+            "name": "filename",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Filename"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "image/png": {}
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/settings/instance": {
       "get": {
         "tags": [
@@ -387,6 +446,52 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ConnectionCheckResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/settings/instance/branding": {
+      "post": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Save Branding",
+        "operationId": "save_branding_api_v1_settings_instance_branding_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_save_branding_api_v1_settings_instance_branding_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InstanceSettingsResponse"
                 }
               }
             }
@@ -3823,6 +3928,56 @@
           }
         }
       }
+    },
+    "/api/v1/university": {
+      "get": {
+        "summary": "Get University",
+        "operationId": "get_university_api_v1_university_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Get University Api V1 University Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/university/profile": {
+      "get": {
+        "summary": "Get University Profile",
+        "description": "Public capability gate for the university-specific rating page.",
+        "operationId": "get_university_profile_api_v1_university_profile_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Get University Profile Api V1 University Profile Get"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -3945,6 +4100,42 @@
         ],
         "title": "Body_preview_csv_documents_api_v1_rag_upload_csv_preview_post"
       },
+      "Body_save_branding_api_v1_settings_instance_branding_post": {
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "title": "Revision"
+          },
+          "changes": {
+            "type": "string",
+            "maxLength": 100000,
+            "title": "Changes",
+            "default": "{}"
+          },
+          "remove_logo": {
+            "type": "boolean",
+            "title": "Remove Logo",
+            "default": false
+          },
+          "logo": {
+            "anyOf": [
+              {
+                "type": "string",
+                "contentMediaType": "application/octet-stream"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Logo"
+          }
+        },
+        "type": "object",
+        "required": [
+          "revision"
+        ],
+        "title": "Body_save_branding_api_v1_settings_instance_branding_post"
+      },
       "Body_upload_abbrev_csv_api_v1_abbrev_upload_post": {
         "properties": {
           "file": {
@@ -4005,6 +4196,44 @@
           "file"
         ],
         "title": "Body_upload_faq_csv_api_v1_faq_upload_post"
+      },
+      "BrandingResponse": {
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "title": "Revision"
+          },
+          "short_name": {
+            "type": "string",
+            "title": "Short Name"
+          },
+          "full_name": {
+            "type": "string",
+            "title": "Full Name"
+          },
+          "logo_url": {
+            "type": "string",
+            "title": "Logo Url"
+          },
+          "favicon_url": {
+            "type": "string",
+            "title": "Favicon Url"
+          },
+          "accent_color": {
+            "type": "string",
+            "title": "Accent Color"
+          }
+        },
+        "type": "object",
+        "required": [
+          "revision",
+          "short_name",
+          "full_name",
+          "logo_url",
+          "favicon_url",
+          "accent_color"
+        ],
+        "title": "BrandingResponse"
       },
       "ChangeRoleRequest": {
         "properties": {
@@ -5688,6 +5917,48 @@
         "title": "MessageLogResponse",
         "description": "Модель ответа для лога сообщения."
       },
+      "MessagePageResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/MessageResponse"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          },
+          "snapshot_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Snapshot Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "MessagePageResponse"
+      },
       "MessageResponse": {
         "properties": {
           "id": {
@@ -7025,48 +7296,6 @@
           "type"
         ],
         "title": "ValidationError"
-      },
-      "MessagePageResponse": {
-        "properties": {
-          "items": {
-            "items": {
-              "$ref": "#/components/schemas/MessageResponse"
-            },
-            "type": "array",
-            "title": "Items"
-          },
-          "total": {
-            "type": "integer",
-            "title": "Total"
-          },
-          "limit": {
-            "type": "integer",
-            "title": "Limit"
-          },
-          "offset": {
-            "type": "integer",
-            "title": "Offset"
-          },
-          "snapshot_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Snapshot Id"
-          }
-        },
-        "type": "object",
-        "required": [
-          "items",
-          "total",
-          "limit",
-          "offset"
-        ],
-        "title": "MessagePageResponse"
       }
     },
     "securitySchemes": {

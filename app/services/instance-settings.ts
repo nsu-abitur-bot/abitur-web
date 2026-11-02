@@ -9,7 +9,17 @@ export function getInstanceSettings(): Promise<InstanceSettings> {
   return apiFetch<InstanceSettings>("/api/v1/settings/instance")
 }
 
-export function saveInstanceSettings(revision: number, changes: SettingChanges): Promise<InstanceSettings> {
+export function saveInstanceSettings(revision: number, changes: SettingChanges, logo?: File | null, removeLogo = false): Promise<InstanceSettings> {
+  if (logo || removeLogo) {
+    const body = new FormData()
+    body.set("revision", String(revision))
+    body.set("changes", JSON.stringify(changes))
+    body.set("remove_logo", String(removeLogo))
+    if (logo) {
+      body.set("logo", logo)
+    }
+    return apiFetch<InstanceSettings>("/api/v1/settings/instance/branding", { method: "POST", body })
+  }
   return apiFetch<InstanceSettings>("/api/v1/settings/instance", {
     method: "PUT",
     body: { revision, changes },

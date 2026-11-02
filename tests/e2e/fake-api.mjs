@@ -45,6 +45,10 @@ const server = createServer(async (req, res) => {
     }
     return
   }
+  if (req.url === "/api/v1/branding") {
+    reply(200, { revision: 1, short_name: "Тестовый вуз", full_name: "Тестовый университет", logo_url: "", favicon_url: "", accent_color: "#4b4bd2" })
+    return
+  }
   if (req.headers.authorization !== `Bearer ${token}`) {
     reply(401, { detail: "Unauthenticated" })
     return

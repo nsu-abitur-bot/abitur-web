@@ -1,5 +1,5 @@
 :root {
-  --admin-primary: #4b4bd2;
+  --admin-primary: var(--ui-color-primary-600);
   --admin-success: #327550;
   --admin-warning: #946328;
   --admin-ink: #202330;
@@ -8,7 +8,7 @@
   --admin-canvas: #f8f9fb;
   --admin-panel: #fff;
   --admin-rule: #e2e5ec;
-  --admin-selection: #ededfc;
+  --admin-selection: var(--ui-color-primary-50);
   --ui-primary: var(--admin-primary);
   --ui-success: var(--admin-success);
   --ui-warning: var(--admin-warning);
@@ -22,7 +22,7 @@
 }
 
 .dark {
-  --admin-primary: #a6a6ff;
+  --admin-primary: var(--ui-color-primary-300);
   --admin-success: #9bc7ac;
   --admin-warning: #e1b679;
   --admin-ink: #e7e9f0;
@@ -31,7 +31,7 @@
   --admin-canvas: #141720;
   --admin-panel: #1d212c;
   --admin-rule: #343a49;
-  --admin-selection: #303052;
+  --admin-selection: var(--ui-color-primary-900);
 }
 
 .admin-shell {
