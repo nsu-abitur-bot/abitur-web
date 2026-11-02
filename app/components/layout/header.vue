@@ -92,6 +92,36 @@ aside#admin-navigation.admin-sidebar(:class="{ 'is-open': open }")
             u-icon(:name="item[2]")
             span {{ item[0] }}
   .admin-sidebar-actions
-    u-color-mode-button
-    u-button(v-if="token" color="neutral" variant="ghost" icon="i-lucide-log-out" @click="logout") Выйти
+    u-color-mode-button.admin-sidebar-action(label="Переключить тему" :square="false")
+    u-button.admin-sidebar-action(v-if="token" color="neutral" variant="ghost" icon="i-lucide-log-out" @click="logout") Выйти
 </template>
+
+<style scoped>
+.admin-sidebar-actions {
+  display: grid;
+  gap: 4px;
+  padding: 12px 0 0;
+  border-top: 1px solid var(--admin-rule);
+}
+
+.admin-sidebar-action {
+  justify-content: flex-start;
+  gap: 10px;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border-radius: 7px;
+  color: var(--admin-ink);
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.admin-sidebar-action:hover {
+  background: var(--admin-rule);
+}
+
+.admin-sidebar-action :deep(.iconify) {
+  width: 17px;
+  height: 17px;
+}
+</style>
