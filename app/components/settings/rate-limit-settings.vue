@@ -70,7 +70,7 @@ section(class="admin-panel p-6")
 
   u-form(v-if="data" :state="state" class="space-y-5" @submit="onSubmit")
     div(class="admin-form-grid")
-      u-form-field(label="Запросов в день для всей системы" name="system_requests_per_day")
+      u-form-field(label="Вся система · запросов в день" name="system_requests_per_day")
         u-input(
           v-model.number="state.system_requests_per_day"
           type="number"
@@ -78,10 +78,8 @@ section(class="admin-panel p-6")
           max="10000000"
           class="w-full"
         )
-        template(#help)
-          | Общий дневной лимит для всех пользователей.
 
-      u-form-field(label="Запросов в день для пользователя" name="user_requests_per_day")
+      u-form-field(label="Один пользователь · запросов в день" name="user_requests_per_day")
         u-input(
           v-model.number="state.user_requests_per_day"
           type="number"
@@ -89,10 +87,8 @@ section(class="admin-panel p-6")
           max="100000"
           class="w-full"
         )
-        template(#help)
-          | Дневной лимит для одного пользователя.
 
-    div(class="flex flex-wrap items-center justify-between gap-3")
-      div(class="text-xs admin-muted") Лимиты применяются к запросам пользователей за календарный день.
+    div(class="flex flex-wrap items-center gap-3")
       u-button(type="submit" color="primary" :loading="isSaving") Сохранить
+      span(class="text-xs admin-muted") За календарный день.
 </template>

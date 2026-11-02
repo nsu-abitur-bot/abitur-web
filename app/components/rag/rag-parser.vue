@@ -234,21 +234,23 @@ const editingText = computed({
 
 <template lang="pug">
 div(class="space-y-4")
-  .admin-detail
+  div(class="space-y-3")
+    h3(class="text-sm font-semibold") Файлы
     .admin-actions
       input(ref="uploadInput" type="file" multiple :accept="RAG_ACCEPTED_EXTENSIONS.join(',')" class="hidden" @change="handleFiles")
       u-button(color="neutral" variant="outline" icon="i-lucide-upload" :loading="uploadingFiles" @click="uploadInput?.click()") Загрузить файлы
-      span.admin-muted До 10 МБ на файл. CSV здесь загружается как текст.
+    p(class="text-xs admin-muted") До 10 МБ на файл. Файлы сразу добавляются в базу; CSV загружается как текст.
     div(v-if="fileResults.length" role="status" class="mt-3 space-y-2")
       ul(class="space-y-2")
         li(v-for="(result, index) in fileResults" :key="index" class="break-anywhere") {{ result }}
       p.admin-muted Проверьте результаты каждого файла. Можно выбрать файлы повторно через «Загрузить файлы» или закрыть окно и проверить список материалов.
   // Main Logic View
-  div(class="admin-detail space-y-4")
+  div(class="space-y-4 border-t border-default pt-5")
+    h3(class="text-sm font-semibold") Ссылки
     // CSV Upload
-    div(class="space-y-3 pb-4 border-b dark:border-gray-800")
+    details(class="rag-csv space-y-3")
+      summary(class="cursor-pointer text-sm admin-muted") Импорт ссылок из CSV
       div(class="flex flex-wrap items-center justify-between gap-2")
-        div(class="text-sm font-semibold text-gray-800 dark:text-gray-200") Импорт из CSV
         div(class="flex items-center gap-2")
           input(ref="fileInput" type="file" accept=".csv,text/csv" class="hidden" @change="handleCsvUpload")
           u-button(
@@ -312,6 +314,8 @@ div(class="space-y-4")
           )
 
       template(#footer)
+        div(class="space-y-3 w-full")
+          p(class="text-xs admin-muted") Обработка текста отправит запрос к модели и может расходовать токены.
         div(class="flex flex-wrap justify-end gap-3 w-full")
           u-button(
             variant="ghost"
@@ -408,7 +412,7 @@ div(class="space-y-4")
             | {{ item.error }}
 
     // Action Button
-    div(class="pt-4 border-t dark:border-gray-800 flex justify-end")
+    div(v-if="pendingItems.length" class="pt-4 border-t dark:border-gray-800 flex justify-end")
       u-button(
         color="primary"
         variant="solid"

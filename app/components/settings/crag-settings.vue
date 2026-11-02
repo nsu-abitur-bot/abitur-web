@@ -77,8 +77,6 @@ const onSubmit = async () => {
 <template lang="pug">
 section(class="admin-panel p-6")
   h2(class="text-base font-semibold mb-5") Проверка ответов
-  p(class="text-sm admin-muted mb-4")
-    | CRAG отбирает фрагменты базы знаний перед генерацией ответа.
 
   div(v-if="status === 'pending' && !data" class="py-6 flex justify-center admin-muted")
     u-icon(name="i-heroicons-arrow-path" class="animate-spin w-8 h-8")
@@ -93,56 +91,70 @@ section(class="admin-panel p-6")
         div
           div(class="text-sm font-medium text-gray-800 dark:text-gray-200") Проверять найденное перед ответом
           div(class="text-xs admin-muted") Отбор найденных фрагментов по релевантности вопросу.
-        u-switch(v-model="state.enabled")
+        u-switch(v-model="state.enabled" aria-label="Проверять найденное перед ответом")
 
       div(class="flex items-center justify-between gap-4 border-b border-[var(--ui-border)] pb-4")
         div
           div(class="text-sm font-medium text-gray-800 dark:text-gray-200") Не смешивать факультеты
           div(class="text-xs admin-muted") Отбор по справочнику факультетов, если факультет указан в вопросе.
-        u-switch(v-model="state.use_faculty_table")
+        u-switch(v-model="state.use_faculty_table" aria-label="Не смешивать факультеты")
 
       div(class="flex items-center justify-between gap-4 border-b border-[var(--ui-border)] pb-4")
         div
           div(class="text-sm font-medium text-gray-800 dark:text-gray-200") Искать ещё раз, если нашлось мало
           div(class="text-xs admin-muted") Повторный поиск с переформулировкой вопроса.
-        u-switch(v-model="state.allow_refine")
+        u-switch(v-model="state.allow_refine" aria-label="Искать ещё раз, если нашлось мало")
 
-    div(class="admin-form-grid")
-      u-form-field(label="Строгость отбора" name="relevance_threshold")
-        u-input(
-          v-model.number="state.relevance_threshold"
-          type="number"
-          min="0"
-          max="1"
-          step="0.05"
-          class="w-full"
-        )
-        template(#help)
-          | От 0 до 1. Высокое значение усиливает отбор.
+    details(class="crag-advanced")
+      summary Параметры отбора
+      div(class="admin-form-grid")
+        u-form-field(label="Строгость отбора" name="relevance_threshold")
+          u-input(
+            v-model.number="state.relevance_threshold"
+            type="number"
+            min="0"
+            max="1"
+            step="0.05"
+            class="w-full"
+          )
+          template(#help)
+            | От 0 до 1. Высокое значение усиливает отбор.
 
-      u-form-field(label="Минимум фрагментов" name="min_chunks")
-        u-input(
-          v-model.number="state.min_chunks"
-          type="number"
-          min="0"
-          max="100"
-          class="w-full"
-        )
-        template(#help)
-          | Ниже этого количества запускается повторный поиск.
+        u-form-field(label="Минимум фрагментов" name="min_chunks")
+          u-input(
+            v-model.number="state.min_chunks"
+            type="number"
+            min="0"
+            max="100"
+            class="w-full"
+          )
+          template(#help)
+            | Ниже этого количества запускается повторный поиск.
 
-      u-form-field(label="Лимит проверяемых фрагментов" name="max_graded_chunks")
-        u-input(
-          v-model.number="state.max_graded_chunks"
-          type="number"
-          min="1"
-          max="100"
-          class="w-full"
-        )
-        template(#help)
-          | Количество фрагментов для оценки релевантности.
+        u-form-field(label="Лимит проверяемых фрагментов" name="max_graded_chunks")
+          u-input(
+            v-model.number="state.max_graded_chunks"
+            type="number"
+            min="1"
+            max="100"
+            class="w-full"
+          )
+          template(#help)
+            | Количество фрагментов для оценки релевантности.
 
-    div(class="flex flex-wrap items-center justify-between gap-3")
-      div(class="text-xs admin-muted") Изменения применяются к ответам бота сразу после сохранения.
+    div(class="flex flex-wrap items-center gap-3")
       u-button(type="submit" color="primary" :loading="isSaving") Сохранить
+      span(class="text-xs admin-muted") Применяется после сохранения.
 </template>
+
+<style scoped>
+.crag-advanced summary {
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--ui-text-muted);
+}
+
+.crag-advanced[open] summary {
+  margin-bottom: 20px;
+}
+</style>

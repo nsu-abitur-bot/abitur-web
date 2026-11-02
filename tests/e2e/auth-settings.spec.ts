@@ -4,6 +4,7 @@ import { expect, test } from "@playwright/test"
 const cookie = { name: "abitur-token", value: "e2e-session", domain: "127.0.0.1", path: "/" }
 
 async function mockSettings(context: BrowserContext, role = "superadmin") {
+  const previewPort = Number(new URL(test.info().project.use.baseURL!).port)
   let revision = 1
   let conflict = false
   let expired = false
@@ -14,7 +15,7 @@ async function mockSettings(context: BrowserContext, role = "superadmin") {
   ]
   await context.route("**/*", async (route) => {
     const url = new URL(route.request().url())
-    if (url.hostname !== "127.0.0.1" || !["9464", "9465"].includes(url.port)) {
+    if (url.hostname !== "127.0.0.1" || ![previewPort, previewPort + 1].includes(Number(url.port))) {
       return route.abort("blockedbyclient")
     }
     if (!url.pathname.startsWith("/api/v1/")) {
@@ -83,6 +84,7 @@ async function mockSettings(context: BrowserContext, role = "superadmin") {
 
 async function openDraft(page: Page) {
   await page.goto("/settings?section=connections")
+  await page.locator("summary").filter({ hasText: "OpenAI" }).click()
   await page.locator("#instance-OPENAI_API_KEY").fill("local-secret-replacement")
 }
 
@@ -127,6 +129,7 @@ test("409 keeps the secret draft, rebases untouched fields, and clears secrets o
   await expect(page.getByText(/Черновик сохранён/)).toBeVisible()
   await expect(page.locator("#instance-OPENAI_API_KEY")).toHaveValue("local-secret-replacement")
   await page.getByRole("button", { name: /Загрузить версию и сверить/ }).click()
+  await page.locator("details[open]").getByText("Дополнительно", { exact: true }).click()
   await expect(page.locator("#instance-OPENAI_BASE_URL")).toHaveValue("https://remote.invalid/v1")
   await expect(page.locator("#instance-OPENAI_API_KEY")).toHaveValue("local-secret-replacement")
   await page.getByRole("button", { name: /Сохранить изменения/ }).click()
@@ -252,6 +255,7 @@ test("DeepSeek exposes only chat and graph checks without saving the secret draf
     return route.fulfill({ json: { message: "Подключение и доступ к модели проверены" } })
   })
   await page.goto("/settings?section=connections")
+  await page.locator("summary").filter({ hasText: "DeepSeek" }).click()
   await expect(page.locator("#instance-DEEPSEEK_API_KEY")).toHaveValue("")
   await expect(page.locator("#instance-DEEPSEEK_API_KEY")).toHaveAttribute("type", "password")
   await page.locator("#instance-DEEPSEEK_API_KEY").fill("local-test-deepseek-draft")
