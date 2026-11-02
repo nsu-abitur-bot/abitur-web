@@ -19,8 +19,12 @@ watch(logoUrl, () => {
   logoFailed.value = false
 })
 const open = ref(false)
+const menuButton = ref<{ $el: HTMLButtonElement } | null>(null)
 onKeyStroke("Escape", () => {
-  open.value = false
+  if (open.value) {
+    open.value = false
+    menuButton.value?.$el.focus()
+  }
 })
 watch(() => route.fullPath, () => {
   open.value = false
@@ -70,12 +74,7 @@ async function logout() {
 
 <template lang="pug">
 header.admin-topbar
-  span.admin-university(:title="universityTitle") {{ universityName }}
-  u-button.admin-menu(icon="i-lucide-menu" color="neutral" variant="ghost" aria-label="Меню" :aria-expanded="open" aria-controls="admin-navigation" @click="open = !open")
-  span.admin-muted Администрирование
-  .admin-actions
-    u-color-mode-button
-    u-button(v-if="token" color="neutral" variant="ghost" icon="i-lucide-log-out" @click="logout") Выйти
+  u-button.admin-menu(ref="menuButton" icon="i-lucide-menu" color="neutral" variant="ghost" aria-label="Меню" :aria-expanded="open" aria-controls="admin-navigation" @click="open = !open")
 aside#admin-navigation.admin-sidebar(:class="{ 'is-open': open }")
   nuxt-link.admin-brand(to="/" :title="universityTitle" :aria-label="`${universityTitle} — Панель управления`")
     span.admin-brand-mark(aria-hidden="true" :class="{ 'has-logo': logoUrl && !logoFailed }")
@@ -92,4 +91,7 @@ aside#admin-navigation.admin-sidebar(:class="{ 'is-open': open }")
           nuxt-link(v-for="item in group.items" :key="item[1]" :to="item[1]" :aria-current="active(item[1]) ? 'page' : undefined")
             u-icon(:name="item[2]")
             span {{ item[0] }}
+  .admin-sidebar-actions
+    u-color-mode-button
+    u-button(v-if="token" color="neutral" variant="ghost" icon="i-lucide-log-out" @click="logout") Выйти
 </template>

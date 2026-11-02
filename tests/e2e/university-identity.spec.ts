@@ -80,7 +80,7 @@ test("university save refreshes the shared brand and header without reload; draf
   await page.goto("/settings?section=connections")
   const brand = page.locator(".admin-brand")
   await expect(brand).toContainText("Демо-вуз")
-  await expect(page.locator(".admin-topbar")).toContainText("Демо-вуз")
+  await expect(page.locator(".admin-topbar")).toBeHidden()
   await expect.poll(fixture.gets).toBe(1)
   await page.locator("#instance-UNIVERSITY_SHORT_NAME").fill("Новый вуз")
 
@@ -97,7 +97,7 @@ test("university save refreshes the shared brand and header without reload; draf
   await expect(page.locator("#instance-UNIVERSITY_SHORT_NAME")).toHaveValue("Новый вуз")
   await page.getByRole("button", { name: /Сохранить изменения/ }).click()
   await expect(brand).toContainText("Новый вуз")
-  await expect(page.locator(".admin-topbar")).toContainText("Новый вуз")
+  await expect(page.locator(".admin-topbar")).toBeHidden()
   await expect(brand.locator("img")).toHaveCount(0)
   expect(fixture.gets()).toBe(5)
   expect(fixture.puts[1]).toEqual({ UNIVERSITY_SHORT_NAME: "Новый вуз" })
