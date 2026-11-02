@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test"
 
 for (const colorScheme of ["light", "dark"] as const) {
-  for (const size of [{ width: 1399, height: 881 }, { width: 1049, height: 881 }, { width: 390, height: 881 }, { width: 1049, height: 400 }]) {
+  for (const size of [{ width: 1399, height: 881 }, { width: 1049, height: 881 }, { width: 390, height: 881 }, { width: 1049, height: 400 }, { width: 390, height: 400 }]) {
     test(`compact shell ${colorScheme} ${size.width}x${size.height}`, async ({ page, context }, testInfo) => {
       await context.route("**/*", (route) => {
         const url = new URL(route.request().url())
@@ -38,6 +38,26 @@ for (const colorScheme of ["light", "dark"] as const) {
         await page.screenshot({ path: testInfo.outputPath(`${path.slice(1)}-initial.png`), fullPage: true })
         const logout = sidebar.getByRole("button", { name: "Выйти", exact: true })
         await expect(logout).toBeVisible()
+        const theme = sidebar.getByRole("button", { name: "Переключить тему", exact: true })
+        await expect(theme).toHaveText("Переключить тему")
+        await theme.focus()
+        await expect(theme).toBeInViewport({ ratio: 1 })
+        const themeBox = await theme.boundingBox()
+        const logoutBox = await logout.boundingBox()
+        expect(themeBox!.height).toBeGreaterThanOrEqual(44)
+        expect(logoutBox!.height).toBeGreaterThanOrEqual(44)
+        expect(themeBox!.x).toBe(logoutBox!.x)
+        expect(themeBox!.width).toBe(logoutBox!.width)
+        expect(logoutBox!.y).toBeGreaterThanOrEqual(themeBox!.y + themeBox!.height)
+        await page.keyboard.press("Enter")
+        await expect(page.locator("html")).toHaveClass(new RegExp(colorScheme === "dark" ? "light" : "dark"))
+        await page.keyboard.press("Space")
+        await expect(page.locator("html")).toHaveClass(new RegExp(colorScheme))
+        expect(await theme.evaluate((el) => {
+          const style = getComputedStyle(el)
+          return el.matches(":focus-visible") && style.outlineStyle !== "none" && Number.parseFloat(style.outlineWidth) >= 2
+        })).toBe(true)
+
         await sidebar.getByRole("link", { name: "Системные логи", exact: true }).focus()
         await page.keyboard.press("Tab")
         await expect(sidebar.locator(".admin-sidebar-actions button").first()).toBeFocused()
