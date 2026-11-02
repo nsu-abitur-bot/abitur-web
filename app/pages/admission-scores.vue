@@ -13,10 +13,10 @@ const facultyOptions = computed(() => faculties.value.map(faculty => ({ label: f
 const state = reactive({
   faculty_id: "",
   program_id: "",
-  year: String(new Date().getFullYear() - 1),
+  year: String(new Date().getFullYear() - 1) as string | number,
   form: "budget",
-  passing_score: "",
-  average_score: "",
+  passing_score: "" as string | number,
+  average_score: "" as string | number,
 })
 const selectedFaculty = computed(() => faculties.value.find(faculty => faculty.id === state.faculty_id))
 const programs = computed(() => selectedFaculty.value?.programs ?? [])
@@ -56,9 +56,14 @@ async function saveScore() {
   const program = selectedProgram.value
   const year = Number(state.year)
   const passingScore = Number(state.passing_score)
-  const averageScore = state.average_score.trim() === "" ? null : Number(state.average_score)
-  if (!faculty || !program || !/^\d{4}$/.test(state.year) || year < 1900 || year > new Date().getFullYear() || !Number.isInteger(passingScore) || passingScore <= 0 || (averageScore !== null && (!Number.isFinite(averageScore) || averageScore <= 0))) {
+  const averageScore = String(state.average_score).trim() === "" ? null : Number(state.average_score)
+  if (!faculty || !program || !/^\d{4}$/.test(String(state.year)) || year < 1900 || year > new Date().getFullYear() || !Number.isInteger(passingScore) || passingScore <= 0 || (averageScore !== null && (!Number.isFinite(averageScore) || averageScore <= 0))) {
     toast.add({ title: "Проверьте направление, год и баллы", color: "error" })
+    return
+  }
+
+  if (averageScore === null && scores.value.some(score => score.faculty_name === faculty.name && score.program_name === program.name && (score.code ?? null) === (program.code ?? null) && score.year === year && score.form === state.form && score.average_score != null)) {
+    toast.add({ title: "Укажите средний балл", description: "Сохранённый средний балл можно заменить, но нельзя удалить.", color: "error" })
     return
   }
 
