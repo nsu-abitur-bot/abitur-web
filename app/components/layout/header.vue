@@ -92,7 +92,7 @@ aside#admin-navigation.admin-sidebar(:class="{ 'is-open': open }")
             u-icon(:name="item[2]")
             span {{ item[0] }}
   .admin-sidebar-actions
-    u-color-mode-button.admin-sidebar-action(label="Переключить тему" aria-label="Переключить тему" :square="false")
+    u-color-mode-button.admin-sidebar-action(label="Переключить тему" :square="false")
     u-button.admin-sidebar-action(v-if="token" color="neutral" variant="ghost" icon="i-lucide-log-out" @click="logout") Выйти
 </template>
 

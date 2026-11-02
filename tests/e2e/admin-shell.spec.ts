@@ -38,8 +38,9 @@ for (const colorScheme of ["light", "dark"] as const) {
         await page.screenshot({ path: testInfo.outputPath(`${path.slice(1)}-initial.png`), fullPage: true })
         const logout = sidebar.getByRole("button", { name: "Выйти", exact: true })
         await expect(logout).toBeVisible()
-        const theme = sidebar.getByRole("button", { name: "Переключить тему", exact: true })
+        const theme = sidebar.locator(".admin-sidebar-actions button").first()
         await expect(theme).toHaveText("Переключить тему")
+        await expect(theme).toHaveAccessibleName(colorScheme === "dark" ? "Переключиться на светлый режим" : "Переключиться на тёмный режим")
         await theme.focus()
         await expect(theme).toBeInViewport({ ratio: 1 })
         const themeBox = await theme.boundingBox()
@@ -66,6 +67,11 @@ for (const colorScheme of ["light", "dark"] as const) {
         await expect(logout).toBeInViewport({ ratio: 1 })
         expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
         await page.screenshot({ path: testInfo.outputPath(`${path.slice(1)}.png`), fullPage: true })
+        if (size.width === 390) {
+          await page.keyboard.press("Escape")
+          await expect(sidebar).toBeHidden()
+          await expect(page.getByRole("button", { name: "Меню", exact: true })).toBeFocused()
+        }
       }
     })
   }
