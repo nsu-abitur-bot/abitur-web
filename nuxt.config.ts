@@ -30,6 +30,7 @@ export default defineNuxtConfig({
 
   app: {
     baseURL: "/",
+    head: { link: [{ key: "brand-icon", rel: "icon", href: "/favicon.svg", type: "image/svg+xml" }] },
   },
 
   typescript: {

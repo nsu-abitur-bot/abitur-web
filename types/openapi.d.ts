@@ -123,6 +123,40 @@ export interface paths {
     patch: operations["change_admin_role_api_v1_auth_admins__admin_id__role_patch"]
     trace?: never
   }
+  "/api/v1/branding": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Branding */
+    get: operations["get_branding_api_v1_branding_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/branding/media/{filename}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Media */
+    get: operations["get_media_api_v1_branding_media__filename__get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/settings/instance": {
     parameters: {
       query?: never
@@ -152,6 +186,23 @@ export interface paths {
     put?: never
     /** Test Connection */
     post: operations["test_connection_api_v1_settings_instance_check_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/settings/instance/branding": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Save Branding */
+    post: operations["save_branding_api_v1_settings_instance_branding_post"]
     delete?: never
     options?: never
     head?: never
@@ -1205,6 +1256,43 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/university": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get University */
+    get: operations["get_university_api_v1_university_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/university/profile": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Get University Profile
+     * @description Public capability gate for the university-specific rating page.
+     */
+    get: operations["get_university_profile_api_v1_university_profile_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
 }
 export type webhooks = Record<string, never>
 export interface components {
@@ -1265,6 +1353,23 @@ export interface components {
        */
       file: string
     }
+    /** Body_save_branding_api_v1_settings_instance_branding_post */
+    Body_save_branding_api_v1_settings_instance_branding_post: {
+      /** Revision */
+      revision: number
+      /**
+       * Changes
+       * @default {}
+       */
+      changes: string
+      /**
+       * Remove Logo
+       * @default false
+       */
+      remove_logo: boolean
+      /** Logo */
+      logo?: string | null
+    }
     /** Body_upload_abbrev_csv_api_v1_abbrev_upload_post */
     Body_upload_abbrev_csv_api_v1_abbrev_upload_post: {
       /** File */
@@ -1290,6 +1395,21 @@ export interface components {
     Body_upload_faq_csv_api_v1_faq_upload_post: {
       /** File */
       file: string
+    }
+    /** BrandingResponse */
+    BrandingResponse: {
+      /** Revision */
+      revision: number
+      /** Short Name */
+      short_name: string
+      /** Full Name */
+      full_name: string
+      /** Logo Url */
+      logo_url: string
+      /** Favicon Url */
+      favicon_url: string
+      /** Accent Color */
+      accent_color: string
     }
     /** ChangeRoleRequest */
     ChangeRoleRequest: {
@@ -2099,6 +2219,19 @@ export interface components {
        */
       created_at: string
     }
+    /** MessagePageResponse */
+    MessagePageResponse: {
+      /** Items */
+      items: components["schemas"]["MessageResponse"][]
+      /** Total */
+      total: number
+      /** Limit */
+      limit: number
+      /** Offset */
+      offset: number
+      /** Snapshot Id */
+      snapshot_id?: string | null
+    }
     /** MessageResponse */
     MessageResponse: {
       /** Id */
@@ -2753,19 +2886,6 @@ export interface components {
       /** Context */
       ctx?: Record<string, never>
     }
-    /** MessagePageResponse */
-    MessagePageResponse: {
-      /** Items */
-      items: components["schemas"]["MessageResponse"][]
-      /** Total */
-      total: number
-      /** Limit */
-      limit: number
-      /** Offset */
-      offset: number
-      /** Snapshot Id */
-      snapshot_id?: string | null
-    }
   }
   responses: never
   parameters: never
@@ -2980,6 +3100,57 @@ export interface operations {
       }
     }
   }
+  get_branding_api_v1_branding_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["BrandingResponse"]
+        }
+      }
+    }
+  }
+  get_media_api_v1_branding_media__filename__get: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        filename: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "image/png": unknown
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
   get_instance_settings_api_v1_settings_instance_get: {
     parameters: {
       query?: never
@@ -3053,6 +3224,39 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["ConnectionCheckResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  save_branding_api_v1_settings_instance_branding_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "multipart/form-data": components["schemas"]["Body_save_branding_api_v1_settings_instance_branding_post"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["InstanceSettingsResponse"]
         }
       }
       /** @description Validation Error */
@@ -5084,6 +5288,50 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_university_api_v1_university_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": {
+            [key: string]: string
+          }
+        }
+      }
+    }
+  }
+  get_university_profile_api_v1_university_profile_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": {
+            [key: string]: string
+          }
         }
       }
     }

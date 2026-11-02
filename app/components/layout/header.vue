@@ -1,16 +1,19 @@
 <script setup lang="ts">
 import { onKeyStroke } from "@vueuse/core"
 
+import { resolveBrandMedia } from "~/utils/branding"
+
 type NavItem = [label: string, to: string, icon: string]
 const route = useRoute()
 const router = useRouter()
 const token = useAuthToken()
 const { isAdmin, isSuperadmin } = useRole()
-const { data: university } = useUniversityIdentity()
+const { data: university } = useBranding()
+const apiBase = useApiBaseUrl()
 const universityName = computed(() => university.value?.short_name?.trim() || university.value?.full_name?.trim() || "Университет")
 const universityTitle = computed(() => university.value?.full_name?.trim() || universityName.value)
 const universityInitial = computed(() => Array.from(universityName.value)[0]?.toLocaleUpperCase() || "?")
-const logoUrl = computed(() => university.value?.logo_url?.trim())
+const logoUrl = computed(() => resolveBrandMedia(university.value?.logo_url, apiBase))
 const logoFailed = ref(false)
 watch(logoUrl, () => {
   logoFailed.value = false
@@ -67,7 +70,7 @@ async function logout() {
 
 <template lang="pug">
 header.admin-topbar
-  span.admin-university(:title="[universityTitle, university?.email, university?.phone, university?.address].filter(Boolean).join(' · ')") {{ universityName }}{{ university?.assistant_name ? ` · ${university.assistant_name}` : '' }}
+  span.admin-university(:title="universityTitle") {{ universityName }}
   u-button.admin-menu(icon="i-lucide-menu" color="neutral" variant="ghost" aria-label="Меню" :aria-expanded="open" aria-controls="admin-navigation" @click="open = !open")
   span.admin-muted Администрирование
   .admin-actions

@@ -40,10 +40,10 @@ async function universityFixture(context: BrowserContext, options: { name?: stri
     if (url.pathname === "/api/v1/auth/me") {
       return reply({ id: 1, username: "identity-admin", role: "superadmin", is_active: true })
     }
-    if (url.pathname === "/api/v1/university") {
+    if (url.pathname === "/api/v1/university" || url.pathname === "/api/v1/branding") {
       gets++
       await gate
-      return unavailable ? reply({ detail: "Unavailable" }, 503) : reply(identity)
+      return unavailable ? reply({ detail: "Unavailable" }, 503) : reply({ ...identity, revision, accent_color: "#4b4bd2", favicon_url: "" })
     }
     if (url.pathname === "/api/v1/settings/instance") {
       if (route.request().method() === "PUT") {
@@ -80,10 +80,10 @@ test("university save refreshes the shared brand and header without reload; draf
   await page.goto("/settings?section=connections")
   const brand = page.locator(".admin-brand")
   await expect(brand).toContainText("Демо-вуз")
-  await expect(page.locator(".admin-topbar")).toContainText("Демо-вуз · Помощник")
-  await expect.poll(fixture.gets).toBe(1)
+  await expect(page.locator(".admin-topbar")).toContainText("Демо-вуз")
+  await expect.poll(fixture.gets).toBe(2)
   await page.locator("#instance-UNIVERSITY_SHORT_NAME").fill("Новый вуз")
-  await page.locator("#instance-UNIVERSITY_LOGO_URL").fill(logo)
+
   await expect(brand).toContainText("Демо-вуз")
   await page.locator(".admin-sidebar").getByRole("link", { name: "Обратная связь", exact: true }).click()
   await page.getByRole("button", { name: "Продолжить редактирование" }).click()
@@ -92,19 +92,19 @@ test("university save refreshes the shared brand and header without reload; draf
   await page.getByRole("button", { name: /Сохранить изменения/ }).click()
   await expect(page.getByText(/Черновик сохранён/)).toBeVisible()
   await expect(brand).toContainText("Демо-вуз")
-  expect(fixture.gets()).toBe(1)
+  expect(fixture.gets()).toBe(2)
   await page.getByRole("button", { name: /Загрузить версию и сверить/ }).click()
   await expect(page.locator("#instance-UNIVERSITY_SHORT_NAME")).toHaveValue("Новый вуз")
   await page.getByRole("button", { name: /Сохранить изменения/ }).click()
   await expect(brand).toContainText("Новый вуз")
-  await expect(page.locator(".admin-topbar")).toContainText("Новый вуз · Помощник")
-  await expect(brand.locator("img")).toHaveJSProperty("naturalWidth", 80)
-  expect(fixture.gets()).toBe(2)
-  expect(fixture.puts[1]).toEqual({ UNIVERSITY_SHORT_NAME: "Новый вуз", UNIVERSITY_LOGO_URL: logo })
+  await expect(page.locator(".admin-topbar")).toContainText("Новый вуз")
+  await expect(brand.locator("img")).toHaveCount(0)
+  expect(fixture.gets()).toBe(6)
+  expect(fixture.puts[1]).toEqual({ UNIVERSITY_SHORT_NAME: "Новый вуз" })
   await page.locator(".admin-sidebar").getByRole("link", { name: "Обратная связь", exact: true }).click()
   await expect(page).toHaveURL("/feedback")
   await expect(brand).toContainText("Новый вуз")
-  expect(fixture.gets()).toBe(2)
+  expect(fixture.gets()).toBe(6)
 })
 
 test("loading and unavailable profiles show a neutral identity", async ({ page, context }) => {
