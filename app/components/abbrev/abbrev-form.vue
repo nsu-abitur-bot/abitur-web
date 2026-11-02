@@ -53,7 +53,7 @@ u-form(:state="state" class="space-y-4" @submit="onSubmit")
   u-form-field(label="Расшифровка" name="full" required class="w-full")
     u-input(v-model="state.full" placeholder="Например: Новосибирский государственный университет" class="w-full")
 
-  div(class="flex justify-end gap-3 pt-2")
+  div.admin-modal-form-actions(class="flex justify-end gap-3 pt-2")
     u-button(color="neutral" variant="soft" :disabled="isLoading" @click="emit('cancel')") Отмена
     u-button(type="submit" color="primary" :loading="isLoading") {{ isEditMode ? 'Сохранить' : 'Создать' }}
 </template>

@@ -2,6 +2,7 @@
 @import "@nuxt/ui";
 @import "./theme.css";
 @import "./admin.css";
+@import "./dialogs.css";
 
 .break-anywhere {
   overflow-wrap: anywhere;

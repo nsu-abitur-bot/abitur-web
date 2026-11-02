@@ -68,7 +68,7 @@ u-form(:state="state" class="space-y-4" @submit="onSubmit")
   u-form-field(label="Вопрос" name="question" required class="w-full")
     u-input(v-model="state.question" placeholder="Например: Как подать документы?" class="w-full")
 
-  u-form-field(label="Синонимы (опционально)" name="aliases" help="Помогает боту лучше понимать похожие вопросы" class="w-full")
+  u-form-field(label="Синонимы" name="aliases" help="Помогает боту лучше понимать похожие вопросы" class="w-full")
     div(class="flex flex-wrap gap-2 mb-2")
       u-badge(
         v-for="alias in state.aliases"
@@ -79,6 +79,7 @@ u-form(:state="state" class="space-y-4" @submit="onSubmit")
       )
         span {{ alias }}
         u-button(
+          :aria-label="`Удалить синоним ${alias}`"
           icon="i-heroicons-x-mark"
           color="neutral"
           variant="link"
@@ -94,7 +95,7 @@ u-form(:state="state" class="space-y-4" @submit="onSubmit")
         class="flex-1"
         @keydown.enter.prevent="addAlias"
       )
-      u-button(color="neutral" variant="solid" @click="addAlias") Добавить
+      u-button(color="neutral" variant="outline" @click="addAlias") Добавить
 
   u-form-field(label="Ответ" name="answer" required class="w-full")
     u-textarea(
@@ -104,7 +105,7 @@ u-form(:state="state" class="space-y-4" @submit="onSubmit")
       class="w-full"
     )
 
-  div(class="flex justify-end gap-3 pt-2")
+  div.admin-modal-form-actions(class="flex justify-end gap-3 pt-2")
     u-button(color="neutral" variant="soft" :disabled="isLoading" @click="emit('cancel')") Отмена
     u-button(type="submit" color="primary" :loading="isLoading") {{ isEditMode ? 'Сохранить' : 'Создать' }}
 </template>

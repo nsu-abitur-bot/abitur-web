@@ -65,7 +65,7 @@ ui-page(title="Факультеты и направления")
               u-input(v-model="newFaculty.name" placeholder="Например: Факультет информационных технологий" class="w-full")
             u-form-field(label="Аббревиатуры (через запятую)" name="aliases" class="flex-1 min-w-48")
               u-input(v-model="newFaculty.aliases" placeholder="ФИТ, Факультет ИТ" class="w-full")
-          div(class="flex items-center justify-between gap-3")
+          div.admin-modal-form-actions(class="flex items-center justify-between gap-3")
             div(class="flex items-center gap-2")
               u-switch(v-model="newFaculty.is_active")
               span(class="text-xs text-gray-500") Активен

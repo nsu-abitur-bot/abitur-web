@@ -112,7 +112,7 @@ ui-box(:title="`Сокращения (${items.length})`")
       @updated="refresh"
     )
 
-  ui-form-dialog(v-model:open="isCreateModalOpen" title="Новая аббревиатура")
+  ui-form-dialog(v-model:open="isCreateModalOpen" size="compact" title="Новая аббревиатура")
     template(#body)
       abbrev-form(
         @submit="handleCreated"

@@ -55,20 +55,6 @@ const lightragLabel: Record<string, string> = {
 
 const getLightragLabel = (status: string) => lightragLabel[status] ?? "Неизвестно"
 
-const getLightragColor = (status: string) => {
-  switch (status) {
-    case "processed":
-      return "success"
-    case "failed":
-      return "error"
-    case "pending":
-    case "processing":
-      return "warning"
-    default:
-      return "neutral"
-  }
-}
-
 const hasLightragProblem = computed(() => data.value !== null && data.value.lightrag_status !== "processed")
 const hasNoEntities = computed(() => data.value !== null && data.value.entities_count === 0)
 const hasError = computed(() => !!data.value?.error)
@@ -76,7 +62,7 @@ const hasAnyProblem = computed(() => hasLightragProblem.value || hasNoEntities.v
 </script>
 
 <template lang="pug">
-ui-detail-dialog(v-model:open="open" title="Диагностика документа")
+ui-detail-dialog(v-model:open="open" title="Диагностика документа" size="regular")
   template(#default)
     div(v-if="isLoading" class="py-10 flex justify-center text-gray-500")
       u-icon(name="i-heroicons-arrow-path" class="animate-spin w-8 h-8")
@@ -93,9 +79,9 @@ ui-detail-dialog(v-model:open="open" title="Диагностика докуме�
 
     div(v-if="!isLoading && !errorMessage && data" class="space-y-4")
       div
-        div(class="text-xs text-gray-500") Название
+        div(class="text-xs admin-muted") Название
         div(class="font-medium text-gray-900 dark:text-white break-anywhere") {{ data.title || "—" }}
-        div(class="text-[11px] text-gray-400 break-anywhere mt-0.5") ID: {{ data.id }}
+        div(class="text-[11px] admin-muted break-anywhere mt-0.5") ID: {{ data.id }}
 
       u-alert(
         v-if="hasNoEntities"
@@ -107,7 +93,7 @@ ui-detail-dialog(v-model:open="open" title="Диагностика докуме�
       )
 
       u-alert(
-        v-else-if="hasLightragProblem"
+        v-else-if="hasLightragProblem && !hasError"
         color="warning"
         variant="soft"
         icon="i-heroicons-exclamation-triangle"
@@ -115,24 +101,24 @@ ui-detail-dialog(v-model:open="open" title="Диагностика докуме�
         :description="`Статус LightRAG: ${getLightragLabel(data.lightrag_status)}.`"
       )
 
-      div(class="grid grid-cols-2 gap-3 text-sm")
-        div(class="rounded-lg bg-gray-50 dark:bg-gray-800 p-3")
-          div(class="text-xs text-gray-500") Статус Postgres
+      div.diagnostic-facts(class="text-sm")
+        div
+          div(class="text-xs admin-muted") Статус Postgres
           div(class="font-medium break-anywhere") {{ data.postgres_status }}
-        div(class="rounded-lg p-3" :class="hasLightragProblem ? 'bg-warning-50 dark:bg-warning-950/30' : 'bg-gray-50 dark:bg-gray-800'")
-          div(class="text-xs text-gray-500") Статус LightRAG
-          u-badge(:color="getLightragColor(data.lightrag_status)" variant="subtle" size="sm" class="mt-1") {{ getLightragLabel(data.lightrag_status) }}
-        div(class="rounded-lg bg-gray-50 dark:bg-gray-800 p-3")
-          div(class="text-xs text-gray-500") Чанки
+        div
+          div(class="text-xs admin-muted") Статус LightRAG
+          div(class="font-medium" :class="hasLightragProblem ? 'text-error-600 dark:text-error-400' : ''") {{ getLightragLabel(data.lightrag_status) }}
+        div
+          div(class="text-xs admin-muted") Чанки
           div(class="font-medium") {{ data.chunks_count }}
-        div(class="rounded-lg p-3" :class="hasNoEntities ? 'bg-error-50 dark:bg-error-950/30' : 'bg-gray-50 dark:bg-gray-800'")
-          div(class="text-xs text-gray-500") Сущности
+        div
+          div(class="text-xs admin-muted") Сущности
           div(class="font-medium" :class="hasNoEntities ? 'text-error-600 dark:text-error-400' : ''") {{ data.entities_count }}
-        div(class="rounded-lg bg-gray-50 dark:bg-gray-800 p-3")
-          div(class="text-xs text-gray-500") Связи
+        div
+          div(class="text-xs admin-muted") Связи
           div(class="font-medium") {{ data.relations_count }}
-        div(class="rounded-lg bg-gray-50 dark:bg-gray-800 p-3")
-          div(class="text-xs text-gray-500") Длина контента
+        div
+          div(class="text-xs admin-muted") Длина контента
           div(class="font-medium") {{ data.content_length ?? "—" }}
 
       div(v-if="hasError" class="rounded-lg border border-error-200 dark:border-error-900 bg-error-50 dark:bg-error-950/30 p-3")
