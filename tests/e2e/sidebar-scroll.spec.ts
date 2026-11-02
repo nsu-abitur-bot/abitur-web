@@ -70,7 +70,8 @@ for (const colorScheme of ["light", "dark"] as const) {
       expect(await sidebar.evaluate(element => getComputedStyle(element).scrollbarWidth)).toBe("none")
       await page.keyboard.press(`Shift+${tab}`)
       await expect(links.nth(await links.count() - 2)).toBeFocused()
-      await page.setViewportSize({ width, height: 1000 })
+      // Two 44px action rows need a taller viewport to exercise the no-overflow case.
+      await page.setViewportSize({ width, height: 1100 })
       expect((await geometry()).maxScroll).toBe(0)
       expect((await geometry()).width).toBe(initialWidth)
       await last.click()
