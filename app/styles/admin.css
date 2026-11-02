@@ -100,6 +100,8 @@
 }
 
 .admin-brand-mark.has-logo {
+  border-radius: 0;
+  overflow: visible;
   background: transparent;
 }
 
@@ -152,15 +154,15 @@
 }
 
 .admin-topbar {
-  margin-left: 220px;
-  min-height: 64px;
-  padding: 12px 32px;
+  display: none;
+}
+
+.admin-sidebar-actions {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  background: var(--admin-panel);
-  border-bottom: 1px solid var(--admin-rule);
+  gap: 8px;
+  padding: 12px;
+  border-top: 1px solid var(--admin-rule);
 }
 
 .admin-content {
@@ -370,8 +372,12 @@
   }
 
   .admin-topbar {
-    margin-left: 0;
-    padding-inline: 16px;
+    display: flex;
+    align-items: center;
+    min-height: 64px;
+    padding: 12px 16px;
+    background: var(--admin-panel);
+    border-bottom: 1px solid var(--admin-rule);
   }
 
   .admin-menu {

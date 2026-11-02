@@ -158,7 +158,7 @@ test("admin can edit rules but cannot open superadmin team settings", async ({ p
   await page.goto("/settings?section=rules")
   await expect(page.getByRole("heading", { name: "Правила и лимиты", exact: true })).toBeVisible()
   await expect(page.locator("#instance-OPENAI_API_KEY")).toHaveCount(0)
-  await expect(page.locator("nav[aria-label='Разделы настроек']").getByRole("button", { name: "Команда", exact: true })).toHaveCount(0)
+  await expect(page.getByRole("navigation", { name: "Основная навигация" }).getByRole("link", { name: "Команда", exact: true })).toHaveCount(0)
   await page.goto("/settings?section=team")
   await expect(page.getByRole("heading", { name: "Недостаточно прав для этого раздела", exact: true })).toBeVisible()
 })
