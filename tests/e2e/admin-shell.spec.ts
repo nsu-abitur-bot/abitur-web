@@ -38,7 +38,11 @@ for (const colorScheme of ["light", "dark"] as const) {
         await page.screenshot({ path: testInfo.outputPath(`${path.slice(1)}-initial.png`), fullPage: true })
         const logout = sidebar.getByRole("button", { name: "Выйти", exact: true })
         await expect(logout).toBeVisible()
-        await logout.focus()
+        await sidebar.getByRole("link", { name: "Системные логи", exact: true }).focus()
+        await page.keyboard.press("Tab")
+        await expect(sidebar.locator(".admin-sidebar-actions button").first()).toBeFocused()
+        await page.keyboard.press("Tab")
+        await expect(logout).toBeFocused()
         await expect(logout).toBeInViewport({ ratio: 1 })
         expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
         await page.screenshot({ path: testInfo.outputPath(`${path.slice(1)}.png`), fullPage: true })
@@ -49,7 +53,7 @@ for (const colorScheme of ["light", "dark"] as const) {
 
 for (const logo of ["/nsu/logo-green.svg", "/wide-logo.svg"]) {
   test(`logo has no clipping mask: ${logo}`, async ({ page, context }, testInfo) => {
-    await context.request.post("http://127.0.0.1:9465/__test/branding", { data: { brand: { revision: 50, short_name: "НГУ", full_name: "Новосибирский государственный университет", logo_url: logo, accent_color: "#72c81e" } } })
+    await context.request.post("http://127.0.0.1:9465/__test/branding", { data: { brand: { revision: 50, short_name: "НГУ", full_name: "Новосибирский государственный университет", logo_url: `http://127.0.0.1:9464${logo}`, favicon_url: "", accent_color: "#72c81e" } } })
     await context.addCookies([{ name: "abitur-token", value: "e2e-local-admin-token", domain: "127.0.0.1", path: "/" }])
     await context.route("**/*", (route) => {
       const url = new URL(route.request().url())
