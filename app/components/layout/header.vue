@@ -79,7 +79,7 @@ header.admin-topbar
 aside#admin-navigation.admin-sidebar(:class="{ 'is-open': open }")
   nuxt-link.admin-brand(to="/" :title="universityTitle" :aria-label="`${universityTitle} — Панель управления`")
     span.admin-brand-mark(aria-hidden="true" :class="{ 'has-logo': logoUrl && !logoFailed }")
-      img(v-if="logoUrl && !logoFailed" :src="logoUrl" alt="" @error="logoFailed = true")
+      img(v-if="logoUrl && !logoFailed" :src="logoUrl" alt="" fetchpriority="high" decoding="sync" @error="logoFailed = true")
       span(v-else) {{ universityInitial }}
     span.admin-brand-copy
       span.admin-brand-name {{ universityName }}

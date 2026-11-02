@@ -14,7 +14,7 @@ useHead(() => ({
   link: [{ key: "brand-icon", rel: "icon", href: (!iconFailed.value && resolveBrandMedia(branding.value?.favicon_url, apiBase)) || "/favicon.svg", type: branding.value?.favicon_url && !iconFailed.value ? "image/png" : "image/svg+xml", onerror: () => {
     iconFailed.value = true
   } }],
-  style: [{ key: "brand-palette", textContent: `:root{${Object.entries(brandVariables(branding.value?.accent_color || DEFAULT_ACCENT)).map(([key, value]) => `${key}:${value}`).join(";")}}` }],
+  style: [{ key: "brand-palette", id: "brand-palette", textContent: `:root{${Object.entries(brandVariables(branding.value?.accent_color || DEFAULT_ACCENT)).map(([key, value]) => `${key}:${value}`).join(";")}}` }],
 }))
 </script>
 

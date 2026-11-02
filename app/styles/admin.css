@@ -92,8 +92,8 @@
   flex: 0 0 32px;
   width: 32px;
   height: 32px;
-  background: #4b4bd2;
-  color: white;
+  background: var(--ui-primary);
+  color: var(--ui-text-inverted);
   border-radius: 10px;
   font-size: 18px;
   overflow: hidden;
