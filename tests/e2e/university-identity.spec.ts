@@ -4,19 +4,14 @@ import { expect, test } from "@playwright/test"
 const fullName = "Университет науки и современных технологий"
 const logo = "/fixture-university-logo.svg"
 
-async function universityFixture(context: BrowserContext, options: { name?: string, logo?: string, unavailable?: boolean, delayed?: boolean } = {}) {
+async function universityFixture(context: BrowserContext, options: { name?: string, logo?: string } = {}) {
   let identity = { profile: "custom", short_name: options.name ?? "Демо-вуз", full_name: fullName, assistant_name: "Помощник", website: "", email: "", phone: "", address: "", logo_url: options.logo ?? "" }
   let revision = 1
   let conflict = false
-  const unavailable = options.unavailable
+  let unavailable = false
   let gets = 0
-  let release: (() => void) | undefined
-  const gate = options.delayed
-    ? new Promise<void>((resolve) => {
-        release = resolve
-      })
-    : Promise.resolve()
   const puts: Record<string, string | null>[] = []
+  await context.request.post("http://127.0.0.1:9465/__test/branding", { data: { brand: { ...identity, revision, accent_color: "#4b4bd2", favicon_url: "" }, status: 200 } })
   await context.addCookies([{ name: "abitur-token", value: "identity-fixture", domain: "127.0.0.1", path: "/" }])
   await context.route("**/*", async (route) => {
     const url = new URL(route.request().url())
@@ -42,7 +37,6 @@ async function universityFixture(context: BrowserContext, options: { name?: stri
     }
     if (url.pathname === "/api/v1/university" || url.pathname === "/api/v1/branding") {
       gets++
-      await gate
       return unavailable ? reply({ detail: "Unavailable" }, 503) : reply({ ...identity, revision, accent_color: "#4b4bd2", favicon_url: "" })
     }
     if (url.pathname === "/api/v1/settings/instance") {
@@ -56,6 +50,7 @@ async function universityFixture(context: BrowserContext, options: { name?: stri
         }
         revision++
         identity = { ...identity, short_name: changes.UNIVERSITY_SHORT_NAME ?? identity.short_name, logo_url: changes.UNIVERSITY_LOGO_URL ?? identity.logo_url }
+        await context.request.post("http://127.0.0.1:9465/__test/branding", { data: { brand: { ...identity, revision, accent_color: "#4b4bd2", favicon_url: "" }, status: unavailable ? 503 : 200 } })
       }
       return reply({ revision, encryption_ready: true, settings: [
         { key: "UNIVERSITY_SHORT_NAME", label: "Короткое название", group: "Университет", choices: [], kind: "text", secret: false, configured: true, value: identity.short_name },
@@ -69,9 +64,14 @@ async function universityFixture(context: BrowserContext, options: { name?: stri
   })
   return {
     puts,
+    failBrand: () => {
+      unavailable = true
+    },
+    recoverBrand: () => {
+      unavailable = false
+    },
     gets: () => gets,
     conflict: () => { conflict = true },
-    release: () => release?.(),
   }
 }
 
@@ -81,7 +81,7 @@ test("university save refreshes the shared brand and header without reload; draf
   const brand = page.locator(".admin-brand")
   await expect(brand).toContainText("Демо-вуз")
   await expect(page.locator(".admin-topbar")).toContainText("Демо-вуз")
-  await expect.poll(fixture.gets).toBe(2)
+  await expect.poll(fixture.gets).toBe(1)
   await page.locator("#instance-UNIVERSITY_SHORT_NAME").fill("Новый вуз")
 
   await expect(brand).toContainText("Демо-вуз")
@@ -92,29 +92,51 @@ test("university save refreshes the shared brand and header without reload; draf
   await page.getByRole("button", { name: /Сохранить изменения/ }).click()
   await expect(page.getByText(/Черновик сохранён/)).toBeVisible()
   await expect(brand).toContainText("Демо-вуз")
-  expect(fixture.gets()).toBe(2)
+  expect(fixture.gets()).toBe(1)
   await page.getByRole("button", { name: /Загрузить версию и сверить/ }).click()
   await expect(page.locator("#instance-UNIVERSITY_SHORT_NAME")).toHaveValue("Новый вуз")
   await page.getByRole("button", { name: /Сохранить изменения/ }).click()
   await expect(brand).toContainText("Новый вуз")
   await expect(page.locator(".admin-topbar")).toContainText("Новый вуз")
   await expect(brand.locator("img")).toHaveCount(0)
-  expect(fixture.gets()).toBe(6)
+  expect(fixture.gets()).toBe(5)
   expect(fixture.puts[1]).toEqual({ UNIVERSITY_SHORT_NAME: "Новый вуз" })
   await page.locator(".admin-sidebar").getByRole("link", { name: "Обратная связь", exact: true }).click()
   await expect(page).toHaveURL("/feedback")
   await expect(brand).toContainText("Новый вуз")
-  expect(fixture.gets()).toBe(6)
+  expect(fixture.gets()).toBe(5)
 })
 
-test("loading and unavailable profiles show a neutral identity", async ({ page, context }) => {
-  const fixture = await universityFixture(context, { delayed: true, unavailable: true })
+test("a failed public refresh preserves the working client brand; retry applies the new saved snapshot", async ({ page, context }) => {
+  const fixture = await universityFixture(context)
+  await page.goto("/settings?section=connections")
+  await expect(page.locator(".admin-brand-name")).toHaveText("Демо-вуз")
+  fixture.failBrand()
+  await page.locator("#instance-UNIVERSITY_SHORT_NAME").fill("Новая версия")
+  await page.getByRole("button", { name: /Сохранить изменения/ }).click()
+  await expect(page.getByText("Настройки сохранены.", { exact: true })).toBeVisible()
+  await expect(page.locator(".admin-brand-name")).toHaveText("Демо-вуз")
+  await expect(page.locator("style#brand-palette")).toHaveCount(1)
+  fixture.recoverBrand()
+  await page.locator("#instance-UNIVERSITY_SHORT_NAME").fill("Восстановленная версия")
+  await page.getByRole("button", { name: /Сохранить изменения/ }).click()
+  await expect(page.locator(".admin-brand-name")).toHaveText("Восстановленная версия")
+  await expect(page).toHaveTitle("Восстановленная версия")
+  await page.reload()
+  await expect(page.locator(".admin-brand-name")).toHaveText("Восстановленная версия")
+})
+
+test("unavailable public brand uses this instance's last good snapshot without client waiting", async ({ page, context }) => {
+  await universityFixture(context, { name: "Сохранённый вуз" })
   await page.goto("/feedback")
-  await expect(page.locator(".admin-brand-name")).toHaveText("Университет")
-  fixture.release()
-  await expect.poll(fixture.gets).toBeGreaterThan(0)
-  await expect(page.locator(".admin-brand-name")).toHaveText("Университет")
-  await expect(page.locator(".admin-brand")).not.toContainText("Абитуриент")
+  await expect(page.locator(".admin-brand-name")).toHaveText("Сохранённый вуз")
+  await context.request.post("http://127.0.0.1:9465/__test/branding", { data: { status: 503 } })
+  await page.reload()
+  await expect(page.locator(".admin-brand-name")).toHaveText("Сохранённый вуз")
+})
+
+test.afterEach(async ({ request }) => {
+  await request.post("http://127.0.0.1:9465/__test/branding", { data: {} })
 })
 
 for (const scenario of [
