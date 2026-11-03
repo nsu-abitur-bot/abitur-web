@@ -8,7 +8,7 @@
       name="description"
       content="Помощник для приёмной кампании: отвечает на вопросы абитуриентов по документам и FAQ вашего вуза. Telegram, MAX и единая панель управления."
     />
-    <meta name="theme-color" content="#f7f5ef" />
+    <meta name="theme-color" content="#ffffff" />
     <meta
       property="og:title"
       content="Абитуриент — о поступлении, из материалов вуза"
@@ -24,21 +24,21 @@
     <style>
       :root {
         color-scheme: light;
-        --paper: #f7f5ef;
-        --ink: #22291f;
-        --muted: #62695e;
-        --line: #d8dbcf;
-        --green: #344d37;
-        --lime: #d9e7b4;
-        --white: #fffefa;
+        --page: #ffffff;
+        --ink: #202330;
+        --muted: #646c7c;
+        --line: #e2e5ec;
+        --primary: #4b4bd2;
+        --selection: #f8f8fd;
+        --white: #ffffff;
         font-family:
-          Inter,
+          system-ui,
           -apple-system,
           BlinkMacSystemFont,
           "Segoe UI",
           sans-serif;
         color: var(--ink);
-        background: var(--paper);
+        background: var(--page);
         font-synthesis: none;
       }
       * {
@@ -60,14 +60,14 @@
       }
       a:focus-visible,
       summary:focus-visible {
-        outline: 3px solid #8b9d58;
+        outline: 3px solid #4b4bd2;
         outline-offset: 5px;
       }
       svg {
         display: block;
       }
       ::selection {
-        background: var(--lime);
+        background: var(--selection);
       }
       .wrap {
         width: min(1200px, calc(100% - 96px));
@@ -104,8 +104,8 @@
       .brand-mark {
         display: grid;
         place-items: center;
-        background: var(--green);
-        color: var(--lime);
+        background: var(--primary);
+        color: #ffffff;
         width: 34px;
         height: 34px;
         border-radius: 8px;
@@ -151,19 +151,19 @@
         content: "";
         height: 7px;
         width: 7px;
-        background: #849758;
+        background: #4b4bd2;
         border-radius: 50%;
       }
       h1 {
         font-size: clamp(42px, 4.8vw, 67px);
         line-height: 1.06;
-        letter-spacing: -0.055em;
-        font-weight: 550;
+        letter-spacing: -0.04em;
+        font-weight: 650;
         margin: 0 0 27px;
       }
       h1 em {
         font-style: normal;
-        color: var(--green);
+        color: var(--primary);
       }
       .intro {
         font-size: 18px;
@@ -179,16 +179,16 @@
         gap: 20px;
         min-height: 48px;
         padding: 13px 20px;
-        border-radius: 5px;
+        border-radius: 8px;
         text-decoration: none;
         font-size: 14px;
         font-weight: 600;
-        background: var(--green);
+        background: var(--primary);
         color: var(--white);
-        border: 1px solid var(--green);
+        border: 1px solid var(--primary);
       }
       .button:hover {
-        background: #253b28;
+        background: #4040b3;
       }
       .button svg {
         width: 18px;
@@ -201,9 +201,10 @@
       }
       .demo {
         position: relative;
-        background: #e9ecdf;
+        background: #f8f9fb;
+        border: 1px solid var(--line);
         padding: 30px 24px 25px;
-        border-radius: 12px;
+        border-radius: 10px;
       }
       .demo-top {
         display: flex;
@@ -212,7 +213,7 @@
         gap: 12px;
         margin: 0 0 22px;
         font-size: 12px;
-        color: #5e6857;
+        color: #646c7c;
       }
       .demo-top strong {
         color: var(--ink);
@@ -225,7 +226,7 @@
         gap: 16px;
       }
       .question {
-        background: var(--green);
+        background: var(--primary);
         color: var(--white);
         border-radius: 12px 12px 3px 12px;
         padding: 14px 18px;
@@ -234,11 +235,11 @@
       }
       .answer {
         background: var(--white);
-        border: 1px solid #dce0d2;
+        border: 1px solid #e2e5ec;
         border-radius: 12px 12px 12px 3px;
         padding: 19px;
         margin-right: 24px;
-        box-shadow: 0 3px 0 #d8ddcc66;
+        box-shadow: 0 2px 6px #20233008;
       }
       .answer p {
         margin: 0 0 14px;
@@ -266,7 +267,7 @@
         margin: 18px 0 0;
         font-size: 11px;
         line-height: 1.5;
-        color: #66705c;
+        color: #646c7c;
       }
       .note-strip {
         border-top: 1px solid var(--line);
@@ -313,7 +314,7 @@
         font-size: 36px;
         line-height: 1.16;
         letter-spacing: -1.5px;
-        font-weight: 550;
+        font-weight: 650;
         max-width: 460px;
         margin: 0;
       }
@@ -335,12 +336,12 @@
       }
       .feature-number {
         font-size: 12px;
-        color: #626d55;
+        color: #646c7c;
       }
       .feature h3 {
         font-size: 19px;
         letter-spacing: -0.4px;
-        font-weight: 550;
+        font-weight: 650;
         margin: 23px 0 12px;
       }
       .feature p {
@@ -350,7 +351,8 @@
         margin: 0;
       }
       .steps-section {
-        background: #e9ecdf;
+        background: var(--white);
+        border: 1px solid var(--line);
         border-radius: 10px;
         padding: 44px;
         display: grid;
@@ -374,20 +376,20 @@
         grid-template-columns: 28px 1fr;
         gap: 19px;
         padding: 22px 0;
-        border-top: 1px solid #cdd3bf;
+        border-top: 1px solid #e2e5ec;
       }
       .steps li:first-child {
         padding-top: 0;
         border-top: 0;
       }
       .step-number {
-        color: var(--green);
+        color: var(--primary);
         font-size: 13px;
         padding-top: 4px;
       }
       .steps h3 {
         font-size: 17px;
-        font-weight: 550;
+        font-weight: 650;
         margin: 0 0 8px;
       }
       .steps p {
@@ -411,7 +413,7 @@
       }
       .faq h2 {
         font-size: 28px;
-        font-weight: 550;
+        font-weight: 650;
         letter-spacing: -1px;
         margin: 0;
       }
@@ -450,8 +452,9 @@
         padding: 0 28px 22px 0;
       }
       .contact {
-        background: var(--green);
-        color: var(--white);
+        background: var(--white);
+        color: var(--ink);
+        border: 1px solid var(--line);
         border-radius: 10px;
         padding: 47px 44px;
         display: flex;
@@ -471,23 +474,23 @@
       .contact p {
         font-size: 14px;
         line-height: 1.7;
-        color: #d0dac9;
+        color: #646c7c;
         max-width: 520px;
         margin: 0;
       }
       .contact .button {
-        background: var(--lime);
-        color: var(--ink);
-        border-color: var(--lime);
+        background: var(--primary);
+        color: var(--white);
+        border-color: var(--primary);
         white-space: nowrap;
       }
       .contact .button:hover {
-        background: #e6f0c8;
+        background: #4040b3;
       }
       .contact .pending-contact {
         font-size: 14px;
-        color: var(--white);
-        border-bottom: 1px solid #a0b196;
+        color: var(--muted);
+        border-bottom: 1px solid #e2e5ec;
         padding-bottom: 5px;
         max-width: 210px;
       }
