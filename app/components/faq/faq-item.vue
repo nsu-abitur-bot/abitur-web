@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import type { components } from "#openapi"
-
-type FaqItem = components["schemas"]["FaqItem"]
+import type { FaqItem } from "~/types/faq"
 
 const props = defineProps<{
   item: FaqItem
@@ -32,7 +30,9 @@ div(class="py-4")
 
   div(class="flex flex-col gap-3")
     div(class="flex justify-between items-start gap-4")
-      h3(class="text-sm font-semibold text-gray-900 dark:text-gray-100") {{ props.item.question }}
+      div(class="flex items-center gap-2")
+        h3(class="text-sm font-semibold text-gray-900 dark:text-gray-100") {{ props.item.question }}
+        u-badge(:color="item.verification_status === 'confirmed' ? 'success' : 'warning'" variant="subtle" size="sm") {{ item.verification_status === 'confirmed' ? 'Подтверждено' : 'Черновик' }}
       div(class="flex gap-2 shrink-0")
         u-button(
           aria-label="Редактировать"
@@ -72,4 +72,9 @@ div(class="py-4")
     // The Answer block
     div(class="mt-1")
       p(class="text-gray-700 dark:text-gray-300 pre-wrap-anywhere text-sm") {{ props.item.answer }}
+    div(class="text-xs text-gray-600 dark:text-gray-400 space-y-1")
+      p(v-if="item.source_document") Документ: {{ item.source_document }}
+      p(v-if="item.source_location") Место: {{ item.source_location }}
+      p(v-if="item.confirmed_by") Подтвердил: {{ item.confirmed_by }}
+      p(v-if="item.confirmed_at") Дата подтверждения: {{ item.confirmed_at }}
 </template>
