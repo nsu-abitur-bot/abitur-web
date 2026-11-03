@@ -1,0 +1,40 @@
+# Главный сайт проекта
+
+Лендинг — статические файлы `public/project-site/`. Они входят в обычный Docker-образ веба и выкладываются существующим CI после зелёных проверок `main`. Страница работает без JavaScript, авторизации, API, сторонних шрифтов и аналитики. Публичный адрес — `https://abitur.site/`.
+
+На поддоменах вузов `/` остаётся админкой. Для основного домена Caddy маршрутизирует только публичные файлы лендинга в уже работающий web-контейнер. Порты и ссылки административных интерфейсов в лендинге не публикуются.
+
+## Настройка основного домена
+
+A-запись `abitur.site`: `192.248.177.14`. Старую AAAA-запись Timeweb удалить, если у нового сервера не настроен соответствующий IPv6. Поддомены вузов не менять.
+
+Добавить отдельный блок к действующему Caddyfile:
+
+```caddyfile
+abitur.site {
+    encode zstd gzip
+    @home path /
+    handle @home {
+        rewrite * /project-site/index.html
+        reverse_proxy 127.0.0.1:13001
+    }
+    @assets path /project-site/icon.svg
+    handle @assets {
+        reverse_proxy 127.0.0.1:13001
+    }
+    handle /robots.txt {
+        respond "User-agent: *\nAllow: /\n" 200
+    }
+    handle {
+        respond "Страница не найдена" 404
+    }
+}
+```
+
+До reload сохранить Caddyfile, проверить `caddy validate --config /etc/caddy/Caddyfile`, затем выполнить `systemctl reload caddy`. TLS выпускается Caddy после переключения DNS. Для отката достаточно вернуть сохранённый Caddyfile и повторить validate/reload. Данные и конфигурация демостендов не меняются.
+
+## Проверки
+
+`task check`, `task types:verify`, `task build`, `task e2e`. Сценарии `tests/e2e/project-landing.spec.ts` проверяют публичную загрузку без API/сессии, мобильную и настольную ширину, FAQ, метаданные и работу без JavaScript.
+
+После публикации проверить HTTPS, содержимое `/`, SVG-иконку, 404 для `/settings` на основном домене и прежний вход в админки на поддоменах.
