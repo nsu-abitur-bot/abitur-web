@@ -1,0 +1,920 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Абитуриент — ответы на вопросы о поступлении</title>
+    <meta
+      name="description"
+      content="Помощник для приёмной кампании: отвечает на вопросы абитуриентов по документам и FAQ вашего вуза. Telegram, MAX и единая панель управления."
+    />
+    <meta name="theme-color" content="#f7f5ef" />
+    <meta
+      property="og:title"
+      content="Абитуриент — о поступлении, из материалов вуза"
+    />
+    <meta
+      property="og:description"
+      content="Загрузите материалы вашего университета и попробуйте помощника на вопросах абитуриентов."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://abitur.site/" />
+    <link rel="canonical" href="https://abitur.site/" />
+    <link rel="icon" href="/project-site/icon.svg" type="image/svg+xml" />
+    <style>
+      :root {
+        color-scheme: light;
+        --paper: #f7f5ef;
+        --ink: #22291f;
+        --muted: #62695e;
+        --line: #d8dbcf;
+        --green: #344d37;
+        --lime: #d9e7b4;
+        --white: #fffefa;
+        font-family:
+          Inter,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        color: var(--ink);
+        background: var(--paper);
+        font-synthesis: none;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 28px;
+      }
+      body {
+        margin: 0;
+      }
+      a {
+        color: inherit;
+      }
+      button,
+      a {
+        -webkit-tap-highlight-color: transparent;
+      }
+      a:focus-visible,
+      summary:focus-visible {
+        outline: 3px solid #8b9d58;
+        outline-offset: 5px;
+      }
+      svg {
+        display: block;
+      }
+      ::selection {
+        background: var(--lime);
+      }
+      .wrap {
+        width: min(1200px, calc(100% - 96px));
+        margin: auto;
+      }
+      .skip {
+        position: absolute;
+        top: -80px;
+        left: 24px;
+        padding: 12px;
+        background: var(--white);
+        z-index: 10;
+      }
+      .skip:focus {
+        top: 8px;
+      }
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 24px;
+        padding: 28px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .brand {
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        font-size: 21px;
+        font-weight: 650;
+        letter-spacing: -0.7px;
+      }
+      .brand-mark {
+        display: grid;
+        place-items: center;
+        background: var(--green);
+        color: var(--lime);
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        font-size: 25px;
+        font-weight: 700;
+        line-height: 1;
+      }
+      .nav {
+        display: flex;
+        gap: 30px;
+        align-items: center;
+        font-size: 14px;
+      }
+      .nav a {
+        text-decoration: none;
+      }
+      .nav a:hover {
+        text-decoration: underline;
+        text-underline-offset: 5px;
+      }
+      .nav .contact-link {
+        border-bottom: 1px solid var(--ink);
+        padding-bottom: 4px;
+      }
+      .hero {
+        display: grid;
+        grid-template-columns: 1.12fr 1fr;
+        gap: 64px;
+        padding: 84px 0 72px;
+        align-items: center;
+      }
+      .eyebrow {
+        font-size: 12px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        font-weight: 600;
+        display: flex;
+        gap: 9px;
+        align-items: center;
+        margin: 0 0 28px;
+      }
+      .eyebrow:before {
+        content: "";
+        height: 7px;
+        width: 7px;
+        background: #849758;
+        border-radius: 50%;
+      }
+      h1 {
+        font-size: clamp(42px, 4.8vw, 67px);
+        line-height: 1.06;
+        letter-spacing: -0.055em;
+        font-weight: 550;
+        margin: 0 0 27px;
+      }
+      h1 em {
+        font-style: normal;
+        color: var(--green);
+      }
+      .intro {
+        font-size: 18px;
+        line-height: 1.65;
+        max-width: 430px;
+        color: var(--muted);
+        margin: 0 0 31px;
+      }
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        min-height: 48px;
+        padding: 13px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+        background: var(--green);
+        color: var(--white);
+        border: 1px solid var(--green);
+      }
+      .button:hover {
+        background: #253b28;
+      }
+      .button svg {
+        width: 18px;
+        height: 18px;
+      }
+      .hero-note {
+        font-size: 12px;
+        color: var(--muted);
+        margin: 14px 0 0;
+      }
+      .demo {
+        position: relative;
+        background: #e9ecdf;
+        padding: 30px 24px 25px;
+        border-radius: 12px;
+      }
+      .demo-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin: 0 0 22px;
+        font-size: 12px;
+        color: #5e6857;
+      }
+      .demo-top strong {
+        color: var(--ink);
+        font-weight: 600;
+      }
+      .chat {
+        font-size: 14px;
+        line-height: 1.6;
+        display: grid;
+        gap: 16px;
+      }
+      .question {
+        background: var(--green);
+        color: var(--white);
+        border-radius: 12px 12px 3px 12px;
+        padding: 14px 18px;
+        margin: 0 0 0 42px;
+        justify-self: end;
+      }
+      .answer {
+        background: var(--white);
+        border: 1px solid #dce0d2;
+        border-radius: 12px 12px 12px 3px;
+        padding: 19px;
+        margin-right: 24px;
+        box-shadow: 0 3px 0 #d8ddcc66;
+      }
+      .answer p {
+        margin: 0 0 14px;
+      }
+      .answer ol {
+        padding-left: 19px;
+        margin: 0 0 18px;
+      }
+      .answer li + li {
+        margin-top: 8px;
+      }
+      .source {
+        border-top: 1px solid var(--line);
+        padding-top: 13px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .source strong {
+        display: block;
+        color: var(--ink);
+        font-weight: 500;
+        margin-top: 3px;
+      }
+      .demo-caption {
+        margin: 18px 0 0;
+        font-size: 11px;
+        line-height: 1.5;
+        color: #66705c;
+      }
+      .note-strip {
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        padding: 24px 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .channels {
+        display: flex;
+        gap: 25px;
+        color: var(--ink);
+        font-weight: 500;
+      }
+      .channels span {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .channels svg {
+        width: 17px;
+        height: 17px;
+      }
+      section.content {
+        padding: 80px 0;
+      }
+      .section-heading {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 48px;
+        margin-bottom: 42px;
+      }
+      .section-label {
+        font-size: 12px;
+        color: var(--muted);
+        margin: 0 0 16px;
+      }
+      .section-heading h2,
+      .steps-heading h2 {
+        font-size: 36px;
+        line-height: 1.16;
+        letter-spacing: -1.5px;
+        font-weight: 550;
+        max-width: 460px;
+        margin: 0;
+      }
+      .section-heading > p {
+        font-size: 16px;
+        color: var(--muted);
+        line-height: 1.75;
+        max-width: 430px;
+        margin: 30px 0 0;
+      }
+      .features {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 38px;
+      }
+      .feature {
+        border-top: 1px solid var(--line);
+        padding-top: 21px;
+      }
+      .feature-number {
+        font-size: 12px;
+        color: #626d55;
+      }
+      .feature h3 {
+        font-size: 19px;
+        letter-spacing: -0.4px;
+        font-weight: 550;
+        margin: 23px 0 12px;
+      }
+      .feature p {
+        font-size: 14px;
+        line-height: 1.8;
+        color: var(--muted);
+        margin: 0;
+      }
+      .steps-section {
+        background: #e9ecdf;
+        border-radius: 10px;
+        padding: 44px;
+        display: grid;
+        grid-template-columns: 0.85fr 1fr;
+        gap: 75px;
+      }
+      .steps-heading > p:last-child {
+        font-size: 15px;
+        line-height: 1.7;
+        color: var(--muted);
+        max-width: 330px;
+        margin-top: 21px;
+      }
+      .steps {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      .steps li {
+        display: grid;
+        grid-template-columns: 28px 1fr;
+        gap: 19px;
+        padding: 22px 0;
+        border-top: 1px solid #cdd3bf;
+      }
+      .steps li:first-child {
+        padding-top: 0;
+        border-top: 0;
+      }
+      .step-number {
+        color: var(--green);
+        font-size: 13px;
+        padding-top: 4px;
+      }
+      .steps h3 {
+        font-size: 17px;
+        font-weight: 550;
+        margin: 0 0 8px;
+      }
+      .steps p {
+        font-size: 14px;
+        line-height: 1.7;
+        color: var(--muted);
+        margin: 0;
+      }
+      .honesty {
+        font-size: 13px;
+        line-height: 1.7;
+        color: var(--muted);
+        margin: 20px 0 0;
+        max-width: 750px;
+      }
+      .faq {
+        display: grid;
+        grid-template-columns: 0.85fr 1fr;
+        gap: 75px;
+        padding: 75px 0;
+      }
+      .faq h2 {
+        font-size: 28px;
+        font-weight: 550;
+        letter-spacing: -1px;
+        margin: 0;
+      }
+      .faq details {
+        border-bottom: 1px solid var(--line);
+      }
+      .faq details:first-child {
+        border-top: 1px solid var(--line);
+      }
+      summary {
+        padding: 21px 26px 21px 0;
+        cursor: pointer;
+        font-size: 15px;
+        position: relative;
+        list-style: none;
+      }
+      summary::-webkit-details-marker {
+        display: none;
+      }
+      summary:after {
+        content: "+";
+        position: absolute;
+        right: 0;
+        color: var(--muted);
+        font-size: 21px;
+        top: 16px;
+      }
+      details[open] summary:after {
+        content: "−";
+      }
+      .faq details p {
+        font-size: 14px;
+        line-height: 1.8;
+        color: var(--muted);
+        margin: 0;
+        padding: 0 28px 22px 0;
+      }
+      .contact {
+        background: var(--green);
+        color: var(--white);
+        border-radius: 10px;
+        padding: 47px 44px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 35px;
+        margin-bottom: 55px;
+      }
+      .contact h2 {
+        font-size: 34px;
+        font-weight: 500;
+        letter-spacing: -1.3px;
+        line-height: 1.2;
+        max-width: 550px;
+        margin: 0 0 13px;
+      }
+      .contact p {
+        font-size: 14px;
+        line-height: 1.7;
+        color: #d0dac9;
+        max-width: 520px;
+        margin: 0;
+      }
+      .contact .button {
+        background: var(--lime);
+        color: var(--ink);
+        border-color: var(--lime);
+        white-space: nowrap;
+      }
+      .contact .button:hover {
+        background: #e6f0c8;
+      }
+      .contact .pending-contact {
+        font-size: 14px;
+        color: var(--white);
+        border-bottom: 1px solid #a0b196;
+        padding-bottom: 5px;
+        max-width: 210px;
+      }
+      .footer {
+        border-top: 1px solid var(--line);
+        padding: 25px 0 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .footer .brand {
+        font-size: 16px;
+        color: var(--ink);
+      }
+      .footer .brand-mark {
+        height: 25px;
+        width: 25px;
+        font-size: 19px;
+        border-radius: 6px;
+      }
+      .footer a:last-child {
+        text-underline-offset: 4px;
+      }
+      @media (min-width: 1500px) {
+        .hero {
+          padding-top: 105px;
+          padding-bottom: 90px;
+        }
+      }
+      @media (max-width: 1000px) {
+        .wrap {
+          width: calc(100% - 56px);
+        }
+        .hero {
+          gap: 30px;
+          padding: 65px 0;
+        }
+        .hero h1 {
+          font-size: 49px;
+        }
+        .demo {
+          padding: 24px 18px;
+        }
+        .steps-section,
+        .faq {
+          gap: 38px;
+        }
+        .contact h2 {
+          font-size: 29px;
+        }
+        .features {
+          gap: 24px;
+        }
+      }
+      @media (max-width: 720px) {
+        .wrap {
+          width: calc(100% - 40px);
+        }
+        .header {
+          padding: 21px 0;
+        }
+        .nav {
+          gap: 16px;
+          font-size: 12px;
+        }
+        .nav .about-link {
+          display: none;
+        }
+        .brand {
+          font-size: 19px;
+        }
+        .brand-mark {
+          width: 30px;
+          height: 30px;
+          font-size: 23px;
+        }
+        .hero {
+          grid-template-columns: 1fr;
+          padding: 49px 0 34px;
+          gap: 35px;
+        }
+        .hero h1 {
+          font-size: 48px;
+          max-width: 510px;
+        }
+        .eyebrow {
+          margin-bottom: 22px;
+        }
+        .intro {
+          font-size: 16px;
+          max-width: 440px;
+        }
+        .demo {
+          max-width: 500px;
+          width: 100%;
+          justify-self: center;
+        }
+        .note-strip {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 16px;
+          padding: 23px 0;
+        }
+        .section-heading {
+          grid-template-columns: 1fr;
+          gap: 16px;
+          margin-bottom: 30px;
+        }
+        .section-heading > p {
+          margin: 0;
+        }
+        .section-heading h2,
+        .steps-heading h2 {
+          font-size: 30px;
+        }
+        .features {
+          grid-template-columns: 1fr;
+          gap: 30px;
+        }
+        .feature {
+          padding-top: 16px;
+        }
+        .feature h3 {
+          margin: 13px 0 8px;
+        }
+        .features .feature-number {
+          float: right;
+        }
+        .feature p {
+          max-width: 480px;
+        }
+        .steps-section {
+          padding: 28px 23px;
+          grid-template-columns: 1fr;
+          gap: 28px;
+        }
+        .steps-heading > p:last-child {
+          max-width: none;
+        }
+        .faq {
+          grid-template-columns: 1fr;
+          gap: 25px;
+          padding: 55px 0;
+        }
+        section.content {
+          padding: 55px 0;
+        }
+        .contact {
+          padding: 32px 25px;
+          flex-direction: column;
+          align-items: flex-start;
+          margin-bottom: 38px;
+          gap: 25px;
+        }
+        .contact h2 {
+          font-size: 29px;
+        }
+        .footer {
+          align-items: flex-start;
+          flex-wrap: wrap;
+          font-size: 11px;
+        }
+        .footer > p {
+          width: 100%;
+          order: 3;
+          margin: 0;
+        }
+        .answer {
+          margin-right: 12px;
+        }
+        .question {
+          margin-left: 25px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <a href="#main" class="skip">К содержимому</a>
+    <div class="wrap">
+      <header class="header">
+        <a class="brand" href="#" aria-label="Абитуриент — на главную"
+          ><span class="brand-mark" aria-hidden="true">а</span>Абитуриент</a
+        >
+        <nav class="nav" aria-label="Главная навигация">
+          <a class="about-link" href="#possibilities">Возможности</a
+          ><a href="#demo">Как попробовать</a
+          ><a class="contact-link" href="#contact">Связаться ↗</a>
+        </nav>
+      </header>
+      <main id="main">
+        <section class="hero" aria-labelledby="hero-title">
+          <div>
+            <p class="eyebrow">Помощник для приёмной кампании</p>
+            <h1 id="hero-title">
+              О поступлении.<br /><em>Из материалов<br />вашего вуза.</em>
+            </h1>
+            <p class="intro">
+              Бот отвечает на вопросы абитуриентов по документам и готовым
+              ответам университета. В привычном мессенджере, со ссылками на
+              источники.
+            </p>
+            <a class="button" href="#contact"
+              >Попробовать для своего вуза
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                aria-hidden="true"
+              >
+                <path d="M5 12h14m-6-6 6 6-6 6" /></svg
+            ></a>
+            <p class="hero-note">Начнём с демонстрации на ваших материалах</p>
+          </div>
+          <div class="demo" aria-label="Пример ответа помощника">
+            <div class="demo-top">
+              <strong>Абитуриент · НГУ</strong><span>Пример диалога</span>
+            </div>
+            <div class="chat">
+              <p class="question">Какие программы бакалавриата есть на ФИТ?</p>
+              <div class="answer">
+                <p>
+                  На ФИТ НГУ есть две программы по направлению «Информатика и
+                  вычислительная техника»:
+                </p>
+                <ol>
+                  <li>Программная инженерия и компьютерные науки</li>
+                  <li>Технологии индустриальной программной инженерии</li>
+                </ol>
+                <div class="source">
+                  Источник<strong
+                    >Обзор факультета информационных технологий НГУ ↗</strong
+                  >
+                </div>
+              </div>
+            </div>
+            <p class="demo-caption">
+              Иллюстрация на основе проверочного диалога. Содержание ответа
+              зависит от загруженных материалов.
+            </p>
+          </div>
+        </section>
+        <div class="note-strip">
+          <span>Для приёмных комиссий и абитуриентов</span>
+          <div class="channels">
+            <span
+              ><svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                aria-hidden="true"
+              >
+                <path d="m21 3-5 18-5-7-8-3 18-8ZM11 14l10-11" /></svg
+              >Telegram</span
+            ><span
+              ><svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                aria-hidden="true"
+              >
+                <path d="M4 19V5h3l5 8 5-8h3v14M4 5l8 14 8-14" /></svg
+              >MAX</span
+            >
+          </div>
+        </div>
+        <section
+          id="possibilities"
+          class="content"
+          aria-labelledby="possibilities-title"
+        >
+          <div class="section-heading">
+            <div>
+              <p class="section-label">01 / Возможности</p>
+              <h2 id="possibilities-title">
+                Материалы университета. <br />Ответы на частые вопросы
+              </h2>
+            </div>
+            <p>
+              Соберите материалы в одном месте. Помощник найдёт подходящие
+              сведения, а сотрудники смогут посмотреть вопросы и обратную связь
+              в панели управления.
+            </p>
+          </div>
+          <div class="features">
+            <article class="feature">
+              <span class="feature-number">01</span>
+              <h3>Документы и готовые ответы</h3>
+              <p>
+                Добавляйте правила приёма, сведения о программах и ответы на
+                частые вопросы. Содержание базы знаний задаёт команда вуза.
+              </p>
+            </article>
+            <article class="feature">
+              <span class="feature-number">02</span>
+              <h3>Ответы с источниками</h3>
+              <p>
+                Для вопросов по базе знаний бот подбирает материалы и указывает
+                источники. Абитуриент может перейти к документу и проверить
+                подробности.
+              </p>
+            </article>
+            <article class="feature">
+              <span class="feature-number">03</span>
+              <h3>Управление без правок кода</h3>
+              <p>
+                Материалы, FAQ, подключения ботов и моделей — в админке. Там же
+                доступны журнал сообщений, статистика и обратная связь.
+              </p>
+            </article>
+          </div>
+        </section>
+        <section id="demo" class="steps-section" aria-labelledby="demo-title">
+          <div class="steps-heading">
+            <p class="section-label">02 / Демонстрация</p>
+            <h2 id="demo-title">Посмотрите, как это<br />работает у вас</h2>
+            <p>
+              Для знакомства с системой подготовим отдельный демостенд с
+              материалами вашего университета.
+            </p>
+          </div>
+          <ol class="steps">
+            <li>
+              <span class="step-number">01</span>
+              <div>
+                <h3>Выберите материалы</h3>
+                <p>
+                  Начните с нескольких документов и вопросов, которые часто
+                  поступают в приёмную комиссию.
+                </p>
+              </div>
+            </li>
+            <li>
+              <span class="step-number">02</span>
+              <div>
+                <h3>Попробуйте помощника</h3>
+                <p>
+                  Задайте вопросы по загруженным материалам. Посмотрите ответы и
+                  проверьте указанные источники.
+                </p>
+              </div>
+            </li>
+            <li>
+              <span class="step-number">03</span>
+              <div>
+                <h3>Обсудим результат</h3>
+                <p>
+                  Вместе разберём, где помощник полезен, каких материалов не
+                  хватает и что нужно доработать для вашего вуза.
+                </p>
+              </div>
+            </li>
+          </ol>
+        </section>
+        <p class="honesty">
+          Проект развивается. Перед использованием в приёмной кампании ответы
+          нужно проверить на материалах вашего вуза. Решения по поступлению
+          остаются за университетом.
+        </p>
+        <section class="faq" aria-labelledby="faq-title">
+          <div>
+            <p class="section-label">03 / Вопросы</p>
+            <h2 id="faq-title">Перед знакомством</h2>
+          </div>
+          <div>
+            <details>
+              <summary>Это только для НГУ?</summary>
+              <p>
+                Нет. Проект начался в НГУ, но поддерживает отдельные стенды с
+                материалами, названием, логотипом и ботами других университетов.
+              </p>
+            </details>
+            <details>
+              <summary>Откуда помощник берёт информацию?</summary>
+              <p>
+                Из материалов и готовых ответов, добавленных командой вуза. Для
+                вопросов по базе знаний выполняется поиск по документам. Полнота
+                и актуальность этих материалов влияют на результат.
+              </p>
+            </details>
+            <details>
+              <summary>Нужно сразу подключать свой вуз?</summary>
+              <p>
+                Сначала можно провести демонстрацию на небольшой подборке
+                материалов. Она поможет оценить ответы до обсуждения дальнейшего
+                использования.
+              </p>
+            </details>
+          </div>
+        </section>
+        <section id="contact" class="contact" aria-labelledby="contact-title">
+          <div>
+            <h2 id="contact-title">
+              Давайте попробуем<br />на материалах вашего вуза
+            </h2>
+            <p>
+              Расскажите, какой университет представляете и какие вопросы хотите
+              разобрать на демонстрации.
+            </p>
+          </div>
+          <span class="pending-contact"
+            >Контакт команды — перед публикацией</span
+          >
+        </section>
+      </main>
+      <footer class="footer">
+        <a class="brand" href="#"
+          ><span class="brand-mark" aria-hidden="true">а</span>Абитуриент</a
+        >
+        <p>Помощник для вопросов о поступлении</p>
+        <a
+          href="https://github.com/nsu-abitur-bot"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Проект на GitHub ↗</a
+        >
+      </footer>
+    </div>
+  </body>
+</html>
