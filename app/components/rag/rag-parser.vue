@@ -4,7 +4,7 @@ import { storeToRefs } from "pinia"
 import { confirmRagUpload, preprocessRagDocument, previewCsvDocuments, uploadRagDocuments } from "~/services/rag-upload"
 import { useRagParserStore } from "~/stores/rag-parser"
 import { RAG_ACCEPTED_EXTENSIONS } from "~/types/rag-upload"
-import { validateRagFiles } from "~/utils/rag-upload"
+import { ragUploadStatusLabel, validateRagFiles } from "~/utils/rag-upload"
 
 const emit = defineEmits<{
   (e: "success"): void
@@ -47,7 +47,7 @@ async function handleFiles(event: Event) {
   uploadingFiles.value = true
   try {
     const result = await uploadRagDocuments({ files: validFiles })
-    fileResults.value.push(...result.results.map(item => `${item.filename}: ${item.status === "indexed" ? "Загружен" : "Пропущен"}. ${item.message}`))
+    fileResults.value.push(...result.results.map(item => `${item.filename}: ${ragUploadStatusLabel(item.status)}. ${item.message}`))
   } catch {
     fileResults.value.push(...validFiles.map(file => `${file.name}: Не удалось загрузить файл. Результат неизвестен — проверьте список материалов перед повторной загрузкой.`))
   } finally {
@@ -239,11 +239,12 @@ div(class="space-y-4")
     .admin-actions
       input(ref="uploadInput" type="file" multiple :accept="RAG_ACCEPTED_EXTENSIONS.join(',')" class="hidden" @change="handleFiles")
       u-button(color="neutral" variant="outline" icon="i-lucide-upload" :loading="uploadingFiles" @click="uploadInput?.click()") Загрузить файлы
-    p(class="text-xs admin-muted") До 10 МБ на файл. Файлы сразу добавляются в базу; CSV загружается как текст.
+    p(class="text-xs admin-muted") До 10 МБ на файл. После обработки материал ожидает проверки редактором; CSV загружается как текст.
     div(v-if="fileResults.length" role="status" class="mt-3 space-y-2")
       ul(class="space-y-2")
         li(v-for="(result, index) in fileResults" :key="index" class="break-anywhere") {{ result }}
-      p.admin-muted Проверьте результаты каждого файла. Можно выбрать файлы повторно через «Загрузить файлы» или закрыть окно и проверить список материалов.
+      p.admin-muted Проверьте результаты каждого файла. Материалы со статусом «Ожидает проверки» появятся в очереди.
+      nuxt-link(to="/rag/proposals" class="text-primary font-medium underline") Открыть очередь предложений
   // Main Logic View
   div(class="space-y-4 border-t border-default pt-5")
     h3(class="text-sm font-semibold") Ссылки

@@ -7,7 +7,7 @@ import { emptyFixture } from "./fixtures/empty-states"
 const cors = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "*", "Access-Control-Allow-Methods": "*" }
 
 // Keep the audit exhaustive when a route is added, including routes outside the admin shell.
-const routeFiles = ["abbrev.vue", "admission-scores.vue", "faculties.vue", "faq.vue", "feedback.vue", "index.vue", "login.vue", "messages.vue", "rag/document/[id].vue", "rag/inspector.vue", "rating.vue", "register.vue", "settings.vue", "stats.vue", "system-logs.vue", "testing.vue"]
+const routeFiles = ["abbrev.vue", "admission-scores.vue", "faculties.vue", "faq.vue", "feedback.vue", "index.vue", "login.vue", "messages.vue", "rag/document/[id].vue", "rag/inspector.vue", "rag/proposals.vue", "rating.vue", "register.vue", "settings.vue", "stats.vue", "system-logs.vue", "testing.vue"]
 
 test("state audit includes every route file", async () => {
   expect((await readdir("app/pages", { recursive: true })).filter(file => file.endsWith(".vue")).sort()).toEqual(routeFiles)

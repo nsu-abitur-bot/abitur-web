@@ -481,6 +481,58 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/content-proposals": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** List Proposals */
+    get: operations["list_proposals_api_v1_content_proposals_get"]
+    put?: never
+    /** Create Proposal */
+    post: operations["create_proposal_api_v1_content_proposals_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/content-proposals/{proposal_id}/reject": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Reject Proposal */
+    post: operations["reject_proposal_api_v1_content_proposals__proposal_id__reject_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/content-proposals/{proposal_id}/approve": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Approve Proposal */
+    post: operations["approve_proposal_api_v1_content_proposals__proposal_id__approve_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/logs/request-stats": {
     parameters: {
       query?: never
@@ -908,7 +960,7 @@ export interface paths {
     get?: never
     put?: never
     /**
-     * Импорт документов по ссылкам из CSV
+     * Добавить документы из CSV в очередь редактора
      * @description Принимает CSV документ на вход и обрабатывает все документы там.
      *     Ожидаемый формат: Название,Link,Комментарий
      */
@@ -1549,10 +1601,10 @@ export interface components {
     /** CsvImportResponse */
     CsvImportResponse: {
       /**
-       * Imported Count
-       * @description Количество успешно импортированных документов
+       * Queued Count
+       * @description Количество документов, ожидающих проверки редактором
        */
-      imported_count: number
+      queued_count: number
       /**
        * Total Found
        * @description Всего найдено ссылок в CSV
@@ -2442,6 +2494,57 @@ export interface components {
        */
       is_active?: boolean | null
     }
+    /** ProposalCreate */
+    ProposalCreate: {
+      /**
+       * Source
+       * @enum {string}
+       */
+      source: "model" | "parser"
+      /**
+       * Graph Id
+       * @default abitur_kb
+       */
+      graph_id: string
+      /** Title */
+      title: string
+      /** Text */
+      text: string
+      /** Source Url */
+      source_url?: string | null
+      /** Source Hash */
+      source_hash?: string | null
+    }
+    /** ProposalResponse */
+    ProposalResponse: {
+      /** Id */
+      id: string
+      /** Source */
+      source: string
+      /** Graph Id */
+      graph_id: string
+      /** Title */
+      title: string
+      /** Text */
+      text: string
+      /** Source Url */
+      source_url: string | null
+      /** Source Hash */
+      source_hash: string | null
+      /** Status */
+      status: string
+      /** Reviewer Id */
+      reviewer_id: string | null
+      /** Document Id */
+      document_id: string | null
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string
+      /** Reviewed At */
+      reviewed_at: string | null
+    }
     /** RagDocument */
     RagDocument: {
       /**
@@ -2552,10 +2655,10 @@ export interface components {
        */
       accepted_formats: string[]
       /**
-       * Indexed Count
-       * @description Количество успешно проиндексированных файлов
+       * Queued Count
+       * @description Количество файлов в очереди редактора
        */
-      indexed_count: number
+      queued_count: number
       /**
        * Skipped Count
        * @description Количество пропущенных файлов
@@ -2845,7 +2948,7 @@ export interface components {
       filename: string
       /**
        * Status
-       * @description Статус обработки: indexed или skipped
+       * @description Статус обработки: queued или skipped
        */
       status: string
       /**
@@ -3906,6 +4009,121 @@ export interface operations {
         }
         content: {
           "application/json": number[]
+        }
+      }
+    }
+  }
+  list_proposals_api_v1_content_proposals_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["ProposalResponse"][]
+        }
+      }
+    }
+  }
+  create_proposal_api_v1_content_proposals_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ProposalCreate"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["ProposalResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  reject_proposal_api_v1_content_proposals__proposal_id__reject_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        proposal_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["ProposalResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  approve_proposal_api_v1_content_proposals__proposal_id__approve_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        proposal_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["ProposalResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
         }
       }
     }

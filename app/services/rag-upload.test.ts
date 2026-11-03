@@ -7,11 +7,11 @@ describe("uploadRagDocuments", () => {
   it("builds multipart request with repeated files field and default graph_id", async () => {
     const response: RagUploadResponse = {
       accepted_formats: [".txt", ".md"],
-      indexed_count: 2,
+      queued_count: 2,
       skipped_count: 0,
       results: [
-        { filename: "one.txt", status: "indexed", message: "Indexed", chars: 120 },
-        { filename: "two.md", status: "indexed", message: "Indexed", chars: 85 },
+        { filename: "one.txt", status: "queued", message: "Indexed", chars: 120 },
+        { filename: "two.md", status: "queued", message: "Indexed", chars: 85 },
       ],
     }
 
@@ -34,16 +34,16 @@ describe("uploadRagDocuments", () => {
     })
 
     expect(request).toHaveBeenCalledOnce()
-    expect(result.indexed_count).toBe(2)
+    expect(result.queued_count).toBe(2)
   })
 
   it("supports partial response from backend", async () => {
     const response: RagUploadResponse = {
       accepted_formats: [".txt"],
-      indexed_count: 1,
+      queued_count: 1,
       skipped_count: 1,
       results: [
-        { filename: "good.txt", status: "indexed", message: "Indexed", chars: 42 },
+        { filename: "good.txt", status: "queued", message: "Indexed", chars: 42 },
         { filename: "bad.txt", status: "skipped", message: "Empty file", chars: 0 },
       ],
     }

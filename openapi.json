@@ -1498,6 +1498,174 @@
         ]
       }
     },
+    "/api/v1/content-proposals": {
+      "get": {
+        "tags": [
+          "Content proposals"
+        ],
+        "summary": "List Proposals",
+        "operationId": "list_proposals_api_v1_content_proposals_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ProposalResponse"
+                  },
+                  "type": "array",
+                  "title": "Response List Proposals Api V1 Content Proposals Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Content proposals"
+        ],
+        "summary": "Create Proposal",
+        "operationId": "create_proposal_api_v1_content_proposals_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProposalCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProposalResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/content-proposals/{proposal_id}/reject": {
+      "post": {
+        "tags": [
+          "Content proposals"
+        ],
+        "summary": "Reject Proposal",
+        "operationId": "reject_proposal_api_v1_content_proposals__proposal_id__reject_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "proposal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Proposal Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProposalResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/content-proposals/{proposal_id}/approve": {
+      "post": {
+        "tags": [
+          "Content proposals"
+        ],
+        "summary": "Approve Proposal",
+        "operationId": "approve_proposal_api_v1_content_proposals__proposal_id__approve_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "proposal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Proposal Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProposalResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/logs/request-stats": {
       "get": {
         "tags": [
@@ -2056,7 +2224,7 @@
             "required": false,
             "schema": {
               "type": "number",
-              "maximum": 1,
+              "maximum": 1.0,
               "minimum": 0.5,
               "default": 0.86,
               "title": "Similarity Threshold"
@@ -2980,7 +3148,7 @@
         "tags": [
           "RAG Management"
         ],
-        "summary": "Импорт документов по ссылкам из CSV",
+        "summary": "Добавить документы из CSV в очередь редактора",
         "description": "Принимает CSV документ на вход и обрабатывает все документы там.\nОжидаемый формат: Название,Link,Комментарий",
         "operationId": "upload_csv_documents_api_v1_rag_upload_csv_post",
         "requestBody": {
@@ -4340,16 +4508,16 @@
           },
           "relevance_threshold": {
             "type": "number",
-            "maximum": 1,
-            "minimum": 0,
+            "maximum": 1.0,
+            "minimum": 0.0,
             "title": "Relevance Threshold",
             "description": "Порог релевантности чанка при LLM-грейдинге (0..1)",
             "default": 0.5
           },
           "min_chunks": {
             "type": "integer",
-            "maximum": 100,
-            "minimum": 0,
+            "maximum": 100.0,
+            "minimum": 0.0,
             "title": "Min Chunks",
             "description": "Минимум чанков после фильтра, ниже которого пробуем доретрив",
             "default": 2
@@ -4368,8 +4536,8 @@
           },
           "max_graded_chunks": {
             "type": "integer",
-            "maximum": 100,
-            "minimum": 1,
+            "maximum": 100.0,
+            "minimum": 1.0,
             "title": "Max Graded Chunks",
             "description": "Максимум чанков, отправляемых на LLM-грейдинг (латентность)",
             "default": 12
@@ -4387,14 +4555,14 @@
           },
           "relevance_threshold": {
             "type": "number",
-            "maximum": 1,
-            "minimum": 0,
+            "maximum": 1.0,
+            "minimum": 0.0,
             "title": "Relevance Threshold"
           },
           "min_chunks": {
             "type": "integer",
-            "maximum": 100,
-            "minimum": 0,
+            "maximum": 100.0,
+            "minimum": 0.0,
             "title": "Min Chunks"
           },
           "allow_refine": {
@@ -4407,8 +4575,8 @@
           },
           "max_graded_chunks": {
             "type": "integer",
-            "maximum": 100,
-            "minimum": 1,
+            "maximum": 100.0,
+            "minimum": 1.0,
             "title": "Max Graded Chunks"
           }
         },
@@ -4481,10 +4649,10 @@
       },
       "CsvImportResponse": {
         "properties": {
-          "imported_count": {
+          "queued_count": {
             "type": "integer",
-            "title": "Imported Count",
-            "description": "Количество успешно импортированных документов"
+            "title": "Queued Count",
+            "description": "Количество документов, ожидающих проверки редактором"
           },
           "total_found": {
             "type": "integer",
@@ -4502,7 +4670,7 @@
         },
         "type": "object",
         "required": [
-          "imported_count",
+          "queued_count",
           "total_found",
           "results"
         ],
@@ -5369,7 +5537,7 @@
         "properties": {
           "similarity_threshold": {
             "type": "number",
-            "maximum": 1,
+            "maximum": 1.0,
             "minimum": 0.5,
             "title": "Similarity Threshold",
             "description": "Порог косинусного сходства для срабатывания FAQ (0..1)",
@@ -5384,7 +5552,7 @@
         "properties": {
           "similarity_threshold": {
             "type": "number",
-            "maximum": 1,
+            "maximum": 1.0,
             "minimum": 0.5,
             "title": "Similarity Threshold"
           }
@@ -5761,8 +5929,8 @@
             "anyOf": [
               {
                 "type": "integer",
-                "maximum": 720,
-                "minimum": 1
+                "maximum": 720.0,
+                "minimum": 1.0
               },
               {
                 "type": "null"
@@ -6365,6 +6533,172 @@
         "title": "ProgramUpdate",
         "description": "Данные для обновления направления подготовки."
       },
+      "ProposalCreate": {
+        "properties": {
+          "source": {
+            "type": "string",
+            "enum": [
+              "model",
+              "parser"
+            ],
+            "title": "Source"
+          },
+          "graph_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Graph Id",
+            "default": "abitur_kb"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Title"
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Text"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "source_hash": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Hash"
+          }
+        },
+        "type": "object",
+        "required": [
+          "source",
+          "title",
+          "text"
+        ],
+        "title": "ProposalCreate"
+      },
+      "ProposalResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "graph_id": {
+            "type": "string",
+            "title": "Graph Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "source_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Hash"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "reviewer_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewer Id"
+          },
+          "document_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Document Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "reviewed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewed At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "source",
+          "graph_id",
+          "title",
+          "text",
+          "source_url",
+          "source_hash",
+          "status",
+          "reviewer_id",
+          "document_id",
+          "created_at",
+          "reviewed_at"
+        ],
+        "title": "ProposalResponse"
+      },
       "RagDocument": {
         "properties": {
           "id": {
@@ -6594,10 +6928,10 @@
             "title": "Accepted Formats",
             "description": "Поддерживаемые расширения файлов"
           },
-          "indexed_count": {
+          "queued_count": {
             "type": "integer",
-            "title": "Indexed Count",
-            "description": "Количество успешно проиндексированных файлов"
+            "title": "Queued Count",
+            "description": "Количество файлов в очереди редактора"
           },
           "skipped_count": {
             "type": "integer",
@@ -6616,7 +6950,7 @@
         "type": "object",
         "required": [
           "accepted_formats",
-          "indexed_count",
+          "queued_count",
           "skipped_count",
           "results"
         ],
@@ -6626,16 +6960,16 @@
         "properties": {
           "system_requests_per_day": {
             "type": "integer",
-            "maximum": 10000000,
-            "minimum": 1,
+            "maximum": 10000000.0,
+            "minimum": 1.0,
             "title": "System Requests Per Day",
             "description": "Количество запросов в день для всей системы",
             "default": 10000
           },
           "user_requests_per_day": {
             "type": "integer",
-            "maximum": 100000,
-            "minimum": 1,
+            "maximum": 100000.0,
+            "minimum": 1.0,
             "title": "User Requests Per Day",
             "description": "Количество запросов в день для одного пользователя",
             "default": 100
@@ -6649,14 +6983,14 @@
         "properties": {
           "system_requests_per_day": {
             "type": "integer",
-            "maximum": 10000000,
-            "minimum": 1,
+            "maximum": 10000000.0,
+            "minimum": 1.0,
             "title": "System Requests Per Day"
           },
           "user_requests_per_day": {
             "type": "integer",
-            "maximum": 100000,
-            "minimum": 1,
+            "maximum": 100000.0,
+            "minimum": 1.0,
             "title": "User Requests Per Day"
           }
         },
@@ -7202,7 +7536,7 @@
           "status": {
             "type": "string",
             "title": "Status",
-            "description": "Статус обработки: indexed или skipped"
+            "description": "Статус обработки: queued или skipped"
           },
           "message": {
             "type": "string",

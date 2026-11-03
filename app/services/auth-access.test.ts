@@ -8,7 +8,7 @@ describe("route permissions", () => {
     for (const path of ["/messages", "/feedback", "/stats"]) {
       expect(canAccessRoute("viewer", path)).toBe(true)
     }
-    for (const path of ["/", "/rag/document/42", "/rag/inspector", "/faq", "/testing", "/settings", "/system-logs"]) {
+    for (const path of ["/", "/rag/document/42", "/rag/inspector", "/rag/proposals", "/faq", "/testing", "/settings", "/system-logs"]) {
       expect(canAccessRoute("viewer", path)).toBe(false)
     }
   })

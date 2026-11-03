@@ -54,6 +54,13 @@ export function getUploadStateFromResponse(response: RagUploadResponse): RagUplo
   return "success"
 }
 
+export function ragUploadStatusLabel(status: string): string {
+  if (status === "queued") {
+    return "Ожидает проверки"
+  }
+  return status === "indexed" ? "Загружен" : "Пропущен"
+}
+
 export function formatBytes(bytes: number): string {
   if (bytes < 1024) {
     return `${bytes} B`

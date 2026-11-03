@@ -32,7 +32,7 @@ export type DocumentCheckResponse = components["schemas"]["DocumentCheckResponse
 export type DocumentCheckResult = components["schemas"]["DocumentCheckResult"]
 export type DocumentUpdateResponse = components["schemas"]["DocumentUpdateResponse"]
 
-export type RagUploadFileStatus = "indexed" | "skipped"
+export type RagUploadFileStatus = "queued" | "skipped"
 
 export interface RejectedRagFile {
   file: File

@@ -5,6 +5,7 @@ import { RAG_MAX_FILE_SIZE_BYTES } from "~/types/rag-upload"
 import {
   getUploadStateFromResponse,
   mapRagUploadError,
+  ragUploadStatusLabel,
   validateRagFiles,
 } from "~/utils/rag-upload"
 
@@ -40,7 +41,7 @@ describe("getUploadStateFromResponse", () => {
   it("returns success when all files are indexed", () => {
     const response: RagUploadResponse = {
       accepted_formats: [".txt"],
-      indexed_count: 2,
+      queued_count: 2,
       skipped_count: 0,
       results: [],
     }
@@ -51,12 +52,19 @@ describe("getUploadStateFromResponse", () => {
   it("returns partial when some files are skipped", () => {
     const response: RagUploadResponse = {
       accepted_formats: [".txt"],
-      indexed_count: 1,
+      queued_count: 1,
       skipped_count: 1,
       results: [],
     }
 
     expect(getUploadStateFromResponse(response)).toBe("partial")
+  })
+})
+
+describe("ragUploadStatusLabel", () => {
+  it("shows queued files as waiting for editor review", () => {
+    expect(ragUploadStatusLabel("queued")).toBe("Ожидает проверки")
+    expect(ragUploadStatusLabel("skipped")).toBe("Пропущен")
   })
 })
 

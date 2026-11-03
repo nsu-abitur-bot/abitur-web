@@ -34,6 +34,7 @@ const groups = computed<{ title?: string, items: NavItem[] }[]>(() => [
   { title: "Знания", items: isAdmin.value
     ? [
         ["Материалы", "/", "i-lucide-files"],
+        ["Предложения", "/rag/proposals", "i-lucide-list-checks"],
         ["Готовые ответы", "/faq", "i-lucide-messages-square"],
         ["Сокращения", "/abbrev", "i-lucide-text"],
         ["Факультеты", "/faculties", "i-lucide-graduation-cap"],
