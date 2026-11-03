@@ -64,18 +64,9 @@ const hasAnyProblem = computed(() => hasLightragProblem.value || hasNoEntities.v
 <template lang="pug">
 ui-detail-dialog(v-model:open="open" title="Диагностика документа" size="regular")
   template(#default)
-    div(v-if="isLoading" class="py-10 flex justify-center text-gray-500")
-      u-icon(name="i-heroicons-arrow-path" class="animate-spin w-8 h-8")
-
-    u-alert(
-      v-else-if="errorMessage"
-      color="error"
-      variant="soft"
-      icon="i-heroicons-exclamation-triangle"
-      :title="errorMessage"
-    )
-
-    u-button(v-if="errorMessage && docId" color="neutral" variant="outline" @click="load(docId)") Повторить
+    ui-empty-state(v-if="isLoading" kind="loading" title="Загрузка диагностики…")
+    ui-empty-state(v-else-if="errorMessage" kind="error" :title="errorMessage")
+      u-button(v-if="docId" color="neutral" variant="outline" @click="load(docId)") Повторить
 
     div(v-if="!isLoading && !errorMessage && data" class="space-y-4")
       div

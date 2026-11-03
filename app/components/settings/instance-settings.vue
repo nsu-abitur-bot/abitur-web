@@ -189,13 +189,16 @@ await load()
     <p v-if="snapshot && !snapshot.encryption_ready && ['Модели', 'Боты'].includes(selectedSection)" class="mb-4 text-sm text-amber-700" role="status">
       Сохранение секретов недоступно: на сервере не настроен ключ шифрования.
     </p>
-    <p v-if="error" class="mb-4 text-sm text-error" role="alert">{{ error }}</p>
+    <p v-if="error && snapshot?.settings.length" class="mb-4 text-sm text-error" role="alert">{{ error }}</p>
     <p v-if="message" class="mb-4 text-sm admin-muted" role="status">{{ message }}</p>
     <div v-if="conflict" class="admin-toolbar mb-4">
       <u-button :loading="busy" @click="rebase">Загрузить версию и сверить черновик</u-button>
     </div>
     <p v-if="review.length" class="mb-4 text-sm" role="status">Проверьте пересекающиеся изменения: {{ review.join(', ') }}. Секреты нельзя сравнить: сервер не возвращает их значения.</p>
     <ui-empty-state v-if="busy && !snapshot?.settings.length" kind="loading" title="Загрузка настроек…" />
+    <ui-empty-state v-else-if="error && !snapshot?.settings.length" kind="error" :title="error">
+      <u-button color="neutral" variant="outline" :loading="busy" @click="load">Загрузить настройки</u-button>
+    </ui-empty-state>
     <ui-empty-state v-else-if="snapshot && !snapshot.settings.length && !error" title="Настроек пока нет">
       <u-button color="neutral" variant="outline" :loading="busy" @click="load">Обновить</u-button>
     </ui-empty-state>
@@ -205,6 +208,7 @@ await load()
       </nav>
       <div class="instance-content">
         <header class="instance-heading"><h2>{{ selectedSection }}</h2><span class="admin-muted text-xs" role="status">{{ changedCount ? `Не сохранено: ${changedCount}` : 'Изменений нет' }}</span></header>
+        <ui-empty-state v-if="!snapshot.settings.some(setting => instanceSection(setting) === selectedSection)" title="Настроек в этом разделе пока нет" />
         <fieldset :disabled="busy" class="instance-fields">
           <settings-university-branding v-if="selectedSection === 'Оформление' && snapshot.settings.some(isBrandingSetting)" v-model:draft="draft" v-model:file="logoFile" v-model:remove="removeLogo" />
           <template v-for="group in groups" :key="group">

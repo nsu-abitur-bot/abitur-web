@@ -87,7 +87,7 @@ ui-page(title="Инспектор RAG" description="Поиск и генерац
         p(class="text-xs text-gray-500 dark:text-gray-400")
           | Сравните, появляются ли чанки документа в разных режимах (например, hybrid и mix).
 
-    u-alert(v-if="queryError" color="error" :title="queryError" role="alert")
+    ui-empty-state(v-if="queryError" kind="error" :title="queryError")
 
     ui-empty-state(v-if="isLoading" kind="loading" title="Выполнение запроса…")
 
