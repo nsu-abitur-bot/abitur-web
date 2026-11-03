@@ -46,7 +46,10 @@ await load()
       <p class="text-sm admin-muted">Чем выше порог, тем точнее должен совпасть вопрос. Значение по умолчанию — 0.95.</p>
       <u-button type="submit" :loading="busy" :disabled="busy || !loaded">Сохранить порог FAQ</u-button>
     </form>
-    <p v-if="error" role="alert" class="text-error mt-3">{{ error }}</p>
-    <u-button v-if="!loaded" variant="ghost" :loading="busy" @click="load">Повторить загрузку</u-button>
+    <ui-empty-state v-if="busy && !loaded" kind="loading" title="Загрузка настроек FAQ…" />
+    <ui-empty-state v-else-if="error && !loaded" kind="error" :title="error">
+      <u-button color="neutral" variant="outline" :loading="busy" @click="load">Повторить загрузку</u-button>
+    </ui-empty-state>
+    <p v-else-if="error" role="alert" class="text-error mt-3">{{ error }}</p>
   </section>
 </template>

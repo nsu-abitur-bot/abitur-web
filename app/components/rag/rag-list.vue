@@ -179,7 +179,7 @@ function openDiagnostics(doc: RagDocument) {
 
 <template lang="pug">
 .materials
-  .admin-table-wrap
+  div(:class="{ 'admin-table-wrap': documents.length }")
     .admin-toolbar(v-if="isLoading || loadError || documents.length")
       u-input(v-model="query" placeholder="Найти материал" aria-label="Поиск материалов" icon="i-lucide-search" class="materials-search")
       u-select(v-model="filter" aria-label="Состояние" :items="[{ label: 'Все состояния', value: 'all' }, { label: 'Обработаны', value: 'ready' }, { label: 'Требуют внимания', value: 'attention' }, { label: 'Не подтверждены', value: 'unknown' }]")

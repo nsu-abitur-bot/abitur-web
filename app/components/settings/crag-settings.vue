@@ -78,12 +78,10 @@ const onSubmit = async () => {
 section(class="admin-panel p-6")
   h2(class="text-base font-semibold mb-5") Проверка ответов
 
-  div(v-if="status === 'pending' && !data" class="py-6 flex justify-center admin-muted")
-    u-icon(name="i-heroicons-arrow-path" class="animate-spin w-8 h-8")
+  ui-empty-state(v-if="status === 'pending' && !data" kind="loading" title="Загрузка настроек проверки ответов…")
 
-  div(v-if="error && !data" role="alert" class="text-sm text-error mb-4")
-    p Не удалось загрузить настройки.
-    u-button(variant="ghost" @click="refresh()") Повторить
+  ui-empty-state(v-else-if="error && !data" kind="error" title="Не удалось загрузить настройки.")
+    u-button(color="neutral" variant="outline" @click="refresh()") Повторить
 
   u-form(v-if="data" :state="state" class="space-y-5" @submit="onSubmit")
     div(class="space-y-4")

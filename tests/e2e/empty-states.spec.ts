@@ -1,73 +1,6 @@
-import type { BrowserContext } from "@playwright/test"
 import { expect, test } from "@playwright/test"
 
-// Every API response is local; unknown endpoints and mutations fail closed.
-async function fixture(context: BrowserContext) {
-  const overrides: Record<string, unknown> = {}
-  const failures = new Set<string>()
-  const unexpected: string[] = []
-  const fixtures: Record<string, unknown> = {
-    "/api/v1/branding": { revision: 1, short_name: "Тестовый вуз", full_name: "Тестовый университет", logo_url: "", favicon_url: "", accent_color: "#4b4bd2" },
-    "/api/v1/auth/me": { id: "admin", username: "e2e-admin", role: "superadmin", is_active: true },
-    "/api/v1/university": { profile: "custom", short_name: "Тестовый вуз", assistant_name: "Помощник" },
-    "/api/v1/rag/docs": { documents: [] },
-    "/api/v1/rag/docs/empty/content": { id: "empty", content: "" },
-    "/api/v1/rag/docs/empty/diagnostics": { id: "empty", postgres_status: "indexed", lightrag_status: "processed", chunks_count: 0 },
-    "/api/v1/faq": { items: [], total: 0 },
-    "/api/v1/abbrev": { items: [], total: 0 },
-    "/api/v1/faculties": [],
-    "/api/v1/messages/page": { items: [], total: 0, limit: 25, offset: 0 },
-    "/api/v1/logs/session/local-session": { logs: [] },
-    "/api/v1/feedback": { reports: [], total: 0 },
-    "/api/v1/topics/": { topics: [] },
-    "/api/v1/auth/admins": [],
-    "/api/v1/settings/instance": { revision: 1, encryption_ready: true, settings: [] },
-    "/api/v1/settings/crag": { enabled: true, relevance_threshold: 0.5, min_chunks: 2, allow_refine: true, use_faculty_table: true, max_graded_chunks: 12 },
-    "/api/v1/settings/faq": { similarity_threshold: 0.95 },
-    "/api/v1/settings/rate-limit": { system_requests_per_day: 10000, user_requests_per_day: 100 },
-    "/api/v1/evals/status": { is_running: false, last_result: null },
-    "/api/v1/system-logs/files": [],
-    "/api/v1/system-logs/": [],
-    "/api/v1/logs/request-stats": { buckets: [] },
-    "/api/v1/logs/token-stats": { buckets: [] },
-    "/api/v1/users/count-stats": {},
-    "/api/v1/logs/popular": { questions: [] },
-    "/api/v1/stats/topics": [],
-  }
-  await context.addCookies([{ name: "abitur-token", value: "e2e-session", domain: "127.0.0.1", path: "/" }])
-  await context.addInitScript(() => localStorage.setItem("nuxt-color-mode", "light"))
-  await context.route("**/*", async (route) => {
-    const url = new URL(route.request().url())
-    if (url.hostname !== "127.0.0.1" || !["9464", "9465"].includes(url.port)) {
-      return route.abort("blockedbyclient")
-    }
-    if (!url.pathname.startsWith("/api/v1/")) {
-      return route.continue()
-    }
-    const headers = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "*", "Access-Control-Allow-Methods": "*" }
-    if (route.request().method() === "OPTIONS") {
-      return route.fulfill({ status: 204, headers })
-    }
-    if (failures.has(url.pathname)) {
-      return route.fulfill({ status: 503, headers, json: { detail: "Local fixture unavailable" } })
-    }
-    if (route.request().method() === "GET" && Object.hasOwn(fixtures, url.pathname)) {
-      if (url.pathname === "/api/v1/messages/page") {
-        const result = (overrides[url.pathname] ?? fixtures[url.pathname]) as { items: { user_text: string }[] }
-        const search = url.searchParams.get("search")?.toLowerCase()
-        const items = result.items.filter(item => !search || item.user_text.toLowerCase().includes(search))
-        return route.fulfill({ headers, json: { items, total: items.length, limit: 25, offset: 0 } })
-      }
-      return route.fulfill({ headers, json: overrides[url.pathname] ?? fixtures[url.pathname] })
-    }
-    if (url.pathname === "/api/v1/rag/debug/query" && route.request().method() === "POST") {
-      return route.fulfill({ headers, json: { answer: "Локальный ответ", settings: { mode: "hybrid" }, chunks: [], entities: [], relations: [], sources: [] } })
-    }
-    unexpected.push(`${route.request().method()} ${url.pathname}`)
-    return route.fulfill({ status: 501, headers, json: { detail: "Unknown local fixture" } })
-  })
-  return { overrides, failures, unexpected }
-}
+import { emptyFixture as fixture } from "./fixtures/empty-states"
 
 const routes = [
   ["materials", "/", "Материалов пока нет"],
@@ -83,6 +16,7 @@ const routes = [
   ["evaluation", "/testing", "Результатов оценки пока нет"],
   ["stats", "/stats", "Нет данных по вопросам"],
   ["document", "/rag/document/empty", "Содержимого пока нет"],
+  ["scores", "/admission-scores", "Баллы пока не добавлены."],
 ] as const
 
 for (const width of [1399, 1049, 390]) {
@@ -177,7 +111,7 @@ test("connections empty snapshot hides during held refresh, failure and retry", 
   await expect(loading).toBeVisible()
   await page.screenshot({ path: testInfo.outputPath("connections-refresh-pending.png"), fullPage: true })
   release()
-  await expect(page.getByRole("alert")).toHaveText("Local fixture unavailable")
+  await expect(page.getByRole("alert").locator(".admin-empty-title")).toHaveText("Local fixture unavailable")
   await expect(empty).toHaveCount(0)
   await expect(loading).toHaveCount(0)
   await expect(page.locator(".instance-workspace")).toHaveCount(0)
@@ -322,4 +256,74 @@ test("neutral empty states follow the existing dark theme", async ({ page, conte
   await page.getByRole("button", { name: "Переключиться на тёмный режим" }).click()
   await expect(page.locator("html")).toHaveClass(/dark/)
   await page.screenshot({ path: testInfo.outputPath("empty-dark-1049.png"), fullPage: true })
+})
+
+for (const width of [1399, 390]) {
+  for (const theme of ["light", "dark"]) {
+    test(`materials and faculties share empty presentation at ${width}px in ${theme}`, async ({ page, context }, testInfo) => {
+      const local = await fixture(context, theme)
+      await page.setViewportSize({ width, height: 900 })
+      const presentations = []
+      for (const [name, url, title] of [routes[0], routes[3]]) {
+        await page.goto(url)
+        await expect(page.locator("html")).toHaveClass(new RegExp(theme))
+        const empty = page.locator(".admin-empty")
+        await expect(empty).toHaveText(title)
+        await expect(empty.locator(".admin-empty-icon")).toBeVisible()
+        presentations.push(await empty.evaluate((element) => {
+          const style = getComputedStyle(element)
+          const frames = []
+          for (let parent = element.parentElement; parent && !parent.matches(".admin-page"); parent = parent.parentElement) {
+            const css = getComputedStyle(parent)
+            if (css.borderTopWidth !== "0px") {
+              frames.push({ border: css.borderTop, background: css.backgroundColor })
+            }
+          }
+          return {
+            frames,
+            height: element.getBoundingClientRect().height,
+            padding: style.padding,
+            gap: style.gap,
+            color: style.color,
+            icon: element.querySelector(".admin-empty-icon")?.className,
+            actions: element.querySelector(".admin-empty-actions")?.getBoundingClientRect().height ?? 0,
+          }
+        }))
+        await expect(page.locator(".admin-page-header").getByRole("button", { name: /Добавить/ })).toBeVisible()
+        expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width)
+        await page.screenshot({ path: testInfo.outputPath(`${name}-${theme}-${width}.png`), fullPage: true })
+      }
+      expect(presentations[0]).toEqual(presentations[1])
+      expect(local.unexpected).toEqual([])
+    })
+  }
+}
+
+for (const width of [1399, 390]) {
+  test(`analogous empty routes in dark theme at ${width}px`, async ({ page, context }, testInfo) => {
+    const local = await fixture(context, "dark")
+    await page.setViewportSize({ width, height: 900 })
+    for (const [name, url, title] of routes) {
+      await page.goto(url)
+      await expect(page.locator("html")).toHaveClass(/dark/)
+      await expect(page.locator(".admin-empty-title", { hasText: title })).toBeVisible()
+      expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width)
+      await page.screenshot({ path: testInfo.outputPath(`${name}-dark-${width}.png`), fullPage: true })
+    }
+    expect(local.unexpected).toEqual([])
+  })
+}
+
+test("admission scores reuse the error action and recover to empty", async ({ page, context }) => {
+  const local = await fixture(context)
+  local.failures.add("/api/v1/admission-scores")
+  await page.goto("/admission-scores")
+  const error = page.locator(".admin-empty[data-state=error]")
+  await expect(error.locator(".admin-empty-title")).toHaveText("Не удалось загрузить баллы.")
+  await expect(error.locator(".admin-empty-actions").getByRole("button", { name: "Повторить" })).toBeVisible()
+  local.failures.clear()
+  await error.getByRole("button", { name: "Повторить" }).click()
+  await expect(page.locator(".admin-empty[data-state=empty] .admin-empty-title")).toHaveText("Баллы пока не добавлены.")
+  await expect(page.getByRole("button", { name: "Сохранить балл" })).toBeVisible()
+  expect(local.unexpected).toEqual([])
 })
