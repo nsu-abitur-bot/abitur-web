@@ -15,7 +15,7 @@ export function instanceSection(setting: InstanceSetting): InstanceSection {
   if (brandingKeys.has(setting.key) || ["Вуз", "Университет"].includes(setting.group)) {
     return "Оформление"
   }
-  if (["Назначение моделей", "OpenAI", "Gemini", "DeepSeek"].includes(setting.group)) {
+  if (["Назначение моделей", "OpenAI", "Gemini", "DeepSeek", "GigaChat"].includes(setting.group)) {
     return "Модели"
   }
   return ["Telegram", "MAX"].includes(setting.group) ? "Боты" : "Дополнительно"

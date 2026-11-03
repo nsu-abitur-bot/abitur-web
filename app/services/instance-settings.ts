@@ -90,5 +90,5 @@ export function connectionPurposes(settings: InstanceSetting[], group: string) {
     { suffix: "EMBEDDING_MODEL", value: "embedding", label: "эмбеддинги FAQ" },
     { suffix: "GRAPH_EMBEDDING_MODEL", value: "graph_embedding", label: "эмбеддинги графа" },
   ]
-  return purposes.filter(purpose => settings.some(setting => setting.group === group && setting.key === `${group.toUpperCase()}_${purpose.suffix}`))
+  return purposes.filter(purpose => settings.some(setting => setting.group === group && setting.key === `${group.toUpperCase()}_${purpose.suffix}`)).map(purpose => group === "GigaChat" && purpose.value === "embedding" ? { ...purpose, label: "эмбеддинги" } : purpose)
 }

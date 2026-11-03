@@ -40,3 +40,8 @@ describe("instance settings presentation", () => {
     expect(instanceGroup(future)).toBe("Новая группа")
   })
 })
+
+it("keeps GigaChat credentials and embeddings under Models", () => {
+  const setting = { key: "GIGACHAT_API_KEY", group: "GigaChat", label: "Ключ авторизации", kind: "text", choices: [], secret: true, configured: false, value: null }
+  expect(instanceSection(setting)).toBe("Модели")
+})

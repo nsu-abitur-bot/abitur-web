@@ -65,3 +65,8 @@ describe("connectionPurposes", () => {
     }
   })
 })
+
+it("offers one shared embedding check for GigaChat", () => {
+  const setting = { key: "GIGACHAT_EMBEDDING_MODEL", group: "GigaChat", label: "Модель эмбеддингов", kind: "text", choices: [], secret: false, configured: true, value: "EmbeddingsGigaR" }
+  expect(connectionPurposes([setting], "GigaChat")).toEqual([{ suffix: "EMBEDDING_MODEL", value: "embedding", label: "эмбеддинги" }])
+})
