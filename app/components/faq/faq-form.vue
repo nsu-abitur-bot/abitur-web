@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import type { components } from "#openapi"
-
-type FaqItem = components["schemas"]["FaqItem"]
+import type { FaqItem } from "~/types/faq"
 
 const props = defineProps<{
   initialData?: FaqItem
@@ -22,6 +20,11 @@ const state = reactive<FaqItem>({
   question: props.initialData?.question ?? "",
   aliases: props.initialData?.aliases ? [...props.initialData.aliases] : [],
   answer: props.initialData?.answer ?? "",
+  verification_status: props.initialData?.verification_status ?? "draft",
+  source_document: props.initialData?.source_document ?? null,
+  source_location: props.initialData?.source_location ?? null,
+  confirmed_by: props.initialData?.confirmed_by ?? null,
+  confirmed_at: props.initialData?.confirmed_at ?? null,
 })
 
 const isLoading = ref(false)
@@ -47,7 +50,13 @@ const onSubmit = async () => {
   try {
     await apiFetch(isEditMode.value ? `/api/v1/faq/${encodeURIComponent(itemId.value!)}` : "/api/v1/faq", {
       method: isEditMode.value ? "PUT" : "POST",
-      body: state,
+      body: {
+        ...state,
+        confirmed_at: state.confirmed_at || null,
+        source_document: state.source_document || null,
+        source_location: state.source_location || null,
+        confirmed_by: state.confirmed_by || null,
+      },
     })
     emit("submit")
   } catch (err) {
@@ -75,6 +84,27 @@ u-form(:state="state" class="space-y-4" @submit="onSubmit")
       placeholder="Напишите ответ..."
       class="w-full"
     )
+
+  u-form-field(label="Статус подтверждения" name="verification_status" help="Для подтверждения нужны дата и имя проверившего либо документ и место в нём" class="w-full")
+    u-select(
+      v-model="state.verification_status"
+      :items="[{ label: 'Черновик', value: 'draft' }, { label: 'Подтверждено человеком', value: 'confirmed' }]"
+      value-key="value"
+      label-key="label"
+      class="w-full"
+    )
+
+  u-form-field(label="Документ-источник" name="source_document" class="w-full")
+    u-input(v-model="state.source_document" placeholder="Название или ссылка на документ" class="w-full")
+
+  u-form-field(label="Место в документе" name="source_location" class="w-full")
+    u-input(v-model="state.source_location" placeholder="Раздел, пункт или страница" class="w-full")
+
+  u-form-field(label="Подтвердил" name="confirmed_by" class="w-full")
+    u-input(v-model="state.confirmed_by" placeholder="Имя сотрудника" class="w-full")
+
+  u-form-field(label="Дата подтверждения" name="confirmed_at" class="w-full")
+    u-input(v-model="state.confirmed_at" type="datetime-local" class="w-full")
 
   details
     summary(class="cursor-pointer text-sm admin-muted") Другие формулировки вопроса ({{ state.aliases?.length ?? 0 }})

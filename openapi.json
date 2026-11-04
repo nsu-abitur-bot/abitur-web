@@ -5507,6 +5507,33 @@
             "type": "string",
             "title": "Answer",
             "description": "Текст ответа"
+          },
+          "verification_status": {
+            "type": "string",
+            "enum": ["draft", "confirmed"],
+            "title": "Verification Status",
+            "description": "Черновик или подтверждено человеком",
+            "default": "draft"
+          },
+          "source_document": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Source Document",
+            "description": "Документ-источник"
+          },
+          "source_location": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Source Location",
+            "description": "Место в документе"
+          },
+          "confirmed_by": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Confirmed By",
+            "description": "Имя подтвердившего"
+          },
+          "confirmed_at": {
+            "anyOf": [{ "type": "string", "format": "date-time" }, { "type": "null" }],
+            "title": "Confirmed At",
+            "description": "Дата подтверждения"
           }
         },
         "type": "object",

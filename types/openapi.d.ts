@@ -2051,6 +2051,31 @@ export interface components {
        * @description Текст ответа
        */
       answer: string
+      /**
+       * Verification Status
+       * @description Черновик или подтверждено человеком
+       */
+      verification_status?: "draft" | "confirmed"
+      /**
+       * Source Document
+       * @description Документ-источник
+       */
+      source_document?: string | null
+      /**
+       * Source Location
+       * @description Место в документе
+       */
+      source_location?: string | null
+      /**
+       * Confirmed By
+       * @description Имя подтвердившего
+       */
+      confirmed_by?: string | null
+      /**
+       * Confirmed At
+       * @description Дата подтверждения
+       */
+      confirmed_at?: string | null
     }
     /** FaqListResponse */
     FaqListResponse: {
