@@ -6,6 +6,7 @@ export type FacultyUpdate = components["schemas"]["FacultyUpdate"]
 export type ProgramItem = components["schemas"]["ProgramItem"]
 export type ProgramCreate = components["schemas"]["ProgramCreate"]
 export type ProgramUpdate = components["schemas"]["ProgramUpdate"]
+export type EducationLevel = ProgramItem["level"]
 
 export async function getFaculties(): Promise<FacultyItem[]> {
   return await apiFetch<FacultyItem[]>("/api/v1/faculties")
@@ -60,10 +61,11 @@ export async function deleteProgram(programId: string): Promise<void> {
   })
 }
 
-export const EDUCATION_LEVELS: { label: string, value: string }[] = [
+export const EDUCATION_LEVELS: { label: string, value: EducationLevel }[] = [
   { label: "Бакалавриат", value: "bachelor" },
   { label: "Специалитет", value: "specialist" },
   { label: "Магистратура", value: "master" },
+  { label: "СПО", value: "spo" },
 ]
 
 export function educationLevelLabel(level: string): string {

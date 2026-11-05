@@ -1934,6 +1934,12 @@ export interface components {
       results: components["schemas"]["DocumentCheckResult"][]
     }
     /**
+     * EducationLevel
+     * @description Уровень образования направления подготовки.
+     * @enum {string}
+     */
+    EducationLevel: "bachelor" | "specialist" | "master" | "spo"
+    /**
      * FacultyCreate
      * @description Данные для создания факультета.
      */
@@ -2460,9 +2466,10 @@ export interface components {
       name: string
       /**
        * Level
-       * @description Уровень: bachelor / specialist / master
+       * @description Уровень: bachelor / specialist / master / spo (СПО)
+       * @enum {string}
        */
-      level: string
+      level: "bachelor" | "master" | "specialist" | "spo"
       /**
        * Code
        * @description Код направления (ФГОС)
@@ -2488,8 +2495,11 @@ export interface components {
       name: string
       /** Code */
       code?: string | null
-      /** Level */
-      level: string
+      /**
+       * Level
+       * @enum {string}
+       */
+      level: "bachelor" | "master" | "specialist" | "spo"
       /** Is Active */
       is_active: boolean
     }
@@ -2505,9 +2515,10 @@ export interface components {
       name?: string | null
       /**
        * Level
-       * @description Уровень образования
+       * @description Уровень: bachelor / specialist / master / spo (СПО)
+       * @enum {unknown}
        */
-      level?: string | null
+      level?: "bachelor" | "master" | "specialist" | "spo" | null
       /**
        * Code
        * @description Код направления (ФГОС)
@@ -2770,6 +2781,8 @@ export interface components {
       faculty_name: string
       /** Program Name */
       program_name: string
+      /** @description Уровень образования программы */
+      level: components["schemas"]["EducationLevel"]
       /** Code */
       code?: string | null
       /** Year */
@@ -2823,7 +2836,7 @@ export interface components {
       average_score?: number | null
       /**
        * Level
-       * @description Уровень: bachelor / specialist
+       * @description Уровень: bachelor / specialist / master / spo (СПО)
        * @default bachelor
        */
       level: string
