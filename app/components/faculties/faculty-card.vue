@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { FacultyItem } from "~/services/faculties"
+import type { EducationLevel, FacultyItem } from "~/services/faculties"
 import {
   createProgram,
   deleteFaculty,
@@ -87,7 +87,7 @@ const isSavingProgram = ref(false)
 const programState = reactive({
   name: "",
   code: "",
-  level: "bachelor",
+  level: "bachelor" as EducationLevel,
 })
 
 const resetProgramForm = () => {

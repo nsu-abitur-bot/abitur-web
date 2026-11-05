@@ -5258,6 +5258,17 @@
         ],
         "title": "DocumentUpdateResponse"
       },
+      "EducationLevel": {
+        "type": "string",
+        "enum": [
+          "bachelor",
+          "specialist",
+          "master",
+          "spo"
+        ],
+        "title": "EducationLevel",
+        "description": "Уровень образования направления подготовки."
+      },
       "FacultyCreate": {
         "properties": {
           "name": {
@@ -6429,8 +6440,14 @@
           },
           "level": {
             "type": "string",
+            "enum": [
+              "bachelor",
+              "master",
+              "specialist",
+              "spo"
+            ],
             "title": "Level",
-            "description": "Уровень: bachelor / specialist / master"
+            "description": "Уровень: bachelor / specialist / master / spo (СПО)"
           },
           "code": {
             "anyOf": [
@@ -6486,6 +6503,12 @@
           },
           "level": {
             "type": "string",
+            "enum": [
+              "bachelor",
+              "master",
+              "specialist",
+              "spo"
+            ],
             "title": "Level"
           },
           "is_active": {
@@ -6528,8 +6551,15 @@
                 "type": "null"
               }
             ],
+            "enum": [
+              "bachelor",
+              "master",
+              "specialist",
+              "spo",
+              null
+            ],
             "title": "Level",
-            "description": "Уровень образования"
+            "description": "Уровень: bachelor / specialist / master / spo (СПО)"
           },
           "code": {
             "anyOf": [
@@ -7142,6 +7172,10 @@
             "type": "string",
             "title": "Program Name"
           },
+          "level": {
+            "$ref": "#/components/schemas/EducationLevel",
+            "description": "Уровень образования программы"
+          },
           "code": {
             "anyOf": [
               {
@@ -7188,6 +7222,7 @@
         "required": [
           "faculty_name",
           "program_name",
+          "level",
           "year",
           "form"
         ],
@@ -7255,7 +7290,7 @@
           "level": {
             "type": "string",
             "title": "Level",
-            "description": "Уровень: bachelor / specialist",
+            "description": "Уровень: bachelor / specialist / master / spo (СПО)",
             "default": "bachelor"
           }
         },
