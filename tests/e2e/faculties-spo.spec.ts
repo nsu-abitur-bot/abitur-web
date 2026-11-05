@@ -63,6 +63,6 @@ test("creates, edits and reopens a college program with the СПО level", async
   await page.getByRole("button", { name: "Редактировать", exact: true }).last().click()
   await expect(dialog.getByRole("combobox", { name: "Уровень", exact: true })).toHaveText("СПО")
   await expect(dialog.getByRole("textbox", { name: "Код", exact: true })).toHaveValue("09.02.07")
-  await page.screenshot({ path: testInfo.outputPath("spo-edit.png") })
+  await page.screenshot({ path: testInfo.outputPath("spo-edit.png"), animations: "disabled" })
   await testInfo.attach("СПО при повторном открытии", { path: testInfo.outputPath("spo-edit.png"), contentType: "image/png" })
 })
