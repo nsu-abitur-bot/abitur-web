@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useIntervalFn } from "@vueuse/core"
 import { storeToRefs } from "pinia"
 
 import { confirmRagUpload, preprocessRagDocument, previewCsvDocuments, uploadRagDocuments } from "~/services/rag-upload"
@@ -60,6 +61,12 @@ const toast = useToast()
 onMounted(() => {
   store.init()
 })
+
+useIntervalFn(async () => {
+  if (await store.refreshImports()) {
+    emit("success")
+  }
+}, 5000)
 
 const triggerCsvUpload = () => {
   fileInput.value?.click()
@@ -127,7 +134,7 @@ const handleConfirmUpload = async () => {
 
   toast.add({
     title: "Готово",
-    description: `Успешно загружено в базу знаний: ${successCount} из ${totalCount}`,
+    description: `Принято сервером: ${successCount} из ${totalCount}`,
     color: successCount === totalCount ? "success" : "warning",
   })
 
@@ -178,15 +185,25 @@ const handleManualUpload = async () => {
 
   isUploading.value = true
   try {
-    await confirmRagUpload({
+    const result = await confirmRagUpload({
       title: manualTitle.value,
       url: manualUrl.value || "",
       text: manualText.value,
       documents: [],
     })
+    if (result.job_id) {
+      pendingItems.value.push({
+        title: manualTitle.value,
+        url: manualUrl.value,
+        text: manualText.value,
+        documents: [],
+        jobId: result.job_id,
+        status: "queued",
+      })
+    }
     toast.add({
       title: "Успех",
-      description: "Данные успешно добавлены в базу знаний",
+      description: result.job_id ? "Материал в очереди на обработку" : "Материал загружен",
       color: "success",
     })
     resetManualForm()
@@ -370,7 +387,7 @@ div(class="space-y-4")
           div(class="flex items-center gap-3")
             u-checkbox(
               :model-value="selectedIndicesSet.has(index)"
-              :disabled="item.status === 'idle' || item.status === 'parsing' || item.status === 'indexing'"
+              :disabled="item.status === 'idle' || item.status === 'parsing' || item.status === 'indexing' || item.status === 'queued'"
               @update:model-value="toggleSelection(index)"
             )
 
@@ -381,6 +398,7 @@ div(class="space-y-4")
               u-icon(v-else-if="item.status === 'success'" name="i-heroicons-check-circle" size="lg" class="text-success-500 shrink-0" title="Готово к загрузке")
               u-icon(v-else-if="item.status === 'error'" name="i-heroicons-exclamation-circle" size="lg" class="text-error-500 shrink-0" title="Ошибка")
               u-icon(v-else-if="item.status === 'indexing'" name="i-heroicons-arrow-path" size="lg" class="animate-spin text-warning-500 shrink-0" title="Загрузка в базу знаний")
+              u-icon(v-else-if="item.status === 'queued'" name="i-heroicons-clock" size="lg" class="text-warning-500 shrink-0" title="В очереди на обработку")
               u-icon(v-else-if="item.status === 'indexed'" name="i-heroicons-check-badge" size="lg" class="text-success-600 shrink-0" title="В базе знаний")
               u-icon(v-else-if="item.status === 'index_error'" name="i-heroicons-x-circle" size="lg" class="text-error-600 shrink-0" title="Ошибка загрузки")
 
@@ -388,6 +406,7 @@ div(class="space-y-4")
                 div(class="text-sm font-semibold truncate flex items-center gap-2")
                   | {{ item.title }}
                   span(v-if="item.status === 'success'" class="text-[10px] px-1.5 py-0.5 rounded bg-success-100 text-success-700 dark:bg-success-900/30 dark:text-success-400 font-normal shrink-0") Ожидает загрузки
+                  span(v-if="item.status === 'queued'" class="text-xs font-normal text-warning-600 shrink-0") В очереди
                   span(v-if="item.status === 'indexed'" class="text-[10px] px-1.5 py-0.5 rounded bg-success-50 text-success-600 dark:bg-success-900/10 dark:text-success-500 font-normal shrink-0") Загружено
                 div(class="text-[10px] text-gray-500 truncate" :title="item.url") {{ item.url }}
 
