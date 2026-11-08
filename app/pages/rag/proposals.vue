@@ -27,8 +27,8 @@ async function decide(proposal: ContentProposal, action: "approve" | "reject") {
   reviewing.value = proposal.id
   error.value = ""
   try {
-    await reviewContentProposal(proposal.id, action)
-    toast.add({ title: action === "approve" ? "Материал добавлен в базу знаний" : "Предложение отклонено", color: "success" })
+    const result = await reviewContentProposal(proposal.id, action)
+    toast.add({ title: action === "approve" ? (result.status === "approved" ? "Материал обработан" : "Материал в очереди. Статус в «Материалах»") : "Предложение отклонено", color: "success" })
     await refresh()
   } catch {
     error.value = "Не удалось сохранить решение. Обновите очередь и повторите попытку."

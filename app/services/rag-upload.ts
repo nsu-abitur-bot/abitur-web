@@ -76,7 +76,7 @@ export async function confirmRagUpload(payload: ConfirmUploadRequest): Promise<{
 }
 
 export async function getRagImportStatus(jobId: string) {
-  return await apiFetch<{ status: "queued" | "indexed" | "index_failed" }>(
+  return await apiFetch<{ status: "queued" | "processing" | "indexed" | "index_failed" }>(
     `/api/v1/rag/imports/${encodeURIComponent(jobId)}`,
   )
 }

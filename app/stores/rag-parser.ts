@@ -274,7 +274,7 @@ export const useRagParserStore = defineStore("ragParser", () => {
             item.status = "index_error"
             item.error = "Не удалось проиндексировать материал"
           }
-          return status !== "queued"
+          return status === "indexed" || status === "index_failed"
         } catch {
           // A temporary read failure does not mean the persisted job failed.
           return false

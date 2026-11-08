@@ -824,10 +824,7 @@ export interface paths {
     }
     get?: never
     put?: never
-    /**
-     * Подтвердить загрузку в RAG
-     * @description Загружает отредактированный текст и выбранные документы в RAG.
-     */
+    /** Поставить загрузку в очередь RAG */
     post: operations["confirm_rag_upload_api_v1_rag_confirm_post"]
     delete?: never
     options?: never
@@ -1337,6 +1334,23 @@ export interface paths {
      * @description Public capability gate for the university-specific rating page.
      */
     get: operations["get_university_profile_api_v1_university_profile_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/rag/imports/{job_id}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Состояние загрузки в RAG */
+    get: operations["get_rag_import_api_v1_rag_imports__job_id__get"]
     put?: never
     post?: never
     delete?: never
@@ -2060,8 +2074,10 @@ export interface components {
       /**
        * Verification Status
        * @description Черновик или подтверждено человеком
+       * @default draft
+       * @enum {string}
        */
-      verification_status?: "draft" | "confirmed"
+      verification_status: "draft" | "confirmed"
       /**
        * Source Document
        * @description Документ-источник
@@ -2603,6 +2619,13 @@ export interface components {
        * @description Статус обработки
        */
       status: string
+      /** Import State */
+      import_state?: string | null
+      /**
+       * Proposal Only
+       * @default false
+       */
+      proposal_only: boolean
       /**
        * Content Hash
        * @description SHA-256 сырого контента
@@ -4147,7 +4170,7 @@ export interface operations {
     requestBody?: never
     responses: {
       /** @description Successful Response */
-      200: {
+      202: {
         headers: {
           [name: string]: unknown
         }
@@ -4739,12 +4762,14 @@ export interface operations {
     }
     responses: {
       /** @description Successful Response */
-      201: {
+      202: {
         headers: {
           [name: string]: unknown
         }
         content: {
-          "application/json": unknown
+          "application/json": {
+            [key: string]: string
+          }
         }
       }
       /** @description Validation Error */
@@ -5588,6 +5613,39 @@ export interface operations {
           "application/json": {
             [key: string]: string
           }
+        }
+      }
+    }
+  }
+  get_rag_import_api_v1_rag_imports__job_id__get: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        job_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": {
+            [key: string]: string
+          }
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
         }
       }
     }
