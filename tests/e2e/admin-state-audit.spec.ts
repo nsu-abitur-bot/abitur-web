@@ -221,7 +221,8 @@ for (const width of [1399, 390]) {
         if (detail.empty) {
           await expect(dialog.getByText(detail.empty)).toBeVisible()
         } else if (detail.trigger === "Диагностика") {
-          await expect(dialog.getByText("Сущности не извлечены", { exact: true })).toBeVisible()
+          await expect(dialog.getByText("Обработка не подтверждена", { exact: true })).toBeVisible()
+          await expect(dialog.getByText("Сущности не извлечены", { exact: true })).toHaveCount(0)
           await expect(dialog.locator(".admin-empty[data-state=\"empty\"]")).toHaveCount(0)
         } else {
           await expect(dialog.getByText("Обращение", { exact: true })).toBeVisible()
