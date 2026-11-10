@@ -1,7 +1,13 @@
 import type { RagDocumentDiagnostics } from "~/types/rag-debug"
 import type { RagDocument } from "~/types/rag-upload"
 
-export function materialState(doc: Pick<RagDocument, "status">, diagnostics?: RagDocumentDiagnostics | null) {
+export function materialState(doc: Pick<RagDocument, "status" | "import_state">, diagnostics?: RagDocumentDiagnostics | null) {
+  switch (doc.import_state) {
+    case "review": return { key: "attention", label: "Ожидает проверки" }
+    case "queued": return { key: "attention", label: "В очереди" }
+    case "processing": return { key: "attention", label: "Обрабатывается" }
+    case "index_failed": return { key: "attention", label: "Ошибка индексации" }
+  }
   const freshness = doc.status?.toLowerCase().replaceAll(" ", "_")
   if (["changed", "изменён", "изменен"].includes(freshness ?? "")) {
     return { key: "attention", label: "Источник изменился" }

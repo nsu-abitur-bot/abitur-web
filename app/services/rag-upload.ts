@@ -68,11 +68,17 @@ export async function parsePageForRag(url: string): Promise<ParsedPageResult> {
   })
 }
 
-export async function confirmRagUpload(payload: ConfirmUploadRequest): Promise<void> {
-  await apiFetch("/api/v1/rag/confirm", {
+export async function confirmRagUpload(payload: ConfirmUploadRequest): Promise<{ job_id?: string }> {
+  return await apiFetch<{ job_id?: string }>("/api/v1/rag/confirm", {
     method: "POST",
     body: payload,
   })
+}
+
+export async function getRagImportStatus(jobId: string) {
+  return await apiFetch<{ status: "queued" | "processing" | "indexed" | "index_failed" }>(
+    `/api/v1/rag/imports/${encodeURIComponent(jobId)}`,
+  )
 }
 
 export async function preprocessRagDocument(text: string): Promise<PreprocessDocumentResponse> {

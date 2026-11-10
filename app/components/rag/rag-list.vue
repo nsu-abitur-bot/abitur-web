@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useIntervalFn } from "@vueuse/core"
+
 import { exportRagKnowledgeBase, getRagDocumentDiagnostics } from "~/services/rag-debug"
 import { materialState, materialType } from "~/services/rag-status"
 import { checkRagDocuments, clearRagCache, deleteRagDocuments, listRagDocuments, updateChangedRagDocuments, updateRagDocument } from "~/services/rag-upload"
@@ -29,9 +31,11 @@ function resetFilters() {
 }
 const state = (doc: RagDocument) => materialState(doc, diagnostics.value[doc.id])
 const visible = computed(() => documents.value.filter(doc => (doc.title || doc.id).toLowerCase().includes(query.value.toLowerCase()) && (filter.value === "all" || state(doc).key === filter.value)))
-const isAllSelected = computed(() => visible.value.length > 0 && visible.value.every(doc => selectedIds.value.has(doc.id)))
+const canManage = (doc: RagDocument) => !doc.proposal_only && doc.import_state !== "queued" && doc.import_state !== "processing"
+const selectable = computed(() => visible.value.filter(canManage))
+const isAllSelected = computed(() => selectable.value.length > 0 && selectable.value.every(doc => selectedIds.value.has(doc.id)))
 function toggleSelectAll() {
-  for (const doc of visible.value) {
+  for (const doc of selectable.value) {
     if (isAllSelected.value) {
       break
     }
@@ -46,19 +50,29 @@ function toggleSelection(id: string) {
   }
 }
 let generation = 0
-async function fetchDocuments() {
+async function fetchDocuments(background = false) {
   const current = ++generation
   isLoading.value = true
-  loadError.value = false
+  if (!background) {
+    loadError.value = false
+  }
   try {
     const loaded = await listRagDocuments()
     if (current !== generation) {
       return
     }
+    const previous = new Map(documents.value.map(doc => [doc.id, doc]))
     documents.value = loaded
-    selectedIds.value = new Set([...selectedIds.value].filter(id => documents.value.some(doc => doc.id === id)))
-    diagnostics.value = {}
-    const queue = [...documents.value]
+    loadError.value = false
+    selectedIds.value = new Set([...selectedIds.value].filter(id => loaded.some(doc => doc.id === id && canManage(doc))))
+    if (!background) {
+      diagnostics.value = {}
+    }
+    const queue = loaded.filter(doc => canManage(doc) && (
+      !diagnostics.value[doc.id]
+      || previous.get(doc.id)?.updated_at !== doc.updated_at
+      || previous.get(doc.id)?.import_state !== doc.import_state
+    ))
     await Promise.all(Array.from({ length: 3 }, async () => {
       while (queue.length) {
         if (current !== generation) {
@@ -78,7 +92,9 @@ async function fetchDocuments() {
       }
     }))
   } catch {
-    loadError.value = true
+    if (current === generation && !background) {
+      loadError.value = true
+    }
   } finally {
     if (current === generation) {
       isLoading.value = false
@@ -91,11 +107,16 @@ watch(() => route.query.doc, (id) => {
     navigateTo({ path: `/rag/document/${encodeURIComponent(id)}`, query })
   }
 }, { immediate: true })
-onMounted(fetchDocuments)
+onMounted(() => fetchDocuments())
+useIntervalFn(() => {
+  if (!isLoading.value && !busy.value && !document.hidden) {
+    void fetchDocuments(true)
+  }
+}, 5000)
 onBeforeUnmount(() => {
   generation++
 })
-watch(() => props.refreshTrigger, fetchDocuments)
+watch(() => props.refreshTrigger, () => fetchDocuments())
 async function run(action: () => Promise<unknown>) {
   if (busy.value) {
     return
@@ -201,7 +222,7 @@ function openDiagnostics(doc: RagDocument) {
           u-button(color="neutral" variant="ghost" @click="close") Отмена
           u-button(color="error" @click="removeSelected(); close()") Удалить
     ui-empty-state(v-if="loadError" kind="error" title="Не удалось загрузить материалы")
-      u-button(color="neutral" variant="outline" @click="fetchDocuments") Повторить
+      u-button(color="neutral" variant="outline" @click="fetchDocuments()") Повторить
     ui-empty-state(v-else-if="isLoading && !documents.length" kind="loading" title="Загрузка материалов…")
     ui-empty-state(v-else-if="!visible.length" :kind="documents.length ? 'no-results' : 'empty'" :title="documents.length ? 'Ничего не найдено' : 'Материалов пока нет'")
       u-button(v-if="documents.length" color="neutral" variant="outline" @click="resetFilters") Сбросить фильтры
@@ -217,15 +238,18 @@ function openDiagnostics(doc: RagDocument) {
       tbody
         tr(v-for="doc in visible" :key="doc.id")
           td
-            u-checkbox(:model-value="selectedIds.has(doc.id)" :aria-label="`Выбрать ${doc.title || doc.id}`" @update:model-value="toggleSelection(doc.id)")
+            u-checkbox(v-if="canManage(doc)" :model-value="selectedIds.has(doc.id)" :aria-label="`Выбрать ${doc.title || doc.id}`" @update:model-value="toggleSelection(doc.id)")
           td.materials-name
-            nuxt-link(:to="{ path: `/rag/document/${encodeURIComponent(doc.id)}`, query: route.query }") {{ doc.title || doc.id }}
+            nuxt-link(v-if="!doc.proposal_only" :to="{ path: `/rag/document/${encodeURIComponent(doc.id)}`, query: route.query }") {{ doc.title || doc.id }}
+            nuxt-link(v-else-if="doc.import_state === 'review'" to="/rag/proposals") {{ doc.title || doc.id }}
+            span(v-else) {{ doc.title || doc.id }}
             small.admin-muted {{ doc.url ? 'Источник по ссылке' : 'Без ссылки' }}
           td.admin-muted.materials-type {{ materialType(doc.url) }}
           td
             span.materials-state(:data-state="state(doc).key") {{ state(doc).label }}
+            small.admin-muted.block(v-if="doc.import_state === 'index_failed' && doc.last_check_message") {{ doc.last_check_message }}
           td
-            u-dropdown-menu(:items="[{ label: 'Редактировать', onSelect: () => openEditDocument(doc) }, { label: 'Диагностика', onSelect: () => openDiagnostics(doc) }]")
+            u-dropdown-menu(v-if="canManage(doc)" :items="[{ label: 'Редактировать', onSelect: () => openEditDocument(doc) }, { label: 'Диагностика', onSelect: () => openDiagnostics(doc) }]")
               u-button(icon="i-lucide-ellipsis" color="neutral" variant="ghost" :aria-label="`Действия: ${doc.title || doc.id}`")
     .materials-footer.admin-muted(v-if="documents.length")
       span Материалов: {{ visible.length }} из {{ documents.length }}

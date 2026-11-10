@@ -1,7 +1,7 @@
 import { useStorage } from "@vueuse/core"
 import { defineStore } from "pinia"
 
-import { confirmRagUpload, parsePageForRag } from "~/services/rag-upload"
+import { confirmRagUpload, getRagImportStatus, parsePageForRag } from "~/services/rag-upload"
 import type { CsvImportPreviewResult } from "~/types/rag-upload"
 
 export interface PendingItem {
@@ -9,7 +9,8 @@ export interface PendingItem {
   title: string
   text: string
   documents: any[]
-  status: "idle" | "parsing" | "success" | "error" | "indexing" | "indexed" | "index_error"
+  status: "idle" | "parsing" | "success" | "error" | "indexing" | "queued" | "indexed" | "index_error"
+  jobId?: string
   error?: string
 }
 
@@ -50,7 +51,7 @@ export const useRagParserStore = defineStore("ragParser", () => {
   })
 
   const indexingStats = computed(() => {
-    const items = pendingItems.value.filter(i => i.status === "indexing" || i.status === "indexed" || i.status === "index_error")
+    const items = pendingItems.value.filter(i => i.status === "indexing" || i.status === "queued" || i.status === "indexed" || i.status === "index_error")
     const total = items.length
     const done = items.filter(i => i.status === "indexed" || i.status === "index_error").length
     return { total, done }
@@ -192,7 +193,7 @@ export const useRagParserStore = defineStore("ragParser", () => {
 
   const toggleAll = () => {
     const validForSelection = pendingItems.value.map((item, i) =>
-      (item.status !== "idle" && item.status !== "parsing" && item.status !== "indexing") ? i : -1,
+      (item.status === "success" || item.status === "index_error") ? i : -1,
     ).filter(i => i !== -1)
 
     const allSelected = validForSelection.length > 0
@@ -214,8 +215,8 @@ export const useRagParserStore = defineStore("ragParser", () => {
 
   const confirmSelectedUpload = async () => {
     const itemsToUpload = selectedIndices.value
-      .map(i => ({ index: i, item: pendingItems.value[i] }))
-      .filter(({ item }) => !!item && item.status === "success" && !item.error)
+      .map(i => pendingItems.value[i])
+      .filter((item): item is PendingItem => !!item && (item.status === "success" || item.status === "index_error"))
 
     if (itemsToUpload.length === 0) {
       return { successCount: 0, totalCount: 0 }
@@ -225,21 +226,17 @@ export const useRagParserStore = defineStore("ragParser", () => {
     let successCount = 0
 
     try {
-      for (const { index } of itemsToUpload) {
-        const current = pendingItems.value[index]
-        if (!current) {
-          continue
-        }
-
+      for (const current of itemsToUpload) {
         current.status = "indexing"
         try {
-          await confirmRagUpload({
+          const result = await confirmRagUpload({
             title: current.title,
             url: current.url,
             text: current.text,
             documents: [],
           })
-          current.status = "indexed"
+          current.jobId = result.job_id
+          current.status = result.job_id ? "queued" : "indexed"
           current.error = undefined
           successCount++
         } catch (err: any) {
@@ -254,6 +251,38 @@ export const useRagParserStore = defineStore("ragParser", () => {
       }
     } finally {
       isUploading.value = false
+    }
+  }
+
+  let refreshingImports = false
+
+  const refreshImports = async () => {
+    if (refreshingImports || isUploading.value) {
+      return false
+    }
+    refreshingImports = true
+    try {
+      const results = await Promise.all(pendingItems.value.map(async (item) => {
+        if (item.status !== "queued" || !item.jobId) {
+          return false
+        }
+        try {
+          const { status } = await getRagImportStatus(item.jobId)
+          if (status === "indexed") {
+            item.status = "indexed"
+          } else if (status === "index_failed") {
+            item.status = "index_error"
+            item.error = "Не удалось проиндексировать материал"
+          }
+          return status === "indexed" || status === "index_failed"
+        } catch {
+          // A temporary read failure does not mean the persisted job failed.
+          return false
+        }
+      }))
+      return results.some(Boolean)
+    } finally {
+      refreshingImports = false
     }
   }
 
@@ -313,6 +342,7 @@ export const useRagParserStore = defineStore("ragParser", () => {
     parsingStats,
     pendingItems,
     processQueue,
+    refreshImports,
     removeItem,
     selectedIndices,
     toggleAll,

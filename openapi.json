@@ -1643,7 +1643,7 @@
           }
         ],
         "responses": {
-          "200": {
+          "202": {
             "description": "Successful Response",
             "content": {
               "application/json": {
@@ -2790,8 +2790,7 @@
         "tags": [
           "RAG Management"
         ],
-        "summary": "Подтвердить загрузку в RAG",
-        "description": "Загружает отредактированный текст и выбранные документы в RAG.",
+        "summary": "Поставить загрузку в очередь RAG",
         "operationId": "confirm_rag_upload_api_v1_rag_confirm_post",
         "requestBody": {
           "content": {
@@ -2804,11 +2803,17 @@
           "required": true
         },
         "responses": {
-          "201": {
+          "202": {
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Confirm Rag Upload Api V1 Rag Confirm Post"
+                }
               }
             }
           },
@@ -4140,6 +4145,57 @@
                   },
                   "type": "object",
                   "title": "Response Get University Profile Api V1 University Profile Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/rag/imports/{job_id}": {
+      "get": {
+        "tags": [
+          "RAG Management"
+        ],
+        "summary": "Состояние загрузки в RAG",
+        "operationId": "get_rag_import_api_v1_rag_imports__job_id__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Get Rag Import Api V1 Rag Imports  Job Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
@@ -5521,28 +5577,60 @@
           },
           "verification_status": {
             "type": "string",
-            "enum": ["draft", "confirmed"],
+            "enum": [
+              "draft",
+              "confirmed"
+            ],
             "title": "Verification Status",
             "description": "Черновик или подтверждено человеком",
             "default": "draft"
           },
           "source_document": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Source Document",
             "description": "Документ-источник"
           },
           "source_location": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Source Location",
             "description": "Место в документе"
           },
           "confirmed_by": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Confirmed By",
             "description": "Имя подтвердившего"
           },
           "confirmed_at": {
-            "anyOf": [{ "type": "string", "format": "date-time" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Confirmed At",
             "description": "Дата подтверждения"
           }
@@ -6791,6 +6879,22 @@
             "type": "string",
             "title": "Status",
             "description": "Статус обработки"
+          },
+          "import_state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Import State"
+          },
+          "proposal_only": {
+            "type": "boolean",
+            "title": "Proposal Only",
+            "default": false
           },
           "content_hash": {
             "anyOf": [

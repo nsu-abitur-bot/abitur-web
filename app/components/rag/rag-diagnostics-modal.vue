@@ -56,7 +56,7 @@ const lightragLabel: Record<string, string> = {
 const getLightragLabel = (status: string) => lightragLabel[status] ?? "Неизвестно"
 
 const hasLightragProblem = computed(() => data.value !== null && data.value.lightrag_status !== "processed")
-const hasNoEntities = computed(() => data.value !== null && data.value.entities_count === 0)
+const hasNoEntities = computed(() => data.value?.lightrag_status === "processed" && data.value.entities_count === 0)
 const hasError = computed(() => !!data.value?.error)
 const hasAnyProblem = computed(() => hasLightragProblem.value || hasNoEntities.value || hasError.value)
 </script>
