@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useDocumentVisibility, useIntervalFn } from "@vueuse/core"
+
 const { popularLimit } = useStatsSettings()
 
 const popularLimitInput = computed({
@@ -20,9 +22,25 @@ const query = computed(() => ({
 
 const { data, refresh, status, error } = await useApi("/api/v1/logs/popular", {
   query,
+  lazy: true,
 })
 
-watch(popularLimit, () => refresh())
+const visibility = useDocumentVisibility()
+const preparing = computed(() => data.value?.status === "pending")
+const failed = computed(() => Boolean(error.value) || data.value?.status === "error")
+const { pause, resume } = useIntervalFn(() => {
+  if (visibility.value === "visible" && status.value !== "pending") {
+    void refresh()
+  }
+}, 2000, { immediate: false })
+
+watch(() => preparing.value || failed.value, (waiting) => {
+  if (waiting) {
+    resume()
+  } else {
+    pause()
+  }
+}, { immediate: true })
 
 const questions = computed(() => data.value?.questions ?? [])
 const topQuestion = computed(() => questions.value[0])
@@ -45,8 +63,8 @@ ui-box(title="Самые популярные вопросы" class="w-full min-
         class="w-20"
       )
 
-  ui-empty-state(v-if="status === 'pending'" kind="loading" title="Загрузка вопросов…")
-  ui-empty-state(v-else-if="error" kind="error" title="Не удалось загрузить популярные вопросы")
+  ui-empty-state(v-if="status === 'pending' || preparing" kind="loading" title="Загрузка вопросов…")
+  ui-empty-state(v-else-if="failed" kind="error" title="Не удалось загрузить популярные вопросы")
     u-button(color="neutral" variant="outline" @click="() => refresh()") Повторить
   ui-empty-state(v-else-if="!topQuestion" title="Нет данных по вопросам")
 

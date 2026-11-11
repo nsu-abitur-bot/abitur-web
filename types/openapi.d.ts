@@ -2519,6 +2519,19 @@ export interface components {
       /** Questions */
       questions: components["schemas"]["PopularQuestion"][]
     }
+    /** PopularQuestionsSnapshotResponse */
+    PopularQuestionsSnapshotResponse: {
+      /** Questions */
+      questions: components["schemas"]["PopularQuestion"][]
+      /**
+       * Status
+       * @default ready
+       * @enum {string}
+       */
+      status: "pending" | "ready" | "error"
+      /** Updated At */
+      updated_at?: string | null
+    }
     /** PreprocessDocumentRequest */
     PreprocessDocumentRequest: {
       /**
@@ -4623,7 +4636,7 @@ export interface operations {
           [name: string]: unknown
         }
         content: {
-          "application/json": components["schemas"]["PopularQuestionsResponse"]
+          "application/json": components["schemas"]["PopularQuestionsSnapshotResponse"]
         }
       }
       /** @description Validation Error */

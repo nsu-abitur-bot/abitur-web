@@ -31,7 +31,7 @@ const periodTabItems = ref<TabsItem[]>([
 
 const period = ref<PeriodType>("day")
 
-const { data: usersMap, status, error, refresh } = await useApi("/api/v1/users/count-stats")
+const { data: usersMap, status, error, refresh } = await useApi("/api/v1/users/count-stats", { lazy: true })
 const data = computed(() => usersMap.value?.[period.value])
 </script>
 

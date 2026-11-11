@@ -2359,7 +2359,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PopularQuestionsResponse"
+                  "$ref": "#/components/schemas/PopularQuestionsSnapshotResponse"
                 }
               }
             }
@@ -6815,6 +6815,44 @@
           "questions"
         ],
         "title": "PopularQuestionsResponse"
+      },
+      "PopularQuestionsSnapshotResponse": {
+        "properties": {
+          "questions": {
+            "items": {
+              "$ref": "#/components/schemas/PopularQuestion"
+            },
+            "type": "array",
+            "title": "Questions"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "ready",
+              "error"
+            ],
+            "title": "Status",
+            "default": "ready"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "questions"
+        ],
+        "title": "PopularQuestionsSnapshotResponse"
       },
       "PreprocessDocumentRequest": {
         "properties": {
