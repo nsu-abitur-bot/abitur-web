@@ -15,8 +15,8 @@ jobs:
       NUXT_TELEMETRY_DISABLED: "1"
     steps:
       - uses: actions/checkout@v5
-      - uses: jdx/mise-action@v3
-      - uses: actions/cache@v4
+      - uses: jdx/mise-action@v5
+      - uses: actions/cache@v5
         with:
           path: ~/.bun/install/cache
           key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
@@ -27,7 +27,7 @@ jobs:
       - run: task build
       - run: bunx --no-install playwright install --with-deps chromium webkit
       - run: task e2e
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: playwright-report
