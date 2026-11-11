@@ -219,12 +219,12 @@ await load()
               <div class="instance-group-body">
                 <p v-if="group === 'Профиль вуза'" class="text-sm admin-muted">Смена профиля не удаляет данные. Для другого вуза нужен отдельный экземпляр с чистой базой.</p>
                 <div class="instance-field-grid">
-                  <settings-instance-field v-for="setting in settingsFor(group)" :key="setting.key" v-model="draft[setting.key]!" :setting="setting" :removed="removed.has(setting.key)" @remove="toggleRemoval(setting.key)" />
+                  <settings-instance-field v-for="setting in settingsFor(group)" :key="setting.key" v-model="draft[setting.key]!" :setting="setting" :removed="removed.has(setting.key)" :disabled="busy" @remove="toggleRemoval(setting.key)" />
                 </div>
                 <details v-if="settingsFor(group, true).length" class="instance-advanced">
                   <summary>Дополнительно</summary>
                   <div class="instance-field-grid">
-                    <settings-instance-field v-for="setting in settingsFor(group, true)" :key="setting.key" v-model="draft[setting.key]!" :setting="setting" :removed="removed.has(setting.key)" @remove="toggleRemoval(setting.key)" />
+                    <settings-instance-field v-for="setting in settingsFor(group, true)" :key="setting.key" v-model="draft[setting.key]!" :setting="setting" :removed="removed.has(setting.key)" :disabled="busy" @remove="toggleRemoval(setting.key)" />
                   </div>
                 </details>
                 <div v-if="connectionPurposes(snapshot.settings, group).length || ['Telegram', 'MAX'].includes(group)" class="instance-checks">
