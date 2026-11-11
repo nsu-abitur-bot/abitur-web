@@ -5,6 +5,27 @@
     "version": "0.1.0"
   },
   "paths": {
+    "/health": {
+      "get": {
+        "summary": "Health",
+        "description": "Проба живости процесса API (#241).\n\nБез обращения к БД: доступность PostgreSQL закрывает её собственный\nhealthcheck в compose, дублировать его здесь — сваливать API из-за БД,\nкоторая и так мониторится.",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Health Health Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/auth/login": {
       "post": {
         "tags": [
@@ -1073,7 +1094,7 @@
         "tags": [
           "faculties"
         ],
-        "summary": "Удалить факультет",
+        "summary": "Выключить факультет",
         "operationId": "delete_faculty_api_v1_faculties__faculty_id__delete",
         "security": [
           {
@@ -1438,6 +1459,18 @@
               "title": "Form"
             },
             "description": "Форма: budget / paid"
+          },
+          {
+            "name": "only_active",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Только активные факультеты и программы",
+              "default": false,
+              "title": "Only Active"
+            },
+            "description": "Только активные факультеты и программы"
           }
         ],
         "responses": {
@@ -1855,6 +1888,95 @@
         }
       }
     },
+    "/api/v1/logs/answer-stats": {
+      "get": {
+        "tags": [
+          "Message Logs"
+        ],
+        "summary": "Метрики ответов: latency, доля неотвеченных, ошибки",
+        "description": "Наблюдаемость ответов по периодам (#242): время отклика (p50/p95),\nдоля неотвеченных и ошибок. Наполняется с момента деплоя: метрики\nпишутся пайплайном в message_metadata каждой записи llm_response.",
+        "operationId": "get_answer_stats_api_v1_logs_answer_stats_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Начало периода (ISO 8601)",
+              "title": "Start"
+            },
+            "description": "Начало периода (ISO 8601)"
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Конец периода (ISO 8601)",
+              "title": "End"
+            },
+            "description": "Конец периода (ISO 8601)"
+          },
+          {
+            "name": "group_by",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Группировка: hour, day, week, month",
+              "default": "day",
+              "title": "Group By"
+            },
+            "description": "Группировка: hour, day, week, month"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnswerStatsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/logs/token-stats": {
       "get": {
         "tags": [
@@ -2228,6 +2350,69 @@
               "minimum": 0.5,
               "default": 0.86,
               "title": "Similarity Threshold"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PopularQuestionsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/logs/unanswered": {
+      "get": {
+        "tags": [
+          "Message Logs"
+        ],
+        "summary": "Очередь вопросов без ответа",
+        "description": "Вопросы, на которые бот честно ответил «не нашёл информации» (#258).\n\nПайплайн пишет их с типом `no_answer`; здесь они сгруппированы с частотой\nи вариантами формулировок — это очередь на наполнение базы знаний.\nСервисные сбои («сервис недоступен») в очередь не попадают: это ошибки\nинфраструктуры, а не пробелы контента.",
+        "operationId": "get_unanswered_questions_api_v1_logs_unanswered_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "raw_limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 5000,
+              "minimum": 1,
+              "default": 500,
+              "title": "Raw Limit"
             }
           }
         ],
@@ -2697,7 +2882,19 @@
           "content": {
             "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/Body_upload_documents_to_rag_api_v1_rag_upload_post"
+                "properties": {
+                  "files": {
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    },
+                    "type": "array"
+                  }
+                },
+                "type": "object",
+                "required": [
+                  "files"
+                ]
               }
             }
           },
@@ -2710,16 +2907,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/RagUploadResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
@@ -2835,6 +3022,57 @@
         ]
       }
     },
+    "/api/v1/rag/imports/{job_id}": {
+      "get": {
+        "tags": [
+          "RAG Management"
+        ],
+        "summary": "Состояние загрузки в RAG",
+        "operationId": "get_rag_import_api_v1_rag_imports__job_id__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Get Rag Import Api V1 Rag Imports  Job Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/rag/preprocess": {
       "post": {
         "tags": [
@@ -2888,8 +3126,71 @@
           "RAG Management"
         ],
         "summary": "Список документов в RAG",
-        "description": "Возвращает список всех загруженных в RAG документов.",
+        "description": "Объединяет метаданные и фильтрует их до выделения страницы.",
         "operationId": "list_rag_documents_api_v1_rag_docs_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 100,
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 500,
+              "default": "",
+              "title": "Q"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "all",
+                "ready",
+                "attention",
+                "unknown"
+              ],
+              "type": "string",
+              "default": "all",
+              "title": "State"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -2900,13 +3201,18 @@
                 }
               }
             }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
           }
-        },
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ]
+        }
       }
     },
     "/api/v1/rag/docs/{doc_id}/content": {
@@ -4151,57 +4457,6 @@
           }
         }
       }
-    },
-    "/api/v1/rag/imports/{job_id}": {
-      "get": {
-        "tags": [
-          "RAG Management"
-        ],
-        "summary": "Состояние загрузки в RAG",
-        "operationId": "get_rag_import_api_v1_rag_imports__job_id__get",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "job_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Job Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "additionalProperties": {
-                    "type": "string"
-                  },
-                  "title": "Response Get Rag Import Api V1 Rag Imports  Job Id  Get"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
     }
   },
   "components": {
@@ -4309,6 +4564,173 @@
         ],
         "title": "AdminRole"
       },
+      "AnswerStatsBucket": {
+        "properties": {
+          "period": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Period"
+          },
+          "questions": {
+            "type": "integer",
+            "title": "Questions"
+          },
+          "answers": {
+            "type": "integer",
+            "title": "Answers"
+          },
+          "no_answer": {
+            "type": "integer",
+            "title": "No Answer"
+          },
+          "no_answer_share": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "No Answer Share"
+          },
+          "errors": {
+            "type": "integer",
+            "title": "Errors"
+          },
+          "error_share": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Share"
+          },
+          "latency_ms_p50": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latency Ms P50"
+          },
+          "latency_ms_p95": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latency Ms P95"
+          }
+        },
+        "type": "object",
+        "required": [
+          "period",
+          "questions",
+          "answers",
+          "no_answer",
+          "errors"
+        ],
+        "title": "AnswerStatsBucket",
+        "description": "Наблюдаемость одного периода: latency, неответы, ошибки (#242)."
+      },
+      "AnswerStatsResponse": {
+        "properties": {
+          "total_questions": {
+            "type": "integer",
+            "title": "Total Questions"
+          },
+          "total_answers": {
+            "type": "integer",
+            "title": "Total Answers"
+          },
+          "total_no_answer": {
+            "type": "integer",
+            "title": "Total No Answer"
+          },
+          "no_answer_share": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "No Answer Share"
+          },
+          "total_errors": {
+            "type": "integer",
+            "title": "Total Errors"
+          },
+          "error_share": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Share"
+          },
+          "group_by": {
+            "type": "string",
+            "title": "Group By"
+          },
+          "start": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start"
+          },
+          "end": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End"
+          },
+          "buckets": {
+            "items": {
+              "$ref": "#/components/schemas/AnswerStatsBucket"
+            },
+            "type": "array",
+            "title": "Buckets"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_questions",
+          "total_answers",
+          "total_no_answer",
+          "total_errors",
+          "group_by",
+          "buckets"
+        ],
+        "title": "AnswerStatsResponse",
+        "description": "Метрики ответов по периодам для дашборда наблюдаемости."
+      },
       "Body_preview_csv_documents_api_v1_rag_upload_csv_preview_post": {
         "properties": {
           "file": {
@@ -4389,24 +4811,6 @@
         ],
         "title": "Body_upload_csv_documents_api_v1_rag_upload_csv_post"
       },
-      "Body_upload_documents_to_rag_api_v1_rag_upload_post": {
-        "properties": {
-          "files": {
-            "items": {
-              "type": "string",
-              "contentMediaType": "application/octet-stream"
-            },
-            "type": "array",
-            "title": "Files",
-            "description": "Файлы для индексации в RAG"
-          }
-        },
-        "type": "object",
-        "required": [
-          "files"
-        ],
-        "title": "Body_upload_documents_to_rag_api_v1_rag_upload_post"
-      },
       "Body_upload_faq_csv_api_v1_faq_upload_post": {
         "properties": {
           "file": {
@@ -4476,11 +4880,13 @@
         "properties": {
           "title": {
             "type": "string",
+            "maxLength": 500,
             "title": "Title",
             "description": "Название страницы"
           },
           "url": {
             "type": "string",
+            "maxLength": 1000,
             "title": "Url",
             "description": "URL страницы"
           },
@@ -5632,7 +6038,7 @@
               }
             ],
             "title": "Confirmed At",
-            "description": "Дата подтверждения"
+            "description": "Дата подтверждения в UTC; дата без часового пояса считается UTC"
           }
         },
         "type": "object",
@@ -6880,6 +7286,17 @@
             "title": "Status",
             "description": "Статус обработки"
           },
+          "lightrag_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lightrag Status"
+          },
           "import_state": {
             "anyOf": [
               {
@@ -7040,7 +7457,41 @@
             },
             "type": "array",
             "title": "Documents",
-            "description": "Список документов в RAG"
+            "description": "Страница материалов"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "description": "Всего материалов с учётом фильтров",
+            "default": 0
+          },
+          "total_all": {
+            "type": "integer",
+            "title": "Total All",
+            "description": "Всего материалов без фильтров",
+            "default": 0
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset",
+            "default": 0
+          },
+          "limit": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Limit"
+          },
+          "has_pending": {
+            "type": "boolean",
+            "title": "Has Pending",
+            "description": "Есть активные импорты на любой странице",
+            "default": false
           }
         },
         "type": "object",
@@ -7302,7 +7753,7 @@
           "passing_score": {
             "anyOf": [
               {
-                "type": "integer"
+                "type": "number"
               },
               {
                 "type": "null"
@@ -7370,7 +7821,7 @@
           "passing_score": {
             "anyOf": [
               {
-                "type": "integer"
+                "type": "number"
               },
               {
                 "type": "null"

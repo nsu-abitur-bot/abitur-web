@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { useIntervalFn } from "@vueuse/core"
 
-import { exportRagKnowledgeBase, getRagDocumentDiagnostics } from "~/services/rag-debug"
+import { exportRagKnowledgeBase } from "~/services/rag-debug"
 import { materialState, materialType } from "~/services/rag-status"
 import { checkRagDocuments, clearRagCache, deleteRagDocuments, listRagDocuments, updateChangedRagDocuments, updateRagDocument } from "~/services/rag-upload"
-import type { RagDocumentDiagnostics } from "~/types/rag-debug"
 import type { RagDocument } from "~/types/rag-upload"
 
 const props = defineProps<{ refreshTrigger?: number }>()
@@ -12,7 +11,16 @@ const route = useRoute()
 const router = useRouter()
 const toast = useToast()
 const documents = ref<RagDocument[]>([])
-const diagnostics = ref<Record<string, RagDocumentDiagnostics | null>>({})
+const pageSize = 20
+const total = ref(0)
+const totalAll = ref(0)
+const hasPending = ref(false)
+const page = computed({ get: () => {
+  const value = Number(route.query.page ?? 1)
+  return Number.isSafeInteger(value) && value > 0 ? value : 1
+}, set: (page) => {
+  router.replace({ query: { ...route.query, page: page > 1 ? page : undefined } })
+} })
 const isLoading = ref(false)
 const loadError = ref(false)
 const busy = ref(false)
@@ -20,17 +28,17 @@ const clearCacheOpen = ref(false)
 const selectedIds = ref(new Set<string>())
 const operationMessages = ref<string[]>([])
 const query = computed({ get: () => String(route.query.q ?? ""), set: (q) => {
-  router.replace({ query: { ...route.query, q: q || undefined } })
+  router.replace({ query: { ...route.query, q: q || undefined, page: undefined } })
 } })
-const filter = computed({ get: () => String(route.query.status ?? "all"), set: (status) => {
-  router.replace({ query: { ...route.query, status: status === "all" ? undefined : status } })
+const filter = computed({ get: () => ["ready", "attention", "unknown"].includes(String(route.query.status)) ? String(route.query.status) : "all", set: (status) => {
+  router.replace({ query: { ...route.query, status: status === "all" ? undefined : status, page: undefined } })
 } })
 function resetFilters() {
-  const { q: _q, status: _status, ...query } = route.query
+  const { q: _q, status: _status, page: _page, ...query } = route.query
   router.replace({ query })
 }
-const state = (doc: RagDocument) => materialState(doc, diagnostics.value[doc.id])
-const visible = computed(() => documents.value.filter(doc => (doc.title || doc.id).toLowerCase().includes(query.value.toLowerCase()) && (filter.value === "all" || state(doc).key === filter.value)))
+const state = (doc: RagDocument) => materialState(doc)
+const visible = computed(() => documents.value)
 const canManage = (doc: RagDocument) => !doc.proposal_only && doc.import_state !== "queued" && doc.import_state !== "processing"
 const selectable = computed(() => visible.value.filter(canManage))
 const isAllSelected = computed(() => selectable.value.length > 0 && selectable.value.every(doc => selectedIds.value.has(doc.id)))
@@ -50,49 +58,37 @@ function toggleSelection(id: string) {
   }
 }
 let generation = 0
+let searchTimer: ReturnType<typeof setTimeout> | undefined
+let controller: AbortController | undefined
+const requestKey = () => JSON.stringify([page.value, query.value, filter.value])
 async function fetchDocuments(background = false) {
+  clearTimeout(searchTimer)
   const current = ++generation
+  const key = requestKey()
+  controller?.abort()
+  controller = new AbortController()
   isLoading.value = true
   if (!background) {
     loadError.value = false
   }
   try {
-    const loaded = await listRagDocuments()
-    if (current !== generation) {
+    const loaded = await listRagDocuments({ limit: pageSize, offset: (page.value - 1) * pageSize, q: query.value, state: filter.value }, controller.signal)
+    if (current !== generation || key !== requestKey()) {
       return
     }
-    const previous = new Map(documents.value.map(doc => [doc.id, doc]))
-    documents.value = loaded
-    loadError.value = false
-    selectedIds.value = new Set([...selectedIds.value].filter(id => loaded.some(doc => doc.id === id && canManage(doc))))
-    if (!background) {
-      diagnostics.value = {}
+    total.value = loaded.total ?? loaded.documents.length
+    totalAll.value = loaded.total_all ?? total.value
+    hasPending.value = loaded.has_pending ?? false
+    const lastPage = Math.max(1, Math.ceil(total.value / pageSize))
+    if (page.value > lastPage) {
+      page.value = lastPage
+      return
     }
-    const queue = loaded.filter(doc => canManage(doc) && (
-      !diagnostics.value[doc.id]
-      || previous.get(doc.id)?.updated_at !== doc.updated_at
-      || previous.get(doc.id)?.import_state !== doc.import_state
-    ))
-    await Promise.all(Array.from({ length: 3 }, async () => {
-      while (queue.length) {
-        if (current !== generation) {
-          break
-        }
-        const doc = queue.shift()!
-        try {
-          const result = await getRagDocumentDiagnostics(doc.id)
-          if (current === generation) {
-            diagnostics.value[doc.id] = result
-          }
-        } catch {
-          if (current === generation) {
-            diagnostics.value[doc.id] = null
-          }
-        }
-      }
-    }))
+    documents.value = loaded.documents
+    loadError.value = false
+    selectedIds.value = new Set([...selectedIds.value].filter(id => loaded.documents.some(doc => doc.id === id && canManage(doc))))
   } catch {
-    if (current === generation && !background) {
+    if (current === generation && key === requestKey() && !background) {
       loadError.value = true
     }
   } finally {
@@ -101,6 +97,21 @@ async function fetchDocuments(background = false) {
     }
   }
 }
+watch([page, query, filter], (values, previous) => {
+  generation++
+  controller?.abort()
+  selectedIds.value.clear()
+  documents.value = []
+  clearTimeout(searchTimer)
+  if (values[1] !== previous[1]) {
+    isLoading.value = true
+    searchTimer = setTimeout(() => {
+      void fetchDocuments()
+    }, 300)
+  } else {
+    void fetchDocuments()
+  }
+})
 watch(() => route.query.doc, (id) => {
   if (typeof id === "string" && id) {
     const { doc: _doc, ...query } = route.query
@@ -109,12 +120,14 @@ watch(() => route.query.doc, (id) => {
 }, { immediate: true })
 onMounted(() => fetchDocuments())
 useIntervalFn(() => {
-  if (!isLoading.value && !busy.value && !document.hidden) {
+  if (hasPending.value && !isLoading.value && !busy.value && !document.hidden) {
     void fetchDocuments(true)
   }
 }, 5000)
 onBeforeUnmount(() => {
+  clearTimeout(searchTimer)
   generation++
+  controller?.abort()
 })
 watch(() => props.refreshTrigger, () => fetchDocuments())
 async function run(action: () => Promise<unknown>) {
@@ -200,8 +213,8 @@ function openDiagnostics(doc: RagDocument) {
 
 <template lang="pug">
 .materials
-  div(:class="{ 'admin-table-wrap': documents.length }")
-    .admin-toolbar(v-if="isLoading || loadError || documents.length")
+  div(:class="{ 'admin-table-wrap': totalAll }")
+    .admin-toolbar(v-if="isLoading || loadError || totalAll")
       u-input(v-model="query" placeholder="Найти материал" aria-label="Поиск материалов" icon="i-lucide-search" class="materials-search")
       u-select(v-model="filter" aria-label="Состояние" :items="[{ label: 'Все состояния', value: 'all' }, { label: 'Обработаны', value: 'ready' }, { label: 'Требуют внимания', value: 'attention' }, { label: 'Не подтверждены', value: 'unknown' }]")
       u-button(color="neutral" variant="outline" :loading="busy" @click="check(false, true)") Проверить все
@@ -224,8 +237,8 @@ function openDiagnostics(doc: RagDocument) {
     ui-empty-state(v-if="loadError" kind="error" title="Не удалось загрузить материалы")
       u-button(color="neutral" variant="outline" @click="fetchDocuments()") Повторить
     ui-empty-state(v-else-if="isLoading && !documents.length" kind="loading" title="Загрузка материалов…")
-    ui-empty-state(v-else-if="!visible.length" :kind="documents.length ? 'no-results' : 'empty'" :title="documents.length ? 'Ничего не найдено' : 'Материалов пока нет'")
-      u-button(v-if="documents.length" color="neutral" variant="outline" @click="resetFilters") Сбросить фильтры
+    ui-empty-state(v-else-if="!visible.length" :kind="totalAll ? 'no-results' : 'empty'" :title="totalAll ? 'Ничего не найдено' : 'Материалов пока нет'")
+      u-button(v-if="totalAll && (query || filter !== 'all')" color="neutral" variant="outline" @click="resetFilters") Сбросить фильтры
     table.admin-table.materials-table(v-else)
       thead
         tr
@@ -251,9 +264,9 @@ function openDiagnostics(doc: RagDocument) {
           td
             u-dropdown-menu(v-if="canManage(doc)" :items="[{ label: 'Редактировать', onSelect: () => openEditDocument(doc) }, { label: 'Диагностика', onSelect: () => openDiagnostics(doc) }]")
               u-button(icon="i-lucide-ellipsis" color="neutral" variant="ghost" :aria-label="`Действия: ${doc.title || doc.id}`")
-    .materials-footer.admin-muted(v-if="documents.length")
-      span Материалов: {{ visible.length }} из {{ documents.length }}
-      span(v-if="isLoading") Проверка обработки…
+    .materials-footer.admin-muted(v-if="totalAll")
+      span Найдено: {{ total }} из {{ totalAll }}
+      u-pagination(v-if="total > pageSize" v-model:page="page" :total="total" :items-per-page="pageSize" :sibling-count="1" :show-edges="false" aria-label="Страницы материалов")
   details.admin-detail(v-if="operationMessages.length")
     summary Результаты операции ({{ operationMessages.length }})
     ul(class="mt-3 space-y-2")

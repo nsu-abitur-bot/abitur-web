@@ -1,7 +1,7 @@
 import type { RagDocumentDiagnostics } from "~/types/rag-debug"
 import type { RagDocument } from "~/types/rag-upload"
 
-export function materialState(doc: Pick<RagDocument, "status" | "import_state">, diagnostics?: RagDocumentDiagnostics | null) {
+export function materialState(doc: Pick<RagDocument, "status" | "import_state" | "lightrag_status">, diagnostics?: RagDocumentDiagnostics | null) {
   switch (doc.import_state) {
     case "review": return { key: "attention", label: "Ожидает проверки" }
     case "queued": return { key: "attention", label: "В очереди" }
@@ -18,7 +18,7 @@ export function materialState(doc: Pick<RagDocument, "status" | "import_state">,
   if (["indexing_failed", "ошибка_индексации"].includes(freshness ?? "")) {
     return { key: "attention", label: "Ошибка индексации" }
   }
-  switch (diagnostics?.lightrag_status) {
+  switch (diagnostics?.lightrag_status ?? doc.lightrag_status) {
     case "processed": return { key: "ready", label: "Обработан" }
     case "processing": return { key: "attention", label: "Обрабатывается" }
     case "pending": return { key: "attention", label: "Ожидает обработки" }

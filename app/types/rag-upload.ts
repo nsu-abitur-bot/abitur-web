@@ -14,6 +14,7 @@ export const RAG_ACCEPTED_EXTENSIONS = [
 export const RAG_MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024
 
 export type RagDocument = components["schemas"]["RagDocument"]
+export type RagDocumentPage = components["schemas"]["RagDocumentListResponse"]
 export type RagDocumentUpdateRequest = components["schemas"]["RagDocumentUpdateRequest"]
 export type ParsedPageResult = components["schemas"]["ParsedPageResult"]
 export type ParsedDocument = components["schemas"]["ParsedDocument"]
