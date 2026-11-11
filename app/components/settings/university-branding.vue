@@ -54,6 +54,20 @@ const initial = computed(() => Array.from(draft.value.UNIVERSITY_SHORT_NAME || d
         <input id="instance-UNIVERSITY_FULL_NAME" v-model="draft.UNIVERSITY_FULL_NAME" maxlength="300" class="instance-control w-full">
         <p class="text-xs admin-muted">Название вуза, также используется в ответах помощника.</p>
       </div>
+      <div v-if="draft.BOT_WELCOME_MESSAGE !== undefined" class="space-y-1">
+        <label for="instance-BOT_WELCOME_MESSAGE" class="block text-sm font-medium">Приветственное сообщение бота</label>
+        <textarea
+          id="instance-BOT_WELCOME_MESSAGE"
+          v-model="draft.BOT_WELCOME_MESSAGE"
+          aria-describedby="bot-welcome-hint"
+          class="instance-control w-full"
+          rows="6"
+          maxlength="3999"
+        />
+        <p id="bot-welcome-hint" class="text-xs admin-muted">
+          До 3999 символов. Обычный текст с переносами строк. Пустое поле вернёт стандартное приветствие.
+        </p>
+      </div>
       <div class="space-y-2">
         <span class="block text-sm font-medium">Логотип</span>
         <div class="flex flex-wrap gap-3 items-center">
