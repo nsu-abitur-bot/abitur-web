@@ -66,3 +66,24 @@ test("a background preparation error is not shown as an empty history", async ({
   await page.getByRole("button", { name: "Повторить", exact: true }).click()
   await expect(page.getByText("Нет данных по вопросам", { exact: true })).toBeVisible()
 })
+
+test("retrying a failed request shows loading while the retry is pending", async ({ page, context }) => {
+  const local = await emptyFixture(context)
+  local.failures.add("/api/v1/logs/popular")
+  await page.goto("/stats")
+  await expect(page.getByText("Не удалось загрузить популярные вопросы", { exact: true })).toBeVisible()
+  local.failures.delete("/api/v1/logs/popular")
+  let release!: () => void
+  local.holds.set("/api/v1/logs/popular", new Promise<void>((resolve) => {
+    release = resolve
+  }))
+  try {
+    await page.getByRole("button", { name: "Повторить", exact: true }).click()
+    await expect(page.getByText("Загрузка вопросов…", { exact: true })).toBeVisible()
+    await expect(page.getByText("Не удалось загрузить популярные вопросы", { exact: true })).toHaveCount(0)
+    release()
+    await expect(page.getByText("Нет данных по вопросам", { exact: true })).toBeVisible()
+  } finally {
+    release()
+  }
+})
