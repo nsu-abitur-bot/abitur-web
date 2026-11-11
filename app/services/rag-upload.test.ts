@@ -61,6 +61,17 @@ describe("uploadRagDocuments", () => {
 })
 
 describe("document batch operations", () => {
+  it("loads a page and its row statuses with one cancellable request", async () => {
+    const response = { documents: [{ id: "doc", status: "indexed", lightrag_status: "processed" }], total: 41, total_all: 80, has_pending: true }
+    const request = vi.fn(async () => response)
+    vi.stubGlobal("apiFetch", request)
+    const { listRagDocuments } = await import("~/services/rag-upload")
+    const params = { limit: 20, offset: 20, q: "приём", state: "ready" }
+    const controller = new AbortController()
+    expect(await listRagDocuments(params, controller.signal)).toEqual(response)
+    expect(request).toHaveBeenCalledExactlyOnceWith("/api/v1/rag/docs", { query: params, signal: controller.signal })
+    vi.unstubAllGlobals()
+  })
   it("never interprets an empty selection as all documents", async () => {
     const request = vi.fn()
     vi.stubGlobal("apiFetch", request)

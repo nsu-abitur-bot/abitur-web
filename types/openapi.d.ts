@@ -4,6 +4,30 @@
  */
 
 export interface paths {
+  "/health": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Health
+     * @description Проба живости процесса API (#241).
+     *
+     *     Без обращения к БД: доступность PostgreSQL закрывает её собственный
+     *     healthcheck в compose, дублировать его здесь — сваливать API из-за БД,
+     *     которая и так мониторится.
+     */
+    get: operations["health_health_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/auth/login": {
     parameters: {
       query?: never
@@ -365,7 +389,7 @@ export interface paths {
     /** Обновить факультет */
     put: operations["update_faculty_api_v1_faculties__faculty_id__put"]
     post?: never
-    /** Удалить факультет */
+    /** Выключить факультет */
     delete: operations["delete_faculty_api_v1_faculties__faculty_id__delete"]
     options?: never
     head?: never
@@ -571,6 +595,28 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/logs/answer-stats": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Метрики ответов: latency, доля неотвеченных, ошибки
+     * @description Наблюдаемость ответов по периодам (#242): время отклика (p50/p95),
+     *     доля неотвеченных и ошибок. Наполняется с момента деплоя: метрики
+     *     пишутся пайплайном в message_metadata каждой записи llm_response.
+     */
+    get: operations["get_answer_stats_api_v1_logs_answer_stats_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/logs/token-stats": {
     parameters: {
       query?: never
@@ -672,6 +718,31 @@ export interface paths {
      *     - **similarity_threshold**: порог семантической близости формулировок
      */
     get: operations["get_popular_questions_api_v1_logs_popular_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/logs/unanswered": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Очередь вопросов без ответа
+     * @description Вопросы, на которые бот честно ответил «не нашёл информации» (#258).
+     *
+     *     Пайплайн пишет их с типом `no_answer`; здесь они сгруппированы с частотой
+     *     и вариантами формулировок — это очередь на наполнение базы знаний.
+     *     Сервисные сбои («сервис недоступен») в очередь не попадают: это ошибки
+     *     инфраструктуры, а не пробелы контента.
+     */
+    get: operations["get_unanswered_questions_api_v1_logs_unanswered_get"]
     put?: never
     post?: never
     delete?: never
@@ -832,6 +903,23 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/rag/imports/{job_id}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Состояние загрузки в RAG */
+    get: operations["get_rag_import_api_v1_rag_imports__job_id__get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/rag/preprocess": {
     parameters: {
       query?: never
@@ -861,7 +949,7 @@ export interface paths {
     }
     /**
      * Список документов в RAG
-     * @description Возвращает список всех загруженных в RAG документов.
+     * @description Объединяет метаданные и фильтрует их до выделения страницы.
      */
     get: operations["list_rag_documents_api_v1_rag_docs_get"]
     put?: never
@@ -1342,23 +1430,6 @@ export interface paths {
     patch?: never
     trace?: never
   }
-  "/api/v1/rag/imports/{job_id}": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /** Состояние загрузки в RAG */
-    get: operations["get_rag_import_api_v1_rag_imports__job_id__get"]
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
 }
 export type webhooks = Record<string, never>
 export interface components {
@@ -1411,6 +1482,59 @@ export interface components {
      * @enum {string}
      */
     AdminRole: "superadmin" | "admin" | "viewer"
+    /**
+     * AnswerStatsBucket
+     * @description Наблюдаемость одного периода: latency, неответы, ошибки (#242).
+     */
+    AnswerStatsBucket: {
+      /**
+       * Period
+       * Format: date-time
+       */
+      period: string
+      /** Questions */
+      questions: number
+      /** Answers */
+      answers: number
+      /** No Answer */
+      no_answer: number
+      /** No Answer Share */
+      no_answer_share?: number | null
+      /** Errors */
+      errors: number
+      /** Error Share */
+      error_share?: number | null
+      /** Latency Ms P50 */
+      latency_ms_p50?: number | null
+      /** Latency Ms P95 */
+      latency_ms_p95?: number | null
+    }
+    /**
+     * AnswerStatsResponse
+     * @description Метрики ответов по периодам для дашборда наблюдаемости.
+     */
+    AnswerStatsResponse: {
+      /** Total Questions */
+      total_questions: number
+      /** Total Answers */
+      total_answers: number
+      /** Total No Answer */
+      total_no_answer: number
+      /** No Answer Share */
+      no_answer_share?: number | null
+      /** Total Errors */
+      total_errors: number
+      /** Error Share */
+      error_share?: number | null
+      /** Group By */
+      group_by: string
+      /** Start */
+      start?: string | null
+      /** End */
+      end?: string | null
+      /** Buckets */
+      buckets: components["schemas"]["AnswerStatsBucket"][]
+    }
     /** Body_preview_csv_documents_api_v1_rag_upload_csv_preview_post */
     Body_preview_csv_documents_api_v1_rag_upload_csv_preview_post: {
       /**
@@ -1448,14 +1572,6 @@ export interface components {
        * @description CSV файл с полями (Название, Link, Комментарий)
        */
       file: string
-    }
-    /** Body_upload_documents_to_rag_api_v1_rag_upload_post */
-    Body_upload_documents_to_rag_api_v1_rag_upload_post: {
-      /**
-       * Files
-       * @description Файлы для индексации в RAG
-       */
-      files: string[]
     }
     /** Body_upload_faq_csv_api_v1_faq_upload_post */
     Body_upload_faq_csv_api_v1_faq_upload_post: {
@@ -2095,7 +2211,7 @@ export interface components {
       confirmed_by?: string | null
       /**
        * Confirmed At
-       * @description Дата подтверждения
+       * @description Дата подтверждения в UTC; дата без часового пояса считается UTC
        */
       confirmed_at?: string | null
     }
@@ -2619,6 +2735,8 @@ export interface components {
        * @description Статус обработки
        */
       status: string
+      /** Lightrag Status */
+      lightrag_status?: string | null
       /** Import State */
       import_state?: string | null
       /**
@@ -2689,9 +2807,34 @@ export interface components {
     RagDocumentListResponse: {
       /**
        * Documents
-       * @description Список документов в RAG
+       * @description Страница материалов
        */
       documents: components["schemas"]["RagDocument"][]
+      /**
+       * Total
+       * @description Всего материалов с учётом фильтров
+       * @default 0
+       */
+      total: number
+      /**
+       * Total All
+       * @description Всего материалов без фильтров
+       * @default 0
+       */
+      total_all: number
+      /**
+       * Offset
+       * @default 0
+       */
+      offset: number
+      /** Limit */
+      limit?: number | null
+      /**
+       * Has Pending
+       * @description Есть активные импорты на любой странице
+       * @default false
+       */
+      has_pending: boolean
     }
     /** RagDocumentUpdateRequest */
     RagDocumentUpdateRequest: {
@@ -3059,6 +3202,28 @@ export interface components {
 }
 export type $defs = Record<string, never>
 export interface operations {
+  health_health_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": {
+            [key: string]: unknown
+          }
+        }
+      }
+    }
+  }
   login_api_v1_auth_login_post: {
     parameters: {
       query?: never
@@ -4027,6 +4192,8 @@ export interface operations {
         year?: number | null
         /** @description Форма: budget / paid */
         form?: string | null
+        /** @description Только активные факультеты и программы */
+        only_active?: boolean
       }
       header?: never
       path?: never
@@ -4263,6 +4430,42 @@ export interface operations {
       }
     }
   }
+  get_answer_stats_api_v1_logs_answer_stats_get: {
+    parameters: {
+      query?: {
+        /** @description Начало периода (ISO 8601) */
+        start?: string | null
+        /** @description Конец периода (ISO 8601) */
+        end?: string | null
+        /** @description Группировка: hour, day, week, month */
+        group_by?: string
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["AnswerStatsResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
   get_token_stats_api_v1_logs_token_stats_get: {
     parameters: {
       query?: {
@@ -4407,6 +4610,38 @@ export interface operations {
         limit?: number
         raw_limit?: number
         similarity_threshold?: number
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["PopularQuestionsResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_unanswered_questions_api_v1_logs_unanswered_get: {
+    parameters: {
+      query?: {
+        limit?: number
+        raw_limit?: number
       }
       header?: never
       path?: never
@@ -4692,7 +4927,9 @@ export interface operations {
     }
     requestBody: {
       content: {
-        "multipart/form-data": components["schemas"]["Body_upload_documents_to_rag_api_v1_rag_upload_post"]
+        "multipart/form-data": {
+          files: string[]
+        }
       }
     }
     responses: {
@@ -4703,15 +4940,6 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["RagUploadResponse"]
-        }
-      }
-      /** @description Validation Error */
-      422: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"]
         }
       }
     }
@@ -4783,6 +5011,39 @@ export interface operations {
       }
     }
   }
+  get_rag_import_api_v1_rag_imports__job_id__get: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        job_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": {
+            [key: string]: string
+          }
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
   preprocess_document_for_rag_api_v1_rag_preprocess_post: {
     parameters: {
       query?: never
@@ -4818,7 +5079,12 @@ export interface operations {
   }
   list_rag_documents_api_v1_rag_docs_get: {
     parameters: {
-      query?: never
+      query?: {
+        limit?: number | null
+        offset?: number
+        q?: string
+        state?: "all" | "ready" | "attention" | "unknown"
+      }
       header?: never
       path?: never
       cookie?: never
@@ -4832,6 +5098,15 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["RagDocumentListResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
         }
       }
     }
@@ -5613,39 +5888,6 @@ export interface operations {
           "application/json": {
             [key: string]: string
           }
-        }
-      }
-    }
-  }
-  get_rag_import_api_v1_rag_imports__job_id__get: {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        job_id: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Successful Response */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": {
-            [key: string]: string
-          }
-        }
-      }
-      /** @description Validation Error */
-      422: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"]
         }
       }
     }

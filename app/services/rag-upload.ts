@@ -10,6 +10,7 @@ import type {
   PreprocessDocumentResponse,
   RagDocument,
   RagDocumentContentResponse,
+  RagDocumentPage,
   RagDocumentUpdateRequest,
   RagUploadResponse,
 } from "~/types/rag-upload"
@@ -57,9 +58,13 @@ export async function previewCsvDocuments(file: File): Promise<CsvImportPreviewR
   })
 }
 
-export async function listRagDocuments(): Promise<RagDocument[]> {
-  const data = await apiFetch<{ documents: RagDocument[] }>("/api/v1/rag/docs")
-  return data.documents
+export async function listRagDocuments(params: {
+  limit: number
+  offset: number
+  q: string
+  state: string
+}, signal?: AbortSignal): Promise<RagDocumentPage> {
+  return await apiFetch<RagDocumentPage>("/api/v1/rag/docs", { query: params, signal })
 }
 export async function parsePageForRag(url: string): Promise<ParsedPageResult> {
   return await apiFetch<ParsedPageResult>("/api/v1/rag/parse", {

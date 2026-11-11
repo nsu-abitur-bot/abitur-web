@@ -56,6 +56,14 @@ export async function emptyFixture(context: BrowserContext, theme = "light") {
       return route.fulfill({ status: 503, headers, json: { detail: "Local fixture unavailable" } })
     }
     if (route.request().method() === "GET" && Object.hasOwn(fixtures, url.pathname)) {
+      if (url.pathname === "/api/v1/rag/docs") {
+        const result = (overrides[url.pathname] ?? fixtures[url.pathname]) as { documents: { id: string, title: string }[] }
+        const q = url.searchParams.get("q")?.toLowerCase()
+        const filtered = result.documents.filter(doc => !q || doc.title.toLowerCase().includes(q))
+        const offset = Number(url.searchParams.get("offset") ?? 0)
+        const limit = Number(url.searchParams.get("limit") ?? 20)
+        return route.fulfill({ headers, json: { documents: filtered.slice(offset, offset + limit), total: filtered.length, total_all: result.documents.length, has_pending: false, offset, limit } })
+      }
       if (url.pathname === "/api/v1/messages/page") {
         const result = (overrides[url.pathname] ?? fixtures[url.pathname]) as { items: { user_text: string }[] }
         const search = url.searchParams.get("search")?.toLowerCase()

@@ -27,7 +27,9 @@ async function mockAdmin(context: BrowserContext, state: "loaded" | "empty" | "e
       if (state === "loading") {
         await pending
       }
-      return reply({ documents: state === "loaded" ? [{ id: "rules", title: "Правила приёма", status: "indexed" }] : [] }, state === "error" ? 503 : 200)
+      const all = state === "loaded" ? [{ id: "rules", title: "Правила приёма", status: "indexed", lightrag_status: "processed" }] : []
+      const documents = all.filter(doc => doc.title.includes(url.searchParams.get("q") ?? "") && url.searchParams.get("state") !== "attention")
+      return reply({ documents, total: documents.length, total_all: all.length, has_pending: false }, state === "error" ? 503 : 200)
     }
     if (url.pathname.endsWith("/diagnostics")) {
       return reply({ id: "rules", postgres_status: "indexed", lightrag_status: "processed", chunks_count: 3 })

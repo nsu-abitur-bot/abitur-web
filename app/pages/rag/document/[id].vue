@@ -5,8 +5,8 @@ import { getRagDocumentContent, listRagDocuments } from "~/services/rag-upload"
 
 const route = useRoute()
 const docId = computed(() => String(route.params.id))
-const { data: docs } = useAsyncData("rag-document-metadata", listRagDocuments)
-const doc = computed(() => docs.value?.find(item => item.id === docId.value))
+const { data: docs } = useAsyncData(() => `rag-document-metadata-${docId.value}`, () => listRagDocuments({ limit: 100, offset: 0, q: docId.value, state: "all" }))
+const doc = computed(() => docs.value?.documents.find(item => item.id === docId.value))
 const { data: content, pending, error, refresh } = useAsyncData(() => `rag-content-${docId.value}`, () => getRagDocumentContent(docId.value))
 const { data: diagnostics } = useAsyncData(() => `rag-diagnostics-${docId.value}`, () => getRagDocumentDiagnostics(docId.value))
 const state = computed(() => materialState({ status: doc.value?.status ?? "" }, diagnostics.value))

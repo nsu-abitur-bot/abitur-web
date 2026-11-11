@@ -6,6 +6,11 @@ import type { RagDocumentDiagnostics } from "~/types/rag-debug"
 const processed: RagDocumentDiagnostics = { id: "a", postgres_status: "indexed", lightrag_status: "processed", chunks_count: 1, entities_count: 0, relations_count: 0 }
 
 describe("materialState", () => {
+  it("uses row processing status without requesting diagnostics", () => {
+    expect(materialState({ status: "indexed", lightrag_status: "processed" }).key).toBe("ready")
+    expect(materialState({ status: "indexed", lightrag_status: "failed" }).key).toBe("attention")
+    expect(materialState({ status: "indexed", lightrag_status: "processed", import_state: "queued" }).label).toBe("В очереди")
+  })
   it("shows the import lifecycle even if an older version was processed", () => {
     for (const [import_state, label] of [
       ["review", "Ожидает проверки"],
