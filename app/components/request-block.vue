@@ -39,6 +39,7 @@ const queryParams = computed(() => {
 
 const { data: statsData, status, error, refresh } = await useApi("/api/v1/logs/request-stats", {
   query: queryParams,
+  lazy: true,
 })
 
 function formatLabel(isoDate: string, groupBy: string): string {

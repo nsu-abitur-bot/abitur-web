@@ -25,7 +25,7 @@ const palette = [
 
 const getColor = (index: number) => palette[index % palette.length] ?? palette[0]!
 
-const { data: stats, refresh, status, error } = await useAsyncData<TopicStat[]>("stats-topics", () => getTopicStats())
+const { data: stats, refresh, status, error } = await useAsyncData<TopicStat[]>("stats-topics", () => getTopicStats(), { lazy: true })
 
 const extractLabel = (item: TopicStat, fallback: string): string => {
   const candidates = ["label", "name", "title", "topic_label", "topic"]

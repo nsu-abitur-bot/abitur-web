@@ -20,9 +20,8 @@ const query = computed(() => ({
 
 const { data, refresh, status, error } = await useApi("/api/v1/logs/popular", {
   query,
+  lazy: true,
 })
-
-watch(popularLimit, () => refresh())
 
 const questions = computed(() => data.value?.questions ?? [])
 const topQuestion = computed(() => questions.value[0])
