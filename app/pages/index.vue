@@ -15,6 +15,7 @@ watch(() => parserStore.uploadingFiles, (uploading, wasUploading) => {
 <template lang="pug">
 ui-page(title="Материалы")
   template(#actions)
+    u-button(icon="i-lucide-refresh-cw" color="neutral" variant="outline" aria-label="Обновить материалы" @click="refreshTrigger++") Обновить
     u-button(icon="i-lucide-plus" @click="adding = true") Добавить материал
   ui-form-dialog(v-model:open="adding" title="Добавить материал")
     template(#body)

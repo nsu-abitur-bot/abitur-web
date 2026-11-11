@@ -217,7 +217,6 @@ function openDiagnostics(doc: RagDocument) {
     .admin-toolbar(v-if="isLoading || loadError || totalAll")
       u-input(v-model="query" placeholder="Найти материал" aria-label="Поиск материалов" icon="i-lucide-search" class="materials-search")
       u-select(v-model="filter" aria-label="Состояние" :items="[{ label: 'Все состояния', value: 'all' }, { label: 'Обработаны', value: 'ready' }, { label: 'Требуют внимания', value: 'attention' }, { label: 'Не подтверждены', value: 'unknown' }]")
-      u-button(icon="i-lucide-refresh-cw" color="neutral" variant="ghost" aria-label="Обновить материалы" :loading="isLoading" @click="fetchDocuments()")
       u-button(color="neutral" variant="outline" :loading="busy" @click="check(false, true)") Проверить все
       u-dropdown-menu(:items="[{ label: 'Обновить изменённые', onSelect: () => check(true, true) }, { label: 'Экспорт ZIP без эмбеддингов', onSelect: () => run(exportRagKnowledgeBase) }, { label: 'Очистить кэш', onSelect: () => { clearCacheOpen = true } }]")
         u-button(icon="i-lucide-ellipsis" color="neutral" variant="ghost" aria-label="Другие действия" :disabled="busy")
@@ -240,7 +239,6 @@ function openDiagnostics(doc: RagDocument) {
     ui-empty-state(v-else-if="isLoading && !documents.length" kind="loading" title="Загрузка материалов…")
     ui-empty-state(v-else-if="!visible.length" :kind="totalAll ? 'no-results' : 'empty'" :title="totalAll ? 'Ничего не найдено' : 'Материалов пока нет'")
       u-button(v-if="totalAll && (query || filter !== 'all')" color="neutral" variant="outline" @click="resetFilters") Сбросить фильтры
-      u-button(v-if="!totalAll" color="neutral" variant="outline" icon="i-lucide-refresh-cw" @click="fetchDocuments()") Обновить материалы
     table.admin-table.materials-table(v-else)
       thead
         tr

@@ -159,3 +159,14 @@ test("ignores a slow response after the search changes", async ({ page, context 
   await expect(page.getByRole("link", { name: "Материал 40", exact: true })).toHaveCount(0)
   await expect(page.locator("tbody tr")).toHaveCount(1)
 })
+
+test("refreshes an empty database and distinguishes it from filtered results", async ({ page, context }) => {
+  const api = await materialsApi(context, 0)
+  await page.goto("/?q=absent")
+  await expect(page.getByText("Материалов пока нет", { exact: true })).toBeVisible()
+  api.documents.push({ id: "external", title: "Добавлен извне", status: "indexed", lightrag_status: "processed" })
+  await page.getByRole("button", { name: "Обновить материалы" }).click()
+  await expect(page.getByText("Ничего не найдено", { exact: true })).toBeVisible()
+  await page.getByRole("button", { name: "Сбросить фильтры" }).click()
+  await expect(page.getByRole("link", { name: "Добавлен извне", exact: true })).toBeVisible()
+})
