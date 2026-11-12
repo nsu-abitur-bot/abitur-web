@@ -713,6 +713,10 @@ export interface paths {
      * Получить самые популярные вопросы
      * @description Получает самые часто задаваемые вопросы пользователей.
      *
+     *     Читает подготовленный фоновым обработчиком снимок. `pending` означает,
+     *     что снимок ещё не подготовлен; GET не вызывает модели и кластеризацию.
+     *     Новые комбинации параметров подхватывает следующий фоновый обход.
+     *
      *     - **limit**: максимальное количество возвращаемых кластеров вопросов
      *     - **raw_limit**: сколько исходных формулировок взять для кластеризации
      *     - **similarity_threshold**: порог семантической близости формулировок
@@ -847,6 +851,29 @@ export interface paths {
     head?: never
     /** Обновить статус обращения */
     patch: operations["update_feedback_report_status_api_v1_feedback__report_id__patch"]
+    trace?: never
+  }
+  "/api/v1/reports/gaps": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Отчёт о пробелах: темы, популярное, неотвеченное, качество
+     * @description Собирается из логов и оценок без вызовов моделей (#262).
+     *
+     *     Разделы: распределение тем, топ вопросов, очередь неотвеченных (#
+     *     442), сводка качества ответов (#444) и вопросы с негативной оценкой.
+     */
+    get: operations["get_gap_report_api_v1_reports_gaps_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
     trace?: never
   }
   "/api/v1/rag/upload": {
@@ -1933,6 +1960,15 @@ export interface components {
        */
       snippet: string
     }
+    /** DislikedQuestion */
+    DislikedQuestion: {
+      /** Question */
+      question: string
+      /** Negative */
+      negative: number
+      /** Rated */
+      rated: number
+    }
     /** DocumentCheckRequest */
     DocumentCheckRequest: {
       /**
@@ -2317,6 +2353,25 @@ export interface components {
        * @enum {string}
        */
       status: "open" | "reviewed" | "ignored"
+    }
+    /** GapReportResponse */
+    GapReportResponse: {
+      /** Period Days */
+      period_days: number
+      /**
+       * Generated At
+       * Format: date-time
+       */
+      generated_at: string
+      /** Topics */
+      topics: components["schemas"]["ReportTopic"][]
+      /** Popular */
+      popular: components["schemas"]["ReportQuestion"][]
+      /** Unanswered */
+      unanswered: components["schemas"]["ReportQuestion"][]
+      quality: components["schemas"]["ReportQuality"]
+      /** Disliked */
+      disliked: components["schemas"]["DislikedQuestion"][]
     }
     /** HTTPValidationError */
     HTTPValidationError: {
@@ -2921,6 +2976,37 @@ export interface components {
       password: string
       /** Invite Code */
       invite_code?: string | null
+    }
+    /** ReportQuality */
+    ReportQuality: {
+      /** Questions */
+      questions: number
+      /** Answers */
+      answers: number
+      /** No Answer */
+      no_answer: number
+      /** No Answer Share */
+      no_answer_share?: number | null
+      /** Errors */
+      errors: number
+      /** Error Share */
+      error_share?: number | null
+    }
+    /** ReportQuestion */
+    ReportQuestion: {
+      /** Question */
+      question: string
+      /** Count */
+      count: number
+      /** Variants */
+      variants?: string[]
+    }
+    /** ReportTopic */
+    ReportTopic: {
+      /** Topic */
+      topic: string
+      /** Count */
+      count: number
     }
     /**
      * RequestCountBucket
@@ -4918,6 +5004,40 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["FeedbackReportResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_gap_report_api_v1_reports_gaps_get: {
+    parameters: {
+      query?: {
+        /** @description Период отчёта в днях */
+        days?: number
+        /** @description Размер каждого топа */
+        limit?: number
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GapReportResponse"]
         }
       }
       /** @description Validation Error */
