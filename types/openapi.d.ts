@@ -4,6025 +4,6025 @@
  */
 
 export interface paths {
-    "/health": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Health
-         * @description Проба живости процесса API (#241).
-         *
-         *     Без обращения к БД: доступность PostgreSQL закрывает её собственный
-         *     healthcheck в compose, дублировать его здесь — сваливать API из-за БД,
-         *     которая и так мониторится.
-         */
-        get: operations["health_health_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/auth/login": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Login */
-        post: operations["login_api_v1_auth_login_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/auth/register": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Register */
-        post: operations["register_api_v1_auth_register_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/auth/me": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Me */
-        get: operations["get_me_api_v1_auth_me_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/auth/invite": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Create Invite */
-        post: operations["create_invite_api_v1_auth_invite_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/auth/admins": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List Admins */
-        get: operations["list_admins_api_v1_auth_admins_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/auth/admins/{admin_id}/deactivate": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /** Deactivate Admin */
-        patch: operations["deactivate_admin_api_v1_auth_admins__admin_id__deactivate_patch"];
-        trace?: never;
-    };
-    "/api/v1/auth/admins/{admin_id}/role": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /** Change Admin Role */
-        patch: operations["change_admin_role_api_v1_auth_admins__admin_id__role_patch"];
-        trace?: never;
-    };
-    "/api/v1/branding": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Branding */
-        get: operations["get_branding_api_v1_branding_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/branding/media/{filename}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Media */
-        get: operations["get_media_api_v1_branding_media__filename__get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/settings/instance": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Instance Settings */
-        get: operations["get_instance_settings_api_v1_settings_instance_get"];
-        /** Update Instance Settings */
-        put: operations["update_instance_settings_api_v1_settings_instance_put"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/settings/instance/check": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Test Connection */
-        post: operations["test_connection_api_v1_settings_instance_check_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/settings/instance/branding": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Save Branding */
-        post: operations["save_branding_api_v1_settings_instance_branding_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/abbrev": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Получить все аббревиатуры */
-        get: operations["get_all_api_v1_abbrev_get"];
-        put?: never;
-        /** Добавить аббревиатуру */
-        post: operations["create_api_v1_abbrev_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/abbrev/upload": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Загрузить аббревиатуры из CSV
-         * @description Загружает аббревиатуры из CSV-файла (UPSERT по полю «Аббревиатура»).
-         *
-         *     Ожидаются две колонки:
-         *     - «Аббревиатура» / «Short» / «Сокращение»
-         *     - «Расшифровка» / «Full» / «Полная форма»
-         *
-         *     Поиск колонок ведётся по названию, иначе используются позиции 0 и 1.
-         *     Если аббревиатура уже существует — её расшифровка обновляется.
-         *     При повторе аббревиатуры внутри файла побеждает последнее значение.
-         */
-        post: operations["upload_abbrev_csv_api_v1_abbrev_upload_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/abbrev/{item_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** Обновить аббревиатуру по ID */
-        put: operations["update_api_v1_abbrev__item_id__put"];
-        post?: never;
-        /** Удалить аббревиатуру по ID */
-        delete: operations["delete_api_v1_abbrev__item_id__delete"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/faq": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Получить все FAQ */
-        get: operations["get_all_faqs_api_v1_faq_get"];
-        put?: never;
-        /** Создать FAQ */
-        post: operations["create_faq_api_v1_faq_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/faq/upload": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Загрузить FAQ из CSV
-         * @description Загружает вопросы и ответы FAQ из CSV-файла.
-         *     Ожидается CSV файл с колонками "Вопросы" и "Ответы".
-         *     Пустая строка означает, что начинается новый вопрос.
-         *     Первый вопрос в блоке становится основным,
-         *     остальные - альтернативными формулировками (aliases).
-         */
-        post: operations["upload_faq_csv_api_v1_faq_upload_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/faq/{item_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** Обновить FAQ по ID */
-        put: operations["update_faq_api_v1_faq__item_id__put"];
-        post?: never;
-        /** Удалить FAQ по ID */
-        delete: operations["delete_faq_api_v1_faq__item_id__delete"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/faculties": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Список факультетов с направлениями
-         * @description Возвращает все факультеты (включая выключенные) с их направлениями.
-         */
-        get: operations["get_faculties_api_v1_faculties_get"];
-        put?: never;
-        /** Создать факультет */
-        post: operations["create_faculty_api_v1_faculties_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/faculties/{faculty_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** Обновить факультет */
-        put: operations["update_faculty_api_v1_faculties__faculty_id__put"];
-        post?: never;
-        /** Выключить факультет */
-        delete: operations["delete_faculty_api_v1_faculties__faculty_id__delete"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/faculties/{faculty_id}/programs": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Добавить направление факультету */
-        post: operations["create_program_api_v1_faculties__faculty_id__programs_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/faculties/programs/{program_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** Обновить направление */
-        put: operations["update_program_api_v1_faculties_programs__program_id__put"];
-        post?: never;
-        /** Удалить направление */
-        delete: operations["delete_program_api_v1_faculties_programs__program_id__delete"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/admission-scores/preview": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Распарсить страницу итогов приёма и показать строки
-         * @description Парсит страницу (без записи в БД) и считает сопоставимость со справочником.
-         */
-        post: operations["preview_scores_api_v1_admission_scores_preview_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/admission-scores/import": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Импортировать отревьюенные строки проходных баллов
-         * @description Идемпотентный upsert строк, присланных админом после предпросмотра.
-         */
-        post: operations["import_scores_api_v1_admission_scores_import_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/admission-scores": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Выборка проходных баллов */
-        get: operations["get_scores_api_v1_admission_scores_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/admission-scores/years": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Список доступных годов */
-        get: operations["get_years_api_v1_admission_scores_years_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/content-proposals": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List Proposals */
-        get: operations["list_proposals_api_v1_content_proposals_get"];
-        put?: never;
-        /** Create Proposal */
-        post: operations["create_proposal_api_v1_content_proposals_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/content-proposals/{proposal_id}/reject": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Reject Proposal */
-        post: operations["reject_proposal_api_v1_content_proposals__proposal_id__reject_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/content-proposals/{proposal_id}/approve": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Approve Proposal */
-        post: operations["approve_proposal_api_v1_content_proposals__proposal_id__approve_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/logs/request-stats": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Статистика количества запросов */
-        get: operations["get_request_stats_api_v1_logs_request_stats_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/logs/faq-stats": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Как часто FAQ-слой отвечает без обращения к модели
-         * @description Доля вопросов, закрытых готовыми ответами FAQ (трек качества).
-         *     Порог матчера настраивается через PUT /settings/faq.
-         */
-        get: operations["get_faq_hit_stats_api_v1_logs_faq_stats_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/logs/answer-stats": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Метрики ответов: latency, доля неотвеченных, ошибки
-         * @description Наблюдаемость ответов по периодам (#242): время отклика (p50/p95),
-         *     доля неотвеченных и ошибок. Наполняется с момента деплоя: метрики
-         *     пишутся пайплайном в message_metadata каждой записи llm_response.
-         */
-        get: operations["get_answer_stats_api_v1_logs_answer_stats_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/logs/token-stats": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Статистика потребления токенов
-         * @description Возвращает суммарное потребление токенов LLM, сгруппированное по периодам.
-         */
-        get: operations["get_token_stats_api_v1_logs_token_stats_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/logs/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Получить логи сообщений
-         * @description Получает логи сообщений с фильтрацией.
-         *
-         *     - **user_id**: фильтр по ID пользователя
-         *     - **session_id**: фильтр по ID сессии
-         *     - **limit**: количество записей (макс. 1000)
-         *     - **offset**: сдвиг для пагинации
-         */
-        get: operations["get_message_logs_api_v1_logs__get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/logs/session/{session_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Получить логи по сессии
-         * @description Получает все логи для конкретной сессии.
-         */
-        get: operations["get_session_logs_api_v1_logs_session__session_id__get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/logs/user/{user_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Получить логи по пользователю
-         * @description Получает все логи для конкретного пользователя.
-         */
-        get: operations["get_user_logs_api_v1_logs_user__user_id__get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/logs/popular": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Получить самые популярные вопросы
-         * @description Получает самые часто задаваемые вопросы пользователей.
-         *
-         *     Читает подготовленный фоновым обработчиком снимок. `pending` означает,
-         *     что снимок ещё не подготовлен; GET не вызывает модели и кластеризацию.
-         *     Новые комбинации параметров подхватывает следующий фоновый обход.
-         *
-         *     - **limit**: максимальное количество возвращаемых кластеров вопросов
-         *     - **raw_limit**: сколько исходных формулировок взять для кластеризации
-         *     - **similarity_threshold**: порог семантической близости формулировок
-         */
-        get: operations["get_popular_questions_api_v1_logs_popular_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/logs/unanswered": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Очередь вопросов без ответа
-         * @description Вопросы, на которые бот честно ответил «не нашёл информации» (#258).
-         *
-         *     Пайплайн пишет их с типом `no_answer`; здесь они сгруппированы с частотой
-         *     и вариантами формулировок — это очередь на наполнение базы знаний.
-         *     Сервисные сбои («сервис недоступен») в очередь не попадают: это ошибки
-         *     инфраструктуры, а не пробелы контента.
-         */
-        get: operations["get_unanswered_questions_api_v1_logs_unanswered_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/topics/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Получить все темы
-         * @description Получить список всех активных тем.
-         */
-        get: operations["get_topics_api_v1_topics__get"];
-        put?: never;
-        /**
-         * Создать новую тему
-         * @description Создает новую тему.
-         *
-         *     - **label**: уникальное название темы
-         *     - **description**: опциональное описание
-         *     - **is_active**: активна ли тема при создании (по умолчанию True)
-         */
-        post: operations["create_topic_api_v1_topics__post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/topics/{topic_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Получить тему по ID
-         * @description Получает тему по её ID.
-         */
-        get: operations["get_topic_api_v1_topics__topic_id__get"];
-        /**
-         * Обновить тему
-         * @description Обновляет тему по ID.
-         *
-         *     - **label**: новое название (опционально)
-         *     - **description**: новое описание (опционально)
-         *     - **is_active**: изменить статус активности (опционально)
-         */
-        put: operations["update_topic_api_v1_topics__topic_id__put"];
-        post?: never;
-        /**
-         * Удалить тему
-         * @description Удаляет (деактивирует) тему по ID.
-         *
-         *     Примечание: тема не удаляется из БД, а деактивируется (is_active = False)
-         *     для сохранения целостности исторических данных.
-         */
-        delete: operations["delete_topic_api_v1_topics__topic_id__delete"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/feedback": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Получить обращения обратной связи */
-        get: operations["list_feedback_reports_api_v1_feedback_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/feedback/{report_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Получить обращение обратной связи */
-        get: operations["get_feedback_report_api_v1_feedback__report_id__get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /** Обновить статус обращения */
-        patch: operations["update_feedback_report_status_api_v1_feedback__report_id__patch"];
-        trace?: never;
-    };
-    "/api/v1/reports/gaps": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Отчёт о пробелах: темы, популярное, неотвеченное, качество
-         * @description Собирается из логов и оценок без вызовов моделей (#262).
-         *
-         *     Разделы: распределение тем, топ вопросов, очередь неотвеченных (#
-         *     442), сводка качества ответов (#444) и вопросы с негативной оценкой.
-         */
-        get: operations["get_gap_report_api_v1_reports_gaps_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/rag/upload": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Загрузить документы в RAG */
-        post: operations["upload_documents_to_rag_api_v1_rag_upload_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/rag/parse": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Спарсить страницу для RAG
-         * @description Парсит страницу или PDF-документ, очищает текст через LLM и находит документы.
-         */
-        post: operations["parse_page_for_rag_api_v1_rag_parse_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/rag/confirm": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Поставить загрузку в очередь RAG */
-        post: operations["confirm_rag_upload_api_v1_rag_confirm_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/rag/imports/{job_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Состояние загрузки в RAG */
-        get: operations["get_rag_import_api_v1_rag_imports__job_id__get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/rag/preprocess": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Предобработать текст документа для RAG
-         * @description Расширяет аббревиатуры и добавляет локальный контекст смысловым блокам.
-         */
-        post: operations["preprocess_document_for_rag_api_v1_rag_preprocess_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/rag/docs": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Список документов в RAG
-         * @description Объединяет метаданные и фильтрует их до выделения страницы.
-         */
-        get: operations["list_rag_documents_api_v1_rag_docs_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/rag/docs/{doc_id}/content": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Получить полный текст документа
-         * @description Возвращает полный исходный текст документа по его ID.
-         */
-        get: operations["get_rag_document_content_api_v1_rag_docs__doc_id__content_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/rag/docs/{doc_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /**
-         * Удалить документ из RAG
-         * @description Удаляет документ из базы знаний RAG.
-         */
-        delete: operations["delete_rag_document_api_v1_rag_docs__doc_id__delete"];
-        options?: never;
-        head?: never;
-        /** Изменить метаданные документа */
-        patch: operations["update_rag_document_api_v1_rag_docs__doc_id__patch"];
-        trace?: never;
-    };
-    "/api/v1/rag/docs/check": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Проверить документы RAG на изменения */
-        post: operations["check_rag_documents_api_v1_rag_docs_check_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/rag/docs/update-changed": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Обновить измененные документы RAG */
-        post: operations["update_changed_rag_documents_api_v1_rag_docs_update_changed_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/rag/upload/csv": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Добавить документы из CSV в очередь редактора
-         * @description Принимает CSV документ на вход и обрабатывает все документы там.
-         *     Ожидаемый формат: Название,Link,Комментарий
-         */
-        post: operations["upload_csv_documents_api_v1_rag_upload_csv_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/rag/upload/csv/preview": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Превью документов из CSV (без обработки)
-         * @description Принимает CSV документ и возвращает список найденных в нём ссылок без их обработки.
-         */
-        post: operations["preview_csv_documents_api_v1_rag_upload_csv_preview_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/rag/cache/clear": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Очистить кэш ответов RAG
-         * @description Очищает кэш ответов LLM (kv_store_llm_response_cache.json)
-         *     для графа, чтобы агент перестал отдавать старые ответы по старым данным.
-         *     Очистка вызывается по нажатию кнопки администратором.
-         */
-        post: operations["clear_rag_cache_api_v1_rag_cache_clear_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/rag/debug/query": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Инспектор поиска: сырая выдача ретривала
-         * @description Выполняет запрос к базе знаний и возвращает извлечённые чанки, сущности,
-         *     связи и источники. Позволяет сравнить режимы (hybrid vs mix) и проверить,
-         *     попадает ли нужный документ в выдачу.
-         */
-        post: operations["debug_rag_query_api_v1_rag_debug_query_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/rag/docs/{doc_id}/diagnostics": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Диагностика документа в LightRAG
-         * @description Возвращает статус обработки документа в LightRAG, число чанков, сущностей
-         *     и связей. entities_count == 0 означает, что граф для документа не построен и
-         *     в режиме hybrid он недостижим.
-         */
-        get: operations["get_rag_document_diagnostics_api_v1_rag_docs__doc_id__diagnostics_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/rag/export": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Экспорт базы знаний (без эмбеддингов)
-         * @description Отдаёт zip с сервисными сторами LightRAG: исходные тексты, статусы
-         *     обработки, чанки и граф сущностей. Векторные базы (эмбеддинги) исключены —
-         *     они привязаны к провайдеру и непереносимы между OpenAI и Gemini.
-         */
-        get: operations["export_knowledge_base_api_v1_rag_export_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/evals/run": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Run Evaluation */
-        post: operations["run_evaluation_api_v1_evals_run_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/evals/status": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Route Get Evaluation Status */
-        get: operations["route_get_evaluation_status_api_v1_evals_status_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/stats/topics": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Topic Stats
-         * @description Получить статистику по темам сообщений.
-         */
-        get: operations["get_topic_stats_api_v1_stats_topics_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/system-logs/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get System Logs
-         * @description Получает последние N строк из указанного файла логов.
-         */
-        get: operations["get_system_logs_api_v1_system_logs__get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/system-logs/files": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * List Log Files
-         * @description Возвращает список доступных файлов логов.
-         */
-        get: operations["list_log_files_api_v1_system_logs_files_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/system-logs/download": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Download System Logs
-         * @description Скачивает указанный файл логов.
-         */
-        get: operations["download_system_logs_api_v1_system_logs_download_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/settings/rate-limit": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Получить настройки дневных лимитов запросов */
-        get: operations["get_rate_limit_settings_api_v1_settings_rate_limit_get"];
-        /** Обновить настройки дневных лимитов запросов */
-        put: operations["update_rate_limit_settings_api_v1_settings_rate_limit_put"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/settings/crag": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Получить настройки корректирующего RAG (CRAG) */
-        get: operations["get_crag_settings_api_v1_settings_crag_get"];
-        /** Обновить настройки корректирующего RAG (CRAG) */
-        put: operations["update_crag_settings_api_v1_settings_crag_put"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/settings/faq": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Получить настройки FAQ-матчера */
-        get: operations["get_faq_settings_api_v1_settings_faq_get"];
-        /**
-         * Обновить настройки FAQ-матчера
-         * @description Меняет порог FAQ. Бот подхватывает значение на следующем вопросе —
-         *     без рестарта, как у CRAG.
-         */
-        put: operations["update_faq_settings_api_v1_settings_faq_put"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/users/count-stats": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Users Count Stats */
-        get: operations["get_users_count_stats_api_v1_users_count_stats_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/messages": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Messages
-         * @description Возвращает список сообщений и ответов бота.
-         */
-        get: operations["get_messages_api_v1_messages_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/messages/page": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Message Page
-         * @description Return one filtered page and its total without loading the full history.
-         */
-        get: operations["get_message_page_api_v1_messages_page_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/university": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get University */
-        get: operations["get_university_api_v1_university_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/university/profile": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get University Profile
-         * @description Public capability gate for the university-specific rating page.
-         */
-        get: operations["get_university_profile_api_v1_university_profile_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
+  "/health": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Health
+     * @description Проба живости процесса API (#241).
+     *
+     *     Без обращения к БД: доступность PostgreSQL закрывает её собственный
+     *     healthcheck в compose, дублировать его здесь — сваливать API из-за БД,
+     *     которая и так мониторится.
+     */
+    get: operations["health_health_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/auth/login": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Login */
+    post: operations["login_api_v1_auth_login_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/auth/register": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Register */
+    post: operations["register_api_v1_auth_register_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/auth/me": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Me */
+    get: operations["get_me_api_v1_auth_me_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/auth/invite": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Create Invite */
+    post: operations["create_invite_api_v1_auth_invite_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/auth/admins": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** List Admins */
+    get: operations["list_admins_api_v1_auth_admins_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/auth/admins/{admin_id}/deactivate": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    /** Deactivate Admin */
+    patch: operations["deactivate_admin_api_v1_auth_admins__admin_id__deactivate_patch"]
+    trace?: never
+  }
+  "/api/v1/auth/admins/{admin_id}/role": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    /** Change Admin Role */
+    patch: operations["change_admin_role_api_v1_auth_admins__admin_id__role_patch"]
+    trace?: never
+  }
+  "/api/v1/branding": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Branding */
+    get: operations["get_branding_api_v1_branding_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/branding/media/{filename}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Media */
+    get: operations["get_media_api_v1_branding_media__filename__get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/settings/instance": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Instance Settings */
+    get: operations["get_instance_settings_api_v1_settings_instance_get"]
+    /** Update Instance Settings */
+    put: operations["update_instance_settings_api_v1_settings_instance_put"]
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/settings/instance/check": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Test Connection */
+    post: operations["test_connection_api_v1_settings_instance_check_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/settings/instance/branding": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Save Branding */
+    post: operations["save_branding_api_v1_settings_instance_branding_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/abbrev": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Получить все аббревиатуры */
+    get: operations["get_all_api_v1_abbrev_get"]
+    put?: never
+    /** Добавить аббревиатуру */
+    post: operations["create_api_v1_abbrev_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/abbrev/upload": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Загрузить аббревиатуры из CSV
+     * @description Загружает аббревиатуры из CSV-файла (UPSERT по полю «Аббревиатура»).
+     *
+     *     Ожидаются две колонки:
+     *     - «Аббревиатура» / «Short» / «Сокращение»
+     *     - «Расшифровка» / «Full» / «Полная форма»
+     *
+     *     Поиск колонок ведётся по названию, иначе используются позиции 0 и 1.
+     *     Если аббревиатура уже существует — её расшифровка обновляется.
+     *     При повторе аббревиатуры внутри файла побеждает последнее значение.
+     */
+    post: operations["upload_abbrev_csv_api_v1_abbrev_upload_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/abbrev/{item_id}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /** Обновить аббревиатуру по ID */
+    put: operations["update_api_v1_abbrev__item_id__put"]
+    post?: never
+    /** Удалить аббревиатуру по ID */
+    delete: operations["delete_api_v1_abbrev__item_id__delete"]
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/faq": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Получить все FAQ */
+    get: operations["get_all_faqs_api_v1_faq_get"]
+    put?: never
+    /** Создать FAQ */
+    post: operations["create_faq_api_v1_faq_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/faq/upload": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Загрузить FAQ из CSV
+     * @description Загружает вопросы и ответы FAQ из CSV-файла.
+     *     Ожидается CSV файл с колонками "Вопросы" и "Ответы".
+     *     Пустая строка означает, что начинается новый вопрос.
+     *     Первый вопрос в блоке становится основным,
+     *     остальные - альтернативными формулировками (aliases).
+     */
+    post: operations["upload_faq_csv_api_v1_faq_upload_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/faq/{item_id}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /** Обновить FAQ по ID */
+    put: operations["update_faq_api_v1_faq__item_id__put"]
+    post?: never
+    /** Удалить FAQ по ID */
+    delete: operations["delete_faq_api_v1_faq__item_id__delete"]
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/faculties": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Список факультетов с направлениями
+     * @description Возвращает все факультеты (включая выключенные) с их направлениями.
+     */
+    get: operations["get_faculties_api_v1_faculties_get"]
+    put?: never
+    /** Создать факультет */
+    post: operations["create_faculty_api_v1_faculties_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/faculties/{faculty_id}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /** Обновить факультет */
+    put: operations["update_faculty_api_v1_faculties__faculty_id__put"]
+    post?: never
+    /** Выключить факультет */
+    delete: operations["delete_faculty_api_v1_faculties__faculty_id__delete"]
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/faculties/{faculty_id}/programs": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Добавить направление факультету */
+    post: operations["create_program_api_v1_faculties__faculty_id__programs_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/faculties/programs/{program_id}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /** Обновить направление */
+    put: operations["update_program_api_v1_faculties_programs__program_id__put"]
+    post?: never
+    /** Удалить направление */
+    delete: operations["delete_program_api_v1_faculties_programs__program_id__delete"]
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/admission-scores/preview": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Распарсить страницу итогов приёма и показать строки
+     * @description Парсит страницу (без записи в БД) и считает сопоставимость со справочником.
+     */
+    post: operations["preview_scores_api_v1_admission_scores_preview_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/admission-scores/import": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Импортировать отревьюенные строки проходных баллов
+     * @description Идемпотентный upsert строк, присланных админом после предпросмотра.
+     */
+    post: operations["import_scores_api_v1_admission_scores_import_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/admission-scores": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Выборка проходных баллов */
+    get: operations["get_scores_api_v1_admission_scores_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/admission-scores/years": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Список доступных годов */
+    get: operations["get_years_api_v1_admission_scores_years_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/content-proposals": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** List Proposals */
+    get: operations["list_proposals_api_v1_content_proposals_get"]
+    put?: never
+    /** Create Proposal */
+    post: operations["create_proposal_api_v1_content_proposals_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/content-proposals/{proposal_id}/reject": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Reject Proposal */
+    post: operations["reject_proposal_api_v1_content_proposals__proposal_id__reject_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/content-proposals/{proposal_id}/approve": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Approve Proposal */
+    post: operations["approve_proposal_api_v1_content_proposals__proposal_id__approve_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/logs/request-stats": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Статистика количества запросов */
+    get: operations["get_request_stats_api_v1_logs_request_stats_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/logs/faq-stats": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Как часто FAQ-слой отвечает без обращения к модели
+     * @description Доля вопросов, закрытых готовыми ответами FAQ (трек качества).
+     *     Порог матчера настраивается через PUT /settings/faq.
+     */
+    get: operations["get_faq_hit_stats_api_v1_logs_faq_stats_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/logs/answer-stats": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Метрики ответов: latency, доля неотвеченных, ошибки
+     * @description Наблюдаемость ответов по периодам (#242): время отклика (p50/p95),
+     *     доля неотвеченных и ошибок. Наполняется с момента деплоя: метрики
+     *     пишутся пайплайном в message_metadata каждой записи llm_response.
+     */
+    get: operations["get_answer_stats_api_v1_logs_answer_stats_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/logs/token-stats": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Статистика потребления токенов
+     * @description Возвращает суммарное потребление токенов LLM, сгруппированное по периодам.
+     */
+    get: operations["get_token_stats_api_v1_logs_token_stats_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/logs/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Получить логи сообщений
+     * @description Получает логи сообщений с фильтрацией.
+     *
+     *     - **user_id**: фильтр по ID пользователя
+     *     - **session_id**: фильтр по ID сессии
+     *     - **limit**: количество записей (макс. 1000)
+     *     - **offset**: сдвиг для пагинации
+     */
+    get: operations["get_message_logs_api_v1_logs__get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/logs/session/{session_id}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Получить логи по сессии
+     * @description Получает все логи для конкретной сессии.
+     */
+    get: operations["get_session_logs_api_v1_logs_session__session_id__get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/logs/user/{user_id}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Получить логи по пользователю
+     * @description Получает все логи для конкретного пользователя.
+     */
+    get: operations["get_user_logs_api_v1_logs_user__user_id__get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/logs/popular": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Получить самые популярные вопросы
+     * @description Получает самые часто задаваемые вопросы пользователей.
+     *
+     *     Читает подготовленный фоновым обработчиком снимок. `pending` означает,
+     *     что снимок ещё не подготовлен; GET не вызывает модели и кластеризацию.
+     *     Новые комбинации параметров подхватывает следующий фоновый обход.
+     *
+     *     - **limit**: максимальное количество возвращаемых кластеров вопросов
+     *     - **raw_limit**: сколько исходных формулировок взять для кластеризации
+     *     - **similarity_threshold**: порог семантической близости формулировок
+     */
+    get: operations["get_popular_questions_api_v1_logs_popular_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/logs/unanswered": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Очередь вопросов без ответа
+     * @description Вопросы, на которые бот честно ответил «не нашёл информации» (#258).
+     *
+     *     Пайплайн пишет их с типом `no_answer`; здесь они сгруппированы с частотой
+     *     и вариантами формулировок — это очередь на наполнение базы знаний.
+     *     Сервисные сбои («сервис недоступен») в очередь не попадают: это ошибки
+     *     инфраструктуры, а не пробелы контента.
+     */
+    get: operations["get_unanswered_questions_api_v1_logs_unanswered_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/topics/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Получить все темы
+     * @description Получить список всех активных тем.
+     */
+    get: operations["get_topics_api_v1_topics__get"]
+    put?: never
+    /**
+     * Создать новую тему
+     * @description Создает новую тему.
+     *
+     *     - **label**: уникальное название темы
+     *     - **description**: опциональное описание
+     *     - **is_active**: активна ли тема при создании (по умолчанию True)
+     */
+    post: operations["create_topic_api_v1_topics__post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/topics/{topic_id}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Получить тему по ID
+     * @description Получает тему по её ID.
+     */
+    get: operations["get_topic_api_v1_topics__topic_id__get"]
+    /**
+     * Обновить тему
+     * @description Обновляет тему по ID.
+     *
+     *     - **label**: новое название (опционально)
+     *     - **description**: новое описание (опционально)
+     *     - **is_active**: изменить статус активности (опционально)
+     */
+    put: operations["update_topic_api_v1_topics__topic_id__put"]
+    post?: never
+    /**
+     * Удалить тему
+     * @description Удаляет (деактивирует) тему по ID.
+     *
+     *     Примечание: тема не удаляется из БД, а деактивируется (is_active = False)
+     *     для сохранения целостности исторических данных.
+     */
+    delete: operations["delete_topic_api_v1_topics__topic_id__delete"]
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/feedback": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Получить обращения обратной связи */
+    get: operations["list_feedback_reports_api_v1_feedback_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/feedback/{report_id}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Получить обращение обратной связи */
+    get: operations["get_feedback_report_api_v1_feedback__report_id__get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    /** Обновить статус обращения */
+    patch: operations["update_feedback_report_status_api_v1_feedback__report_id__patch"]
+    trace?: never
+  }
+  "/api/v1/reports/gaps": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Отчёт о пробелах: темы, популярное, неотвеченное, качество
+     * @description Собирается из логов и оценок без вызовов моделей (#262).
+     *
+     *     Разделы: распределение тем, топ вопросов, очередь неотвеченных (#
+     *     442), сводка качества ответов (#444) и вопросы с негативной оценкой.
+     */
+    get: operations["get_gap_report_api_v1_reports_gaps_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/rag/upload": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Загрузить документы в RAG */
+    post: operations["upload_documents_to_rag_api_v1_rag_upload_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/rag/parse": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Спарсить страницу для RAG
+     * @description Парсит страницу или PDF-документ, очищает текст через LLM и находит документы.
+     */
+    post: operations["parse_page_for_rag_api_v1_rag_parse_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/rag/confirm": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Поставить загрузку в очередь RAG */
+    post: operations["confirm_rag_upload_api_v1_rag_confirm_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/rag/imports/{job_id}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Состояние загрузки в RAG */
+    get: operations["get_rag_import_api_v1_rag_imports__job_id__get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/rag/preprocess": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Предобработать текст документа для RAG
+     * @description Расширяет аббревиатуры и добавляет локальный контекст смысловым блокам.
+     */
+    post: operations["preprocess_document_for_rag_api_v1_rag_preprocess_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/rag/docs": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Список документов в RAG
+     * @description Объединяет метаданные и фильтрует их до выделения страницы.
+     */
+    get: operations["list_rag_documents_api_v1_rag_docs_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/rag/docs/{doc_id}/content": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Получить полный текст документа
+     * @description Возвращает полный исходный текст документа по его ID.
+     */
+    get: operations["get_rag_document_content_api_v1_rag_docs__doc_id__content_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/rag/docs/{doc_id}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
+    /**
+     * Удалить документ из RAG
+     * @description Удаляет документ из базы знаний RAG.
+     */
+    delete: operations["delete_rag_document_api_v1_rag_docs__doc_id__delete"]
+    options?: never
+    head?: never
+    /** Изменить метаданные документа */
+    patch: operations["update_rag_document_api_v1_rag_docs__doc_id__patch"]
+    trace?: never
+  }
+  "/api/v1/rag/docs/check": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Проверить документы RAG на изменения */
+    post: operations["check_rag_documents_api_v1_rag_docs_check_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/rag/docs/update-changed": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Обновить измененные документы RAG */
+    post: operations["update_changed_rag_documents_api_v1_rag_docs_update_changed_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/rag/upload/csv": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Добавить документы из CSV в очередь редактора
+     * @description Принимает CSV документ на вход и обрабатывает все документы там.
+     *     Ожидаемый формат: Название,Link,Комментарий
+     */
+    post: operations["upload_csv_documents_api_v1_rag_upload_csv_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/rag/upload/csv/preview": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Превью документов из CSV (без обработки)
+     * @description Принимает CSV документ и возвращает список найденных в нём ссылок без их обработки.
+     */
+    post: operations["preview_csv_documents_api_v1_rag_upload_csv_preview_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/rag/cache/clear": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Очистить кэш ответов RAG
+     * @description Очищает кэш ответов LLM (kv_store_llm_response_cache.json)
+     *     для графа, чтобы агент перестал отдавать старые ответы по старым данным.
+     *     Очистка вызывается по нажатию кнопки администратором.
+     */
+    post: operations["clear_rag_cache_api_v1_rag_cache_clear_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/rag/debug/query": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Инспектор поиска: сырая выдача ретривала
+     * @description Выполняет запрос к базе знаний и возвращает извлечённые чанки, сущности,
+     *     связи и источники. Позволяет сравнить режимы (hybrid vs mix) и проверить,
+     *     попадает ли нужный документ в выдачу.
+     */
+    post: operations["debug_rag_query_api_v1_rag_debug_query_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/rag/docs/{doc_id}/diagnostics": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Диагностика документа в LightRAG
+     * @description Возвращает статус обработки документа в LightRAG, число чанков, сущностей
+     *     и связей. entities_count == 0 означает, что граф для документа не построен и
+     *     в режиме hybrid он недостижим.
+     */
+    get: operations["get_rag_document_diagnostics_api_v1_rag_docs__doc_id__diagnostics_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/rag/export": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Экспорт базы знаний (без эмбеддингов)
+     * @description Отдаёт zip с сервисными сторами LightRAG: исходные тексты, статусы
+     *     обработки, чанки и граф сущностей. Векторные базы (эмбеддинги) исключены —
+     *     они привязаны к провайдеру и непереносимы между OpenAI и Gemini.
+     */
+    get: operations["export_knowledge_base_api_v1_rag_export_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/evals/run": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Run Evaluation */
+    post: operations["run_evaluation_api_v1_evals_run_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/evals/status": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Route Get Evaluation Status */
+    get: operations["route_get_evaluation_status_api_v1_evals_status_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/stats/topics": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Get Topic Stats
+     * @description Получить статистику по темам сообщений.
+     */
+    get: operations["get_topic_stats_api_v1_stats_topics_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/system-logs/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Get System Logs
+     * @description Получает последние N строк из указанного файла логов.
+     */
+    get: operations["get_system_logs_api_v1_system_logs__get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/system-logs/files": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * List Log Files
+     * @description Возвращает список доступных файлов логов.
+     */
+    get: operations["list_log_files_api_v1_system_logs_files_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/system-logs/download": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Download System Logs
+     * @description Скачивает указанный файл логов.
+     */
+    get: operations["download_system_logs_api_v1_system_logs_download_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/settings/rate-limit": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Получить настройки дневных лимитов запросов */
+    get: operations["get_rate_limit_settings_api_v1_settings_rate_limit_get"]
+    /** Обновить настройки дневных лимитов запросов */
+    put: operations["update_rate_limit_settings_api_v1_settings_rate_limit_put"]
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/settings/crag": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Получить настройки корректирующего RAG (CRAG) */
+    get: operations["get_crag_settings_api_v1_settings_crag_get"]
+    /** Обновить настройки корректирующего RAG (CRAG) */
+    put: operations["update_crag_settings_api_v1_settings_crag_put"]
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/settings/faq": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Получить настройки FAQ-матчера */
+    get: operations["get_faq_settings_api_v1_settings_faq_get"]
+    /**
+     * Обновить настройки FAQ-матчера
+     * @description Меняет порог FAQ. Бот подхватывает значение на следующем вопросе —
+     *     без рестарта, как у CRAG.
+     */
+    put: operations["update_faq_settings_api_v1_settings_faq_put"]
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/users/count-stats": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Users Count Stats */
+    get: operations["get_users_count_stats_api_v1_users_count_stats_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/messages": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Get Messages
+     * @description Возвращает список сообщений и ответов бота.
+     */
+    get: operations["get_messages_api_v1_messages_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/messages/page": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Get Message Page
+     * @description Return one filtered page and its total without loading the full history.
+     */
+    get: operations["get_message_page_api_v1_messages_page_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/university": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get University */
+    get: operations["get_university_api_v1_university_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/university/profile": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Get University Profile
+     * @description Public capability gate for the university-specific rating page.
+     */
+    get: operations["get_university_profile_api_v1_university_profile_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
 }
-export type webhooks = Record<string, never>;
+export type webhooks = Record<string, never>
 export interface components {
-    schemas: {
-        /** AbbrevItem */
-        AbbrevItem: {
-            /**
-             * Id
-             * @description UUID записи (заполняется при ответе)
-             */
-            id?: string | null;
-            /**
-             * Short
-             * @description Аббревиатура (например, НГУ)
-             */
-            short: string;
-            /**
-             * Full
-             * @description Расшифровка (например, Новосибирский государственный университет)
-             */
-            full: string;
-        };
-        /** AbbrevListResponse */
-        AbbrevListResponse: {
-            /**
-             * Items
-             * @description Список аббревиатур
-             */
-            items: components["schemas"]["AbbrevItem"][];
-        };
-        /** AdminResponse */
-        AdminResponse: {
-            /** Id */
-            id: string;
-            /** Username */
-            username: string;
-            role: components["schemas"]["AdminRole"];
-            /** Is Active */
-            is_active: boolean;
-            /**
-             * Created At
-             * Format: date-time
-             */
-            created_at: string;
-            /** Created By Id */
-            created_by_id: string | null;
-        };
-        /**
-         * AdminRole
-         * @enum {string}
-         */
-        AdminRole: "superadmin" | "admin" | "viewer";
-        /**
-         * AnswerStatsBucket
-         * @description Наблюдаемость одного периода: latency, неответы, ошибки (#242).
-         */
-        AnswerStatsBucket: {
-            /**
-             * Period
-             * Format: date-time
-             */
-            period: string;
-            /** Questions */
-            questions: number;
-            /** Answers */
-            answers: number;
-            /** No Answer */
-            no_answer: number;
-            /** No Answer Share */
-            no_answer_share?: number | null;
-            /** Errors */
-            errors: number;
-            /** Error Share */
-            error_share?: number | null;
-            /** Latency Ms P50 */
-            latency_ms_p50?: number | null;
-            /** Latency Ms P95 */
-            latency_ms_p95?: number | null;
-        };
-        /**
-         * AnswerStatsResponse
-         * @description Метрики ответов по периодам для дашборда наблюдаемости.
-         */
-        AnswerStatsResponse: {
-            /** Total Questions */
-            total_questions: number;
-            /** Total Answers */
-            total_answers: number;
-            /** Total No Answer */
-            total_no_answer: number;
-            /** No Answer Share */
-            no_answer_share?: number | null;
-            /** Total Errors */
-            total_errors: number;
-            /** Error Share */
-            error_share?: number | null;
-            /** Group By */
-            group_by: string;
-            /** Start */
-            start?: string | null;
-            /** End */
-            end?: string | null;
-            /** Buckets */
-            buckets: components["schemas"]["AnswerStatsBucket"][];
-        };
-        /** Body_preview_csv_documents_api_v1_rag_upload_csv_preview_post */
-        Body_preview_csv_documents_api_v1_rag_upload_csv_preview_post: {
-            /**
-             * File
-             * @description CSV файл с полями (Название, Link, Комментарий)
-             */
-            file: string;
-        };
-        /** Body_save_branding_api_v1_settings_instance_branding_post */
-        Body_save_branding_api_v1_settings_instance_branding_post: {
-            /** Revision */
-            revision: number;
-            /**
-             * Changes
-             * @default {}
-             */
-            changes: string;
-            /**
-             * Remove Logo
-             * @default false
-             */
-            remove_logo: boolean;
-            /** Logo */
-            logo?: string | null;
-        };
-        /** Body_upload_abbrev_csv_api_v1_abbrev_upload_post */
-        Body_upload_abbrev_csv_api_v1_abbrev_upload_post: {
-            /** File */
-            file: string;
-        };
-        /** Body_upload_csv_documents_api_v1_rag_upload_csv_post */
-        Body_upload_csv_documents_api_v1_rag_upload_csv_post: {
-            /**
-             * File
-             * @description CSV файл с полями (Название, Link, Комментарий)
-             */
-            file: string;
-        };
-        /** Body_upload_faq_csv_api_v1_faq_upload_post */
-        Body_upload_faq_csv_api_v1_faq_upload_post: {
-            /** File */
-            file: string;
-        };
-        /** BrandingResponse */
-        BrandingResponse: {
-            /** Revision */
-            revision: number;
-            /** Short Name */
-            short_name: string;
-            /** Full Name */
-            full_name: string;
-            /** Logo Url */
-            logo_url: string;
-            /** Favicon Url */
-            favicon_url: string;
-            /** Accent Color */
-            accent_color: string;
-        };
-        /** ChangeRoleRequest */
-        ChangeRoleRequest: {
-            /** @description Новая роль администратора */
-            role: components["schemas"]["AdminRole"];
-        };
-        /** ConfirmUploadRequest */
-        ConfirmUploadRequest: {
-            /**
-             * Title
-             * @description Название страницы
-             */
-            title: string;
-            /**
-             * Url
-             * @description URL страницы
-             */
-            url: string;
-            /**
-             * Text
-             * @description Отредактированный текст страницы
-             */
-            text: string;
-            /**
-             * Documents
-             * @description Финальный список файлов для загрузки
-             */
-            documents: components["schemas"]["ParsedDocument"][];
-        };
-        /** ConnectionCheck */
-        ConnectionCheck: {
-            /** Revision */
-            revision: number;
-            /** Changes */
-            changes: {
-                [key: string]: string | null;
-            };
-            /** Target */
-            target: string;
-        };
-        /** ConnectionCheckResponse */
-        ConnectionCheckResponse: {
-            /** Message */
-            message: string;
-        };
-        /**
-         * CragSettings
-         * @description Настройки корректирующего RAG (CRAG).
-         */
-        CragSettings: {
-            /**
-             * Enabled
-             * @description Включён ли CRAG-слой (корректирующий RAG)
-             * @default true
-             */
-            enabled: boolean;
-            /**
-             * Relevance Threshold
-             * @description Порог релевантности чанка при LLM-грейдинге (0..1)
-             * @default 0.5
-             */
-            relevance_threshold: number;
-            /**
-             * Min Chunks
-             * @description Минимум чанков после фильтра, ниже которого пробуем доретрив
-             * @default 2
-             */
-            min_chunks: number;
-            /**
-             * Allow Refine
-             * @description Разрешить одну переформулировку запроса и доретрив
-             * @default true
-             */
-            allow_refine: boolean;
-            /**
-             * Use Faculty Table
-             * @description Авторитетная фильтрация по таблице факультетов
-             * @default true
-             */
-            use_faculty_table: boolean;
-            /**
-             * Max Graded Chunks
-             * @description Максимум чанков, отправляемых на LLM-грейдинг (латентность)
-             * @default 12
-             */
-            max_graded_chunks: number;
-        };
-        /**
-         * CragSettingsUpdate
-         * @description Обновление настроек CRAG.
-         */
-        CragSettingsUpdate: {
-            /** Enabled */
-            enabled: boolean;
-            /** Relevance Threshold */
-            relevance_threshold: number;
-            /** Min Chunks */
-            min_chunks: number;
-            /** Allow Refine */
-            allow_refine: boolean;
-            /** Use Faculty Table */
-            use_faculty_table: boolean;
-            /** Max Graded Chunks */
-            max_graded_chunks: number;
-        };
-        /** CsvImportPreviewResponse */
-        CsvImportPreviewResponse: {
-            /**
-             * Total Found
-             * @description Всего найдено ссылок в CSV
-             */
-            total_found: number;
-            /**
-             * Results
-             * @description Список найденных документов для превью
-             */
-            results: components["schemas"]["CsvImportPreviewResult"][];
-        };
-        /** CsvImportPreviewResult */
-        CsvImportPreviewResult: {
-            /**
-             * Title
-             * @description Название документа
-             */
-            title: string;
-            /**
-             * Url
-             * @description URL документа
-             */
-            url: string;
-            /**
-             * Comment
-             * @description Комментарий из CSV
-             */
-            comment?: string | null;
-        };
-        /** CsvImportResponse */
-        CsvImportResponse: {
-            /**
-             * Queued Count
-             * @description Количество документов, ожидающих проверки редактором
-             */
-            queued_count: number;
-            /**
-             * Total Found
-             * @description Всего найдено ссылок в CSV
-             */
-            total_found: number;
-            /**
-             * Results
-             * @description Результаты обработки по каждой ссылке
-             */
-            results: components["schemas"]["CsvImportResult"][];
-        };
-        /** CsvImportResult */
-        CsvImportResult: {
-            /**
-             * Title
-             * @description Название документа
-             */
-            title: string;
-            /**
-             * Url
-             * @description URL документа
-             */
-            url: string;
-            /**
-             * Success
-             * @description Статус обработки
-             */
-            success: boolean;
-            /**
-             * Message
-             * @description Сообщение об ошибке или статус
-             */
-            message?: string | null;
-        };
-        /** DebugChunk */
-        DebugChunk: {
-            /**
-             * Index
-             * @description Порядковый номер чанка в выдаче
-             */
-            index: number;
-            /**
-             * Source Url
-             * @description URL источника чанка
-             */
-            source_url?: string | null;
-            /**
-             * File Path
-             * @description Исходное поле file_path чанка
-             */
-            file_path?: string | null;
-            /**
-             * Content
-             * @description Текст чанка
-             */
-            content: string;
-            /**
-             * Rerank Score
-             * @description Скор реранкинга, если есть
-             */
-            rerank_score?: number | null;
-        };
-        /** DebugEntity */
-        DebugEntity: {
-            /**
-             * Name
-             * @description Имя сущности
-             */
-            name: string;
-            /**
-             * Type
-             * @description Тип сущности
-             */
-            type?: string | null;
-            /**
-             * Description
-             * @description Описание сущности
-             */
-            description?: string | null;
-        };
-        /** DebugQueryRequest */
-        DebugQueryRequest: {
-            /**
-             * Question
-             * @description Вопрос для проверки поиска по базе знаний
-             */
-            question: string;
-            /**
-             * Mode
-             * @description Режим поиска LightRAG: hybrid, mix, local, global, naive, bypass
-             * @default hybrid
-             */
-            mode: string;
-        };
-        /** DebugQueryResponse */
-        DebugQueryResponse: {
-            /**
-             * Question
-             * @description Заданный вопрос
-             */
-            question: string;
-            /**
-             * Mode
-             * @description Использованный режим поиска
-             */
-            mode: string;
-            /**
-             * Answer
-             * @description Сгенерированный ответ базы знаний
-             */
-            answer: string;
-            /** @description Параметры поиска */
-            settings: components["schemas"]["DebugQuerySettings"];
-            /**
-             * Chunks
-             * @description Извлечённые чанки
-             */
-            chunks: components["schemas"]["DebugChunk"][];
-            /**
-             * Entities
-             * @description Найденные сущности
-             */
-            entities: components["schemas"]["DebugEntity"][];
-            /**
-             * Relations
-             * @description Найденные связи
-             */
-            relations: components["schemas"]["DebugRelation"][];
-            /**
-             * Sources
-             * @description Итоговые источники
-             */
-            sources: components["schemas"]["DebugSource"][];
-        };
-        /** DebugQuerySettings */
-        DebugQuerySettings: {
-            /**
-             * Mode
-             * @description Использованный режим поиска
-             */
-            mode: string;
-            /**
-             * Chunk Top K
-             * @description Сколько чанков извлекается
-             */
-            chunk_top_k?: number | null;
-            /**
-             * Top K
-             * @description Top-k для сущностей/связей
-             */
-            top_k?: number | null;
-            /**
-             * Enable Rerank
-             * @description Включён ли реранкинг
-             */
-            enable_rerank?: boolean | null;
-            /**
-             * Min Rerank Score
-             * @description Порог rerank-скора
-             */
-            min_rerank_score?: number | null;
-        };
-        /** DebugRelation */
-        DebugRelation: {
-            /**
-             * Source
-             * @description Сущность-источник связи
-             */
-            source?: string | null;
-            /**
-             * Target
-             * @description Сущность-цель связи
-             */
-            target?: string | null;
-            /**
-             * Description
-             * @description Описание связи
-             */
-            description?: string | null;
-        };
-        /** DebugSource */
-        DebugSource: {
-            /**
-             * Url
-             * @description URL источника
-             */
-            url: string;
-            /**
-             * Title
-             * @description Название источника
-             */
-            title: string;
-            /**
-             * Snippet
-             * @description Фрагмент текста источника
-             */
-            snippet: string;
-        };
-        /** DislikedQuestion */
-        DislikedQuestion: {
-            /** Question */
-            question: string;
-            /** Negative */
-            negative: number;
-            /** Rated */
-            rated: number;
-        };
-        /** DocumentCheckRequest */
-        DocumentCheckRequest: {
-            /**
-             * Document Ids
-             * @description ID документов для проверки; если не переданы, проверяются все
-             */
-            document_ids?: string[] | null;
-        };
-        /** DocumentCheckResponse */
-        DocumentCheckResponse: {
-            /**
-             * Checked Count
-             * @description Количество проверенных документов
-             */
-            checked_count: number;
-            /**
-             * Changed Count
-             * @description Количество измененных документов
-             */
-            changed_count: number;
-            /**
-             * Results
-             * @description Результаты проверки
-             */
-            results: components["schemas"]["DocumentCheckResult"][];
-        };
-        /** DocumentCheckResult */
-        DocumentCheckResult: {
-            /**
-             * Id
-             * @description ID документа
-             */
-            id: string;
-            /**
-             * Title
-             * @description Название документа
-             */
-            title: string;
-            /**
-             * Source Url
-             * @description URL источника
-             */
-            source_url?: string | null;
-            /**
-             * Status
-             * @description без изменений, изменён, источник недоступен, нет ссылки, обновлён, ошибка индексации
-             */
-            status: string;
-            /**
-             * Content Hash
-             * @description Новый SHA-256
-             */
-            content_hash?: string | null;
-            /**
-             * Previous Hash
-             * @description Сохраненный SHA-256
-             */
-            previous_hash?: string | null;
-            /**
-             * Message
-             * @description Ошибка или пояснение
-             */
-            message?: string | null;
-        };
-        /** DocumentDiagnosticsResponse */
-        DocumentDiagnosticsResponse: {
-            /**
-             * Id
-             * @description Идентификатор документа в Postgres
-             */
-            id: string;
-            /**
-             * Title
-             * @description Название документа
-             */
-            title?: string | null;
-            /**
-             * Postgres Status
-             * @description Статус документа в Postgres
-             */
-            postgres_status: string;
-            /**
-             * Lightrag Status
-             * @description Статус обработки в LightRAG: processed, failed, pending, processing, not_found
-             */
-            lightrag_status: string;
-            /**
-             * Chunks Count
-             * @description Количество чанков документа
-             */
-            chunks_count: number;
-            /**
-             * Entities Count
-             * @description Количество извлечённых сущностей (0 → недостижим в hybrid)
-             */
-            entities_count: number;
-            /**
-             * Relations Count
-             * @description Количество извлечённых связей
-             */
-            relations_count: number;
-            /**
-             * Content Length
-             * @description Длина контента
-             */
-            content_length?: number | null;
-            /**
-             * Error
-             * @description Ошибка обработки в LightRAG, если есть
-             */
-            error?: string | null;
-        };
-        /** DocumentUpdateResponse */
-        DocumentUpdateResponse: {
-            /**
-             * Checked Count
-             * @description Количество проверенных документов
-             */
-            checked_count: number;
-            /**
-             * Updated Count
-             * @description Количество обновленных документов
-             */
-            updated_count: number;
-            /**
-             * Results
-             * @description Результаты обновления
-             */
-            results: components["schemas"]["DocumentCheckResult"][];
-        };
-        /**
-         * EducationLevel
-         * @description Уровень образования направления подготовки.
-         * @enum {string}
-         */
-        EducationLevel: "bachelor" | "specialist" | "master" | "spo";
-        /**
-         * FacultyCreate
-         * @description Данные для создания факультета.
-         */
-        FacultyCreate: {
-            /**
-             * Name
-             * @description Название факультета
-             */
-            name: string;
-            /**
-             * Aliases
-             * @description Аббревиатуры и альтернативные названия
-             */
-            aliases?: string[];
-            /**
-             * Is Active
-             * @description Активен ли факультет
-             * @default true
-             */
-            is_active: boolean;
-        };
-        /**
-         * FacultyItem
-         * @description Факультет с его направлениями подготовки.
-         */
-        FacultyItem: {
-            /** Id */
-            id: string;
-            /** Name */
-            name: string;
-            /** Aliases */
-            aliases?: string[];
-            /** Is Active */
-            is_active: boolean;
-            /** Programs */
-            programs?: components["schemas"]["ProgramItem"][];
-        };
-        /**
-         * FacultyUpdate
-         * @description Данные для обновления факультета.
-         */
-        FacultyUpdate: {
-            /**
-             * Name
-             * @description Название факультета
-             */
-            name?: string | null;
-            /**
-             * Aliases
-             * @description Аббревиатуры и альтернативные названия
-             */
-            aliases?: string[] | null;
-            /**
-             * Is Active
-             * @description Активен ли факультет
-             */
-            is_active?: boolean | null;
-        };
-        /**
-         * FaqHitBucket
-         * @description Элемент статистики срабатываний FAQ-слоя.
-         */
-        FaqHitBucket: {
-            /**
-             * Period
-             * Format: date-time
-             */
-            period: string;
-            /** Questions */
-            questions: number;
-            /** Hits */
-            hits: number;
-            /** Hit Rate */
-            hit_rate?: number | null;
-        };
-        /**
-         * FaqHitStatsResponse
-         * @description Как часто вопросы закрываются готовыми ответами FAQ без модели.
-         */
-        FaqHitStatsResponse: {
-            /** Total Questions */
-            total_questions: number;
-            /** Total Hits */
-            total_hits: number;
-            /** Hit Rate */
-            hit_rate?: number | null;
-            /** Group By */
-            group_by: string;
-            /** Start */
-            start?: string | null;
-            /** End */
-            end?: string | null;
-            /** Buckets */
-            buckets: components["schemas"]["FaqHitBucket"][];
-        };
-        /** FaqItem */
-        FaqItem: {
-            /**
-             * Id
-             * @description UUID записи (заполняется при ответе)
-             */
-            id?: string | null;
-            /**
-             * Question
-             * @description Основной вопрос
-             */
-            question: string;
-            /**
-             * Aliases
-             * @description Альтернативные формулировки (синонимы) вопроса
-             */
-            aliases?: string[];
-            /**
-             * Answer
-             * @description Текст ответа
-             */
-            answer: string;
-            /**
-             * Verification Status
-             * @description Черновик или подтверждено человеком
-             * @default draft
-             * @enum {string}
-             */
-            verification_status: "draft" | "confirmed";
-            /**
-             * Source Document
-             * @description Документ-источник
-             */
-            source_document?: string | null;
-            /**
-             * Source Location
-             * @description Место в документе
-             */
-            source_location?: string | null;
-            /**
-             * Confirmed By
-             * @description Имя подтвердившего
-             */
-            confirmed_by?: string | null;
-            /**
-             * Confirmed At
-             * @description Дата подтверждения в UTC; дата без часового пояса считается UTC
-             */
-            confirmed_at?: string | null;
-        };
-        /** FaqListResponse */
-        FaqListResponse: {
-            /**
-             * Items
-             * @description Список вопросов-ответов
-             */
-            items: components["schemas"]["FaqItem"][];
-        };
-        /**
-         * FaqSettings
-         * @description Настройки FAQ-матчера.
-         */
-        FaqSettings: {
-            /**
-             * Similarity Threshold
-             * @description Порог косинусного сходства для срабатывания FAQ (0..1)
-             * @default 0.95
-             */
-            similarity_threshold: number;
-        };
-        /**
-         * FaqSettingsUpdate
-         * @description Обновление настроек FAQ-матчера.
-         */
-        FaqSettingsUpdate: {
-            /** Similarity Threshold */
-            similarity_threshold: number;
-        };
-        /** FeedbackReportListItem */
-        FeedbackReportListItem: {
-            /** Id */
-            id: number;
-            /** User Id */
-            user_id: number;
-            /** Session Id */
-            session_id: string;
-            /** Channel */
-            channel: string;
-            /** Comment */
-            comment: string;
-            /** Question */
-            question?: string | null;
-            /** Bot Response */
-            bot_response?: string | null;
-            /** Status */
-            status: string;
-            /**
-             * Created At
-             * Format: date-time
-             */
-            created_at: string;
-            /** Reviewed At */
-            reviewed_at?: string | null;
-        };
-        /** FeedbackReportListResponse */
-        FeedbackReportListResponse: {
-            /** Reports */
-            reports: components["schemas"]["FeedbackReportListItem"][];
-            /** Total */
-            total: number;
-            /** Limit */
-            limit: number;
-            /** Offset */
-            offset: number;
-        };
-        /** FeedbackReportResponse */
-        FeedbackReportResponse: {
-            /** Id */
-            id: number;
-            /** User Id */
-            user_id: number;
-            /** Session Id */
-            session_id: string;
-            /** Channel */
-            channel: string;
-            /** Comment */
-            comment: string;
-            /** Question */
-            question?: string | null;
-            /** Bot Response */
-            bot_response?: string | null;
-            /** Logs Snapshot */
-            logs_snapshot?: {
-                [key: string]: unknown;
-            }[] | null;
-            /** Status */
-            status: string;
-            /**
-             * Created At
-             * Format: date-time
-             */
-            created_at: string;
-            /** Reviewed At */
-            reviewed_at?: string | null;
-        };
-        /** FeedbackReportStatusUpdate */
-        FeedbackReportStatusUpdate: {
-            /**
-             * Status
-             * @enum {string}
-             */
-            status: "open" | "reviewed" | "ignored";
-        };
-        /** GapReportResponse */
-        GapReportResponse: {
-            /** Period Days */
-            period_days: number;
-            /**
-             * Generated At
-             * Format: date-time
-             */
-            generated_at: string;
-            /** Topics */
-            topics: components["schemas"]["ReportTopic"][];
-            /** Popular */
-            popular: components["schemas"]["ReportQuestion"][];
-            /** Unanswered */
-            unanswered: components["schemas"]["ReportQuestion"][];
-            quality: components["schemas"]["ReportQuality"];
-            /** Disliked */
-            disliked: components["schemas"]["DislikedQuestion"][];
-        };
-        /** HTTPValidationError */
-        HTTPValidationError: {
-            /** Detail */
-            detail?: components["schemas"]["ValidationError"][];
-        };
-        /**
-         * ImportRequest
-         * @description Запрос на импорт отревьюенных строк проходных баллов.
-         */
-        ImportRequest: {
-            /** Rows */
-            rows?: components["schemas"]["ScoreRowSchema"][];
-        };
-        /**
-         * ImportResponse
-         * @description Статистика идемпотентного upsert.
-         */
-        ImportResponse: {
-            /** Created */
-            created: number;
-            /** Updated */
-            updated: number;
-            /** Skipped */
-            skipped: number;
-        };
-        /** InstanceSettingResponse */
-        InstanceSettingResponse: {
-            /** Key */
-            key: string;
-            /** Label */
-            label: string;
-            /** Group */
-            group: string;
-            /** Kind */
-            kind: string;
-            /** Choices */
-            choices: string[];
-            /** Secret */
-            secret: boolean;
-            /** Configured */
-            configured: boolean;
-            /** Value */
-            value: string | null;
-        };
-        /** InstanceSettingsResponse */
-        InstanceSettingsResponse: {
-            /** Revision */
-            revision: number;
-            /** Encryption Ready */
-            encryption_ready: boolean;
-            /** Settings */
-            settings: components["schemas"]["InstanceSettingResponse"][];
-        };
-        /** InviteCodeRequest */
-        InviteCodeRequest: {
-            /** @default admin */
-            role: components["schemas"]["AdminRole"];
-            /** Expires In Hours */
-            expires_in_hours?: number | null;
-        };
-        /** InviteCodeResponse */
-        InviteCodeResponse: {
-            /** Code */
-            code: string;
-            role: components["schemas"]["AdminRole"];
-            /** Expires At */
-            expires_at: string | null;
-        };
-        /** LoginRequest */
-        LoginRequest: {
-            /** Username */
-            username: string;
-            /** Password */
-            password: string;
-        };
-        /**
-         * MessageLogListResponse
-         * @description Модель ответа для списка логов.
-         */
-        MessageLogListResponse: {
-            /** Logs */
-            logs: components["schemas"]["MessageLogResponse"][];
-            /** Total */
-            total: number;
-            /** Limit */
-            limit: number;
-            /** Offset */
-            offset: number;
-        };
-        /**
-         * MessageLogResponse
-         * @description Модель ответа для лога сообщения.
-         */
-        MessageLogResponse: {
-            /** Id */
-            id: number;
-            /** User Id */
-            user_id: number;
-            /** Session Id */
-            session_id: string;
-            /** Message Type */
-            message_type: string;
-            /** Content */
-            content: string;
-            /** Message Metadata */
-            message_metadata?: {
-                [key: string]: unknown;
-            } | null;
-            /** Topic Id */
-            topic_id?: number | null;
-            /**
-             * Created At
-             * Format: date-time
-             */
-            created_at: string;
-        };
-        /** MessagePageResponse */
-        MessagePageResponse: {
-            /** Items */
-            items: components["schemas"]["MessageResponse"][];
-            /** Total */
-            total: number;
-            /** Limit */
-            limit: number;
-            /** Offset */
-            offset: number;
-            /** Snapshot Id */
-            snapshot_id?: string | null;
-        };
-        /** MessageResponse */
-        MessageResponse: {
-            /** Id */
-            id: string;
-            /** User Id */
-            user_id: number;
-            /** Username */
-            username?: string | null;
-            /** Messenger */
-            messenger?: string | null;
-            /** Session Id */
-            session_id: string;
-            /** User Text */
-            user_text: string;
-            /** Bot Response */
-            bot_response: string;
-            /**
-             * Created At
-             * Format: date-time
-             */
-            created_at: string;
-        };
-        /** ParsedDocument */
-        ParsedDocument: {
-            /**
-             * Title
-             * @description Название документа
-             */
-            title: string;
-            /**
-             * Url
-             * @description URL для скачивания/ссылки на документ
-             */
-            url: string;
-        };
-        /** ParsedPageResult */
-        ParsedPageResult: {
-            /**
-             * Title
-             * @description Название страницы
-             */
-            title: string;
-            /**
-             * Url
-             * @description URL страницы
-             */
-            url: string;
-            /**
-             * Text
-             * @description Сырой или предобработанный текст страницы
-             */
-            text: string;
-            /**
-             * Documents
-             * @description Список найденных PDF-документов
-             */
-            documents: components["schemas"]["ParsedDocument"][];
-        };
-        /** PopularQuestion */
-        PopularQuestion: {
-            /** Question */
-            question: string;
-            /** Count */
-            count: number;
-            /** Variants */
-            variants?: string[];
-        };
-        /** PopularQuestionsResponse */
-        PopularQuestionsResponse: {
-            /** Questions */
-            questions: components["schemas"]["PopularQuestion"][];
-        };
-        /** PopularQuestionsSnapshotResponse */
-        PopularQuestionsSnapshotResponse: {
-            /** Questions */
-            questions: components["schemas"]["PopularQuestion"][];
-            /**
-             * Status
-             * @default ready
-             * @enum {string}
-             */
-            status: "pending" | "ready" | "error";
-            /** Updated At */
-            updated_at?: string | null;
-        };
-        /** PreprocessDocumentRequest */
-        PreprocessDocumentRequest: {
-            /**
-             * Text
-             * @description Текст документа для предобработки
-             */
-            text: string;
-        };
-        /** PreprocessDocumentResponse */
-        PreprocessDocumentResponse: {
-            /**
-             * Text
-             * @description Текст после расширения аббревиатур и очистки
-             */
-            text: string;
-            /**
-             * Chars
-             * @description Количество символов в обработанном тексте
-             */
-            chars: number;
-        };
-        /**
-         * PreviewRequest
-         * @description Запрос на предпросмотр парсинга страницы итогов приёма.
-         */
-        PreviewRequest: {
-            /**
-             * Url
-             * @description URL страницы (по умолчанию — страница НГУ)
-             */
-            url?: string | null;
-        };
-        /**
-         * PreviewResponse
-         * @description Результат предпросмотра: распарсенные строки и сводка.
-         */
-        PreviewResponse: {
-            /** Rows */
-            rows?: components["schemas"]["ScoreRowSchema"][];
-            summary: components["schemas"]["PreviewSummary"];
-        };
-        /**
-         * PreviewSummary
-         * @description Сводка предпросмотра распарсенных строк.
-         */
-        PreviewSummary: {
-            /**
-             * Total
-             * @description Всего распарсено строк
-             */
-            total: number;
-            /**
-             * Matched
-             * @description Строк, сопоставленных со справочником
-             */
-            matched: number;
-            /**
-             * Unmatched
-             * @description Строк без сопоставления
-             */
-            unmatched: number;
-            /**
-             * Unmatched Samples
-             * @description Примеры несопоставленных (факультет, направление)
-             */
-            unmatched_samples?: components["schemas"]["UnmatchedSample"][];
-        };
-        /**
-         * ProgramCreate
-         * @description Данные для создания направления подготовки.
-         */
-        ProgramCreate: {
-            /**
-             * Name
-             * @description Название направления
-             */
-            name: string;
-            /**
-             * Level
-             * @description Уровень: bachelor / specialist / master / spo (СПО)
-             * @enum {string}
-             */
-            level: "bachelor" | "master" | "specialist" | "spo";
-            /**
-             * Code
-             * @description Код направления (ФГОС)
-             */
-            code?: string | null;
-            /**
-             * Is Active
-             * @description Активно ли направление
-             * @default true
-             */
-            is_active: boolean;
-        };
-        /**
-         * ProgramItem
-         * @description Направление подготовки (образовательная программа).
-         */
-        ProgramItem: {
-            /** Id */
-            id: string;
-            /** Faculty Id */
-            faculty_id: string;
-            /** Name */
-            name: string;
-            /** Code */
-            code?: string | null;
-            /**
-             * Level
-             * @enum {string}
-             */
-            level: "bachelor" | "master" | "specialist" | "spo";
-            /** Is Active */
-            is_active: boolean;
-        };
-        /**
-         * ProgramUpdate
-         * @description Данные для обновления направления подготовки.
-         */
-        ProgramUpdate: {
-            /**
-             * Name
-             * @description Название направления
-             */
-            name?: string | null;
-            /**
-             * Level
-             * @description Уровень: bachelor / specialist / master / spo (СПО)
-             * @enum {unknown}
-             */
-            level?: "bachelor" | "master" | "specialist" | "spo" | null;
-            /**
-             * Code
-             * @description Код направления (ФГОС)
-             */
-            code?: string | null;
-            /**
-             * Is Active
-             * @description Активно ли направление
-             */
-            is_active?: boolean | null;
-        };
-        /** ProposalCreate */
-        ProposalCreate: {
-            /**
-             * Source
-             * @enum {string}
-             */
-            source: "model" | "parser";
-            /**
-             * Graph Id
-             * @default abitur_kb
-             */
-            graph_id: string;
-            /** Title */
-            title: string;
-            /** Text */
-            text: string;
-            /** Source Url */
-            source_url?: string | null;
-            /** Source Hash */
-            source_hash?: string | null;
-        };
-        /** ProposalResponse */
-        ProposalResponse: {
-            /** Id */
-            id: string;
-            /** Source */
-            source: string;
-            /** Graph Id */
-            graph_id: string;
-            /** Title */
-            title: string;
-            /** Text */
-            text: string;
-            /** Source Url */
-            source_url: string | null;
-            /** Source Hash */
-            source_hash: string | null;
-            /** Status */
-            status: string;
-            /** Reviewer Id */
-            reviewer_id: string | null;
-            /** Document Id */
-            document_id: string | null;
-            /**
-             * Created At
-             * Format: date-time
-             */
-            created_at: string;
-            /** Reviewed At */
-            reviewed_at: string | null;
-        };
-        /** RagDocument */
-        RagDocument: {
-            /**
-             * Id
-             * @description Идентификатор документа (обычно URL или имя файла)
-             */
-            id: string;
-            /**
-             * Title
-             * @description Название документа
-             */
-            title?: string | null;
-            /**
-             * Url
-             * @description Оригинальный URL или путь к файлу
-             */
-            url?: string | null;
-            /**
-             * Status
-             * @description Статус обработки
-             */
-            status: string;
-            /** Lightrag Status */
-            lightrag_status?: string | null;
-            /** Import State */
-            import_state?: string | null;
-            /**
-             * Proposal Only
-             * @default false
-             */
-            proposal_only: boolean;
-            /**
-             * Content Hash
-             * @description SHA-256 сырого контента
-             */
-            content_hash?: string | null;
-            /**
-             * Content Summary
-             * @description Краткое содержание
-             */
-            content_summary?: string | null;
-            /**
-             * Content Length
-             * @description Длина контента
-             */
-            content_length?: number | null;
-            /**
-             * Created At
-             * @description Дата создания
-             */
-            created_at?: string | null;
-            /**
-             * Updated At
-             * @description Дата обновления
-             */
-            updated_at?: string | null;
-            /**
-             * Last Indexed At
-             * @description Дата последней индексации
-             */
-            last_indexed_at?: string | null;
-            /**
-             * Last Checked At
-             * @description Дата последней проверки
-             */
-            last_checked_at?: string | null;
-            /**
-             * Last Checked Hash
-             * @description SHA-256 последней проверки
-             */
-            last_checked_hash?: string | null;
-            /**
-             * Last Check Message
-             * @description Ошибка или пояснение последней проверки
-             */
-            last_check_message?: string | null;
-        };
-        /** RagDocumentContentResponse */
-        RagDocumentContentResponse: {
-            /**
-             * Id
-             * @description Идентификатор документа
-             */
-            id: string;
-            /**
-             * Content
-             * @description Полный текст документа
-             */
-            content: string;
-        };
-        /** RagDocumentListResponse */
-        RagDocumentListResponse: {
-            /**
-             * Documents
-             * @description Страница материалов
-             */
-            documents: components["schemas"]["RagDocument"][];
-            /**
-             * Total
-             * @description Всего материалов с учётом фильтров
-             * @default 0
-             */
-            total: number;
-            /**
-             * Total All
-             * @description Всего материалов без фильтров
-             * @default 0
-             */
-            total_all: number;
-            /**
-             * Offset
-             * @default 0
-             */
-            offset: number;
-            /** Limit */
-            limit?: number | null;
-            /**
-             * Has Pending
-             * @description Есть активные импорты на любой странице
-             * @default false
-             */
-            has_pending: boolean;
-        };
-        /** RagDocumentUpdateRequest */
-        RagDocumentUpdateRequest: {
-            /**
-             * Title
-             * @description Новое название документа
-             */
-            title?: string | null;
-            /**
-             * Source Url
-             * @description Новая ссылка на источник
-             */
-            source_url?: string | null;
-        };
-        /** RagUploadResponse */
-        RagUploadResponse: {
-            /**
-             * Accepted Formats
-             * @description Поддерживаемые расширения файлов
-             */
-            accepted_formats: string[];
-            /**
-             * Queued Count
-             * @description Количество файлов в очереди редактора
-             */
-            queued_count: number;
-            /**
-             * Skipped Count
-             * @description Количество пропущенных файлов
-             */
-            skipped_count: number;
-            /**
-             * Results
-             * @description Результаты обработки по каждому загруженному файлу
-             */
-            results: components["schemas"]["UploadedDocumentResult"][];
-        };
-        /**
-         * RateLimitSettings
-         * @description Настройки дневных лимитов запросов.
-         */
-        RateLimitSettings: {
-            /**
-             * System Requests Per Day
-             * @description Количество запросов в день для всей системы
-             * @default 10000
-             */
-            system_requests_per_day: number;
-            /**
-             * User Requests Per Day
-             * @description Количество запросов в день для одного пользователя
-             * @default 100
-             */
-            user_requests_per_day: number;
-        };
-        /**
-         * RateLimitSettingsUpdate
-         * @description Обновление дневных лимитов запросов.
-         */
-        RateLimitSettingsUpdate: {
-            /** System Requests Per Day */
-            system_requests_per_day: number;
-            /** User Requests Per Day */
-            user_requests_per_day: number;
-        };
-        /** RegisterRequest */
-        RegisterRequest: {
-            /** Username */
-            username: string;
-            /** Password */
-            password: string;
-            /** Invite Code */
-            invite_code?: string | null;
-        };
-        /** ReportQuality */
-        ReportQuality: {
-            /** Questions */
-            questions: number;
-            /** Answers */
-            answers: number;
-            /** No Answer */
-            no_answer: number;
-            /** No Answer Share */
-            no_answer_share?: number | null;
-            /** Errors */
-            errors: number;
-            /** Error Share */
-            error_share?: number | null;
-        };
-        /** ReportQuestion */
-        ReportQuestion: {
-            /** Question */
-            question: string;
-            /** Count */
-            count: number;
-            /** Variants */
-            variants?: string[];
-        };
-        /** ReportTopic */
-        ReportTopic: {
-            /** Topic */
-            topic: string;
-            /** Count */
-            count: number;
-        };
-        /**
-         * RequestCountBucket
-         * @description Элемент статистики по количеству запросов.
-         */
-        RequestCountBucket: {
-            /**
-             * Period
-             * Format: date-time
-             */
-            period: string;
-            /** Count */
-            count: number;
-        };
-        /**
-         * RequestCountStatsResponse
-         * @description Статистика количества запросов за период времени.
-         */
-        RequestCountStatsResponse: {
-            /** Total */
-            total: number;
-            /** Group By */
-            group_by: string;
-            /** Start */
-            start?: string | null;
-            /** End */
-            end?: string | null;
-            /** Buckets */
-            buckets: components["schemas"]["RequestCountBucket"][];
-        };
-        /**
-         * ScoreItem
-         * @description Плоская запись проходного балла для выборки.
-         */
-        ScoreItem: {
-            /** Faculty Name */
-            faculty_name: string;
-            /** Program Name */
-            program_name: string;
-            /** @description Уровень образования программы */
-            level: components["schemas"]["EducationLevel"];
-            /** Code */
-            code?: string | null;
-            /** Year */
-            year: number;
-            /** Form */
-            form: string;
-            /** Passing Score */
-            passing_score?: number | null;
-            /** Average Score */
-            average_score?: number | null;
-        };
-        /**
-         * ScoreRowSchema
-         * @description Строка проходного балла (сырая, до/после разрешения в program_id).
-         */
-        ScoreRowSchema: {
-            /**
-             * Faculty Name
-             * @description Название факультета/института
-             */
-            faculty_name: string;
-            /**
-             * Program Name
-             * @description Название направления подготовки
-             */
-            program_name: string;
-            /**
-             * Code
-             * @description Код направления (ФГОС)
-             */
-            code?: string | null;
-            /**
-             * Year
-             * @description Год приёма
-             */
-            year: number;
-            /**
-             * Form
-             * @description Форма обучения: budget / paid
-             */
-            form: string;
-            /**
-             * Passing Score
-             * @description Проходной балл
-             */
-            passing_score?: number | null;
-            /**
-             * Average Score
-             * @description Средний балл
-             */
-            average_score?: number | null;
-            /**
-             * Level
-             * @description Уровень: bachelor / specialist / master / spo (СПО)
-             * @default bachelor
-             */
-            level: string;
-        };
-        /** SettingsChange */
-        SettingsChange: {
-            /** Revision */
-            revision: number;
-            /** Changes */
-            changes: {
-                [key: string]: string | null;
-            };
-        };
-        /** TokenResponse */
-        TokenResponse: {
-            /** Access Token */
-            access_token: string;
-            /**
-             * Token Type
-             * @default bearer
-             */
-            token_type: string;
-        };
-        /**
-         * TokenUsageBucket
-         * @description Элемент статистики по количеству потраченных токенов.
-         */
-        TokenUsageBucket: {
-            /**
-             * Period
-             * Format: date-time
-             */
-            period: string;
-            /** Tokens */
-            tokens: number;
-        };
-        /**
-         * TokenUsageStatsResponse
-         * @description Статистика потребления токенов LLM за период времени.
-         */
-        TokenUsageStatsResponse: {
-            /** Total */
-            total: number;
-            /** Group By */
-            group_by: string;
-            /** Start */
-            start?: string | null;
-            /** End */
-            end?: string | null;
-            /** Buckets */
-            buckets: components["schemas"]["TokenUsageBucket"][];
-        };
-        /**
-         * TopicCreate
-         * @description Модель для создания новой темы.
-         */
-        TopicCreate: {
-            /**
-             * Label
-             * @description Название темы
-             */
-            label: string;
-            /**
-             * Description
-             * @description Описание темы
-             */
-            description?: string | null;
-            /**
-             * Is Active
-             * @description Активна ли тема
-             * @default true
-             */
-            is_active: boolean;
-        };
-        /**
-         * TopicListResponse
-         * @description Модель ответа для списка тем.
-         */
-        TopicListResponse: {
-            /** Topics */
-            topics: components["schemas"]["TopicResponse"][];
-            /** Total */
-            total: number;
-        };
-        /**
-         * TopicResponse
-         * @description Модель ответа для темы.
-         */
-        TopicResponse: {
-            /**
-             * Label
-             * @description Название темы
-             */
-            label: string;
-            /**
-             * Description
-             * @description Описание темы
-             */
-            description?: string | null;
-            /** Id */
-            id: number;
-            /** Is Active */
-            is_active: boolean;
-            /**
-             * Created At
-             * Format: date-time
-             */
-            created_at: string;
-        };
-        /**
-         * TopicUpdate
-         * @description Модель для обновления темы.
-         */
-        TopicUpdate: {
-            /**
-             * Label
-             * @description Название темы
-             */
-            label?: string | null;
-            /**
-             * Description
-             * @description Описание темы
-             */
-            description?: string | null;
-            /**
-             * Is Active
-             * @description Активна ли тема
-             */
-            is_active?: boolean | null;
-        };
-        /**
-         * UnmatchedSample
-         * @description Пример строки, не сопоставленной со справочником факультетов.
-         */
-        UnmatchedSample: {
-            /** Faculty Name */
-            faculty_name: string;
-            /** Program Name */
-            program_name: string;
-        };
-        /** UploadedDocumentResult */
-        UploadedDocumentResult: {
-            /**
-             * Filename
-             * @description Имя загруженного файла
-             */
-            filename: string;
-            /**
-             * Status
-             * @description Статус обработки: queued или skipped
-             */
-            status: string;
-            /**
-             * Message
-             * @description Подробности результата обработки
-             */
-            message: string;
-            /**
-             * Chars
-             * @description Количество символов, отправленных в RAG
-             * @default 0
-             */
-            chars: number;
-        };
-        /** UserCountStatsResponse */
-        UserCountStatsResponse: {
-            /** Day */
-            day: number;
-            /** Week */
-            week: number;
-            /** Month */
-            month: number;
-            /** Year */
-            year: number;
-            /** All Time */
-            all_time: number;
-        };
-        /** ValidationError */
-        ValidationError: {
-            /** Location */
-            loc: (string | number)[];
-            /** Message */
-            msg: string;
-            /** Error Type */
-            type: string;
-            /** Input */
-            input?: unknown;
-            /** Context */
-            ctx?: Record<string, never>;
-        };
-    };
-    responses: never;
-    parameters: never;
-    requestBodies: never;
-    headers: never;
-    pathItems: never;
+  schemas: {
+    /** AbbrevItem */
+    AbbrevItem: {
+      /**
+       * Id
+       * @description UUID записи (заполняется при ответе)
+       */
+      id?: string | null
+      /**
+       * Short
+       * @description Аббревиатура (например, НГУ)
+       */
+      short: string
+      /**
+       * Full
+       * @description Расшифровка (например, Новосибирский государственный университет)
+       */
+      full: string
+    }
+    /** AbbrevListResponse */
+    AbbrevListResponse: {
+      /**
+       * Items
+       * @description Список аббревиатур
+       */
+      items: components["schemas"]["AbbrevItem"][]
+    }
+    /** AdminResponse */
+    AdminResponse: {
+      /** Id */
+      id: string
+      /** Username */
+      username: string
+      role: components["schemas"]["AdminRole"]
+      /** Is Active */
+      is_active: boolean
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string
+      /** Created By Id */
+      created_by_id: string | null
+    }
+    /**
+     * AdminRole
+     * @enum {string}
+     */
+    AdminRole: "superadmin" | "admin" | "viewer"
+    /**
+     * AnswerStatsBucket
+     * @description Наблюдаемость одного периода: latency, неответы, ошибки (#242).
+     */
+    AnswerStatsBucket: {
+      /**
+       * Period
+       * Format: date-time
+       */
+      period: string
+      /** Questions */
+      questions: number
+      /** Answers */
+      answers: number
+      /** No Answer */
+      no_answer: number
+      /** No Answer Share */
+      no_answer_share?: number | null
+      /** Errors */
+      errors: number
+      /** Error Share */
+      error_share?: number | null
+      /** Latency Ms P50 */
+      latency_ms_p50?: number | null
+      /** Latency Ms P95 */
+      latency_ms_p95?: number | null
+    }
+    /**
+     * AnswerStatsResponse
+     * @description Метрики ответов по периодам для дашборда наблюдаемости.
+     */
+    AnswerStatsResponse: {
+      /** Total Questions */
+      total_questions: number
+      /** Total Answers */
+      total_answers: number
+      /** Total No Answer */
+      total_no_answer: number
+      /** No Answer Share */
+      no_answer_share?: number | null
+      /** Total Errors */
+      total_errors: number
+      /** Error Share */
+      error_share?: number | null
+      /** Group By */
+      group_by: string
+      /** Start */
+      start?: string | null
+      /** End */
+      end?: string | null
+      /** Buckets */
+      buckets: components["schemas"]["AnswerStatsBucket"][]
+    }
+    /** Body_preview_csv_documents_api_v1_rag_upload_csv_preview_post */
+    Body_preview_csv_documents_api_v1_rag_upload_csv_preview_post: {
+      /**
+       * File
+       * @description CSV файл с полями (Название, Link, Комментарий)
+       */
+      file: string
+    }
+    /** Body_save_branding_api_v1_settings_instance_branding_post */
+    Body_save_branding_api_v1_settings_instance_branding_post: {
+      /** Revision */
+      revision: number
+      /**
+       * Changes
+       * @default {}
+       */
+      changes: string
+      /**
+       * Remove Logo
+       * @default false
+       */
+      remove_logo: boolean
+      /** Logo */
+      logo?: string | null
+    }
+    /** Body_upload_abbrev_csv_api_v1_abbrev_upload_post */
+    Body_upload_abbrev_csv_api_v1_abbrev_upload_post: {
+      /** File */
+      file: string
+    }
+    /** Body_upload_csv_documents_api_v1_rag_upload_csv_post */
+    Body_upload_csv_documents_api_v1_rag_upload_csv_post: {
+      /**
+       * File
+       * @description CSV файл с полями (Название, Link, Комментарий)
+       */
+      file: string
+    }
+    /** Body_upload_faq_csv_api_v1_faq_upload_post */
+    Body_upload_faq_csv_api_v1_faq_upload_post: {
+      /** File */
+      file: string
+    }
+    /** BrandingResponse */
+    BrandingResponse: {
+      /** Revision */
+      revision: number
+      /** Short Name */
+      short_name: string
+      /** Full Name */
+      full_name: string
+      /** Logo Url */
+      logo_url: string
+      /** Favicon Url */
+      favicon_url: string
+      /** Accent Color */
+      accent_color: string
+    }
+    /** ChangeRoleRequest */
+    ChangeRoleRequest: {
+      /** @description Новая роль администратора */
+      role: components["schemas"]["AdminRole"]
+    }
+    /** ConfirmUploadRequest */
+    ConfirmUploadRequest: {
+      /**
+       * Title
+       * @description Название страницы
+       */
+      title: string
+      /**
+       * Url
+       * @description URL страницы
+       */
+      url: string
+      /**
+       * Text
+       * @description Отредактированный текст страницы
+       */
+      text: string
+      /**
+       * Documents
+       * @description Финальный список файлов для загрузки
+       */
+      documents: components["schemas"]["ParsedDocument"][]
+    }
+    /** ConnectionCheck */
+    ConnectionCheck: {
+      /** Revision */
+      revision: number
+      /** Changes */
+      changes: {
+        [key: string]: string | null
+      }
+      /** Target */
+      target: string
+    }
+    /** ConnectionCheckResponse */
+    ConnectionCheckResponse: {
+      /** Message */
+      message: string
+    }
+    /**
+     * CragSettings
+     * @description Настройки корректирующего RAG (CRAG).
+     */
+    CragSettings: {
+      /**
+       * Enabled
+       * @description Включён ли CRAG-слой (корректирующий RAG)
+       * @default true
+       */
+      enabled: boolean
+      /**
+       * Relevance Threshold
+       * @description Порог релевантности чанка при LLM-грейдинге (0..1)
+       * @default 0.5
+       */
+      relevance_threshold: number
+      /**
+       * Min Chunks
+       * @description Минимум чанков после фильтра, ниже которого пробуем доретрив
+       * @default 2
+       */
+      min_chunks: number
+      /**
+       * Allow Refine
+       * @description Разрешить одну переформулировку запроса и доретрив
+       * @default true
+       */
+      allow_refine: boolean
+      /**
+       * Use Faculty Table
+       * @description Авторитетная фильтрация по таблице факультетов
+       * @default true
+       */
+      use_faculty_table: boolean
+      /**
+       * Max Graded Chunks
+       * @description Максимум чанков, отправляемых на LLM-грейдинг (латентность)
+       * @default 12
+       */
+      max_graded_chunks: number
+    }
+    /**
+     * CragSettingsUpdate
+     * @description Обновление настроек CRAG.
+     */
+    CragSettingsUpdate: {
+      /** Enabled */
+      enabled: boolean
+      /** Relevance Threshold */
+      relevance_threshold: number
+      /** Min Chunks */
+      min_chunks: number
+      /** Allow Refine */
+      allow_refine: boolean
+      /** Use Faculty Table */
+      use_faculty_table: boolean
+      /** Max Graded Chunks */
+      max_graded_chunks: number
+    }
+    /** CsvImportPreviewResponse */
+    CsvImportPreviewResponse: {
+      /**
+       * Total Found
+       * @description Всего найдено ссылок в CSV
+       */
+      total_found: number
+      /**
+       * Results
+       * @description Список найденных документов для превью
+       */
+      results: components["schemas"]["CsvImportPreviewResult"][]
+    }
+    /** CsvImportPreviewResult */
+    CsvImportPreviewResult: {
+      /**
+       * Title
+       * @description Название документа
+       */
+      title: string
+      /**
+       * Url
+       * @description URL документа
+       */
+      url: string
+      /**
+       * Comment
+       * @description Комментарий из CSV
+       */
+      comment?: string | null
+    }
+    /** CsvImportResponse */
+    CsvImportResponse: {
+      /**
+       * Queued Count
+       * @description Количество документов, ожидающих проверки редактором
+       */
+      queued_count: number
+      /**
+       * Total Found
+       * @description Всего найдено ссылок в CSV
+       */
+      total_found: number
+      /**
+       * Results
+       * @description Результаты обработки по каждой ссылке
+       */
+      results: components["schemas"]["CsvImportResult"][]
+    }
+    /** CsvImportResult */
+    CsvImportResult: {
+      /**
+       * Title
+       * @description Название документа
+       */
+      title: string
+      /**
+       * Url
+       * @description URL документа
+       */
+      url: string
+      /**
+       * Success
+       * @description Статус обработки
+       */
+      success: boolean
+      /**
+       * Message
+       * @description Сообщение об ошибке или статус
+       */
+      message?: string | null
+    }
+    /** DebugChunk */
+    DebugChunk: {
+      /**
+       * Index
+       * @description Порядковый номер чанка в выдаче
+       */
+      index: number
+      /**
+       * Source Url
+       * @description URL источника чанка
+       */
+      source_url?: string | null
+      /**
+       * File Path
+       * @description Исходное поле file_path чанка
+       */
+      file_path?: string | null
+      /**
+       * Content
+       * @description Текст чанка
+       */
+      content: string
+      /**
+       * Rerank Score
+       * @description Скор реранкинга, если есть
+       */
+      rerank_score?: number | null
+    }
+    /** DebugEntity */
+    DebugEntity: {
+      /**
+       * Name
+       * @description Имя сущности
+       */
+      name: string
+      /**
+       * Type
+       * @description Тип сущности
+       */
+      type?: string | null
+      /**
+       * Description
+       * @description Описание сущности
+       */
+      description?: string | null
+    }
+    /** DebugQueryRequest */
+    DebugQueryRequest: {
+      /**
+       * Question
+       * @description Вопрос для проверки поиска по базе знаний
+       */
+      question: string
+      /**
+       * Mode
+       * @description Режим поиска LightRAG: hybrid, mix, local, global, naive, bypass
+       * @default hybrid
+       */
+      mode: string
+    }
+    /** DebugQueryResponse */
+    DebugQueryResponse: {
+      /**
+       * Question
+       * @description Заданный вопрос
+       */
+      question: string
+      /**
+       * Mode
+       * @description Использованный режим поиска
+       */
+      mode: string
+      /**
+       * Answer
+       * @description Сгенерированный ответ базы знаний
+       */
+      answer: string
+      /** @description Параметры поиска */
+      settings: components["schemas"]["DebugQuerySettings"]
+      /**
+       * Chunks
+       * @description Извлечённые чанки
+       */
+      chunks: components["schemas"]["DebugChunk"][]
+      /**
+       * Entities
+       * @description Найденные сущности
+       */
+      entities: components["schemas"]["DebugEntity"][]
+      /**
+       * Relations
+       * @description Найденные связи
+       */
+      relations: components["schemas"]["DebugRelation"][]
+      /**
+       * Sources
+       * @description Итоговые источники
+       */
+      sources: components["schemas"]["DebugSource"][]
+    }
+    /** DebugQuerySettings */
+    DebugQuerySettings: {
+      /**
+       * Mode
+       * @description Использованный режим поиска
+       */
+      mode: string
+      /**
+       * Chunk Top K
+       * @description Сколько чанков извлекается
+       */
+      chunk_top_k?: number | null
+      /**
+       * Top K
+       * @description Top-k для сущностей/связей
+       */
+      top_k?: number | null
+      /**
+       * Enable Rerank
+       * @description Включён ли реранкинг
+       */
+      enable_rerank?: boolean | null
+      /**
+       * Min Rerank Score
+       * @description Порог rerank-скора
+       */
+      min_rerank_score?: number | null
+    }
+    /** DebugRelation */
+    DebugRelation: {
+      /**
+       * Source
+       * @description Сущность-источник связи
+       */
+      source?: string | null
+      /**
+       * Target
+       * @description Сущность-цель связи
+       */
+      target?: string | null
+      /**
+       * Description
+       * @description Описание связи
+       */
+      description?: string | null
+    }
+    /** DebugSource */
+    DebugSource: {
+      /**
+       * Url
+       * @description URL источника
+       */
+      url: string
+      /**
+       * Title
+       * @description Название источника
+       */
+      title: string
+      /**
+       * Snippet
+       * @description Фрагмент текста источника
+       */
+      snippet: string
+    }
+    /** DislikedQuestion */
+    DislikedQuestion: {
+      /** Question */
+      question: string
+      /** Negative */
+      negative: number
+      /** Rated */
+      rated: number
+    }
+    /** DocumentCheckRequest */
+    DocumentCheckRequest: {
+      /**
+       * Document Ids
+       * @description ID документов для проверки; если не переданы, проверяются все
+       */
+      document_ids?: string[] | null
+    }
+    /** DocumentCheckResponse */
+    DocumentCheckResponse: {
+      /**
+       * Checked Count
+       * @description Количество проверенных документов
+       */
+      checked_count: number
+      /**
+       * Changed Count
+       * @description Количество измененных документов
+       */
+      changed_count: number
+      /**
+       * Results
+       * @description Результаты проверки
+       */
+      results: components["schemas"]["DocumentCheckResult"][]
+    }
+    /** DocumentCheckResult */
+    DocumentCheckResult: {
+      /**
+       * Id
+       * @description ID документа
+       */
+      id: string
+      /**
+       * Title
+       * @description Название документа
+       */
+      title: string
+      /**
+       * Source Url
+       * @description URL источника
+       */
+      source_url?: string | null
+      /**
+       * Status
+       * @description без изменений, изменён, источник недоступен, нет ссылки, обновлён, ошибка индексации
+       */
+      status: string
+      /**
+       * Content Hash
+       * @description Новый SHA-256
+       */
+      content_hash?: string | null
+      /**
+       * Previous Hash
+       * @description Сохраненный SHA-256
+       */
+      previous_hash?: string | null
+      /**
+       * Message
+       * @description Ошибка или пояснение
+       */
+      message?: string | null
+    }
+    /** DocumentDiagnosticsResponse */
+    DocumentDiagnosticsResponse: {
+      /**
+       * Id
+       * @description Идентификатор документа в Postgres
+       */
+      id: string
+      /**
+       * Title
+       * @description Название документа
+       */
+      title?: string | null
+      /**
+       * Postgres Status
+       * @description Статус документа в Postgres
+       */
+      postgres_status: string
+      /**
+       * Lightrag Status
+       * @description Статус обработки в LightRAG: processed, failed, pending, processing, not_found
+       */
+      lightrag_status: string
+      /**
+       * Chunks Count
+       * @description Количество чанков документа
+       */
+      chunks_count: number
+      /**
+       * Entities Count
+       * @description Количество извлечённых сущностей (0 → недостижим в hybrid)
+       */
+      entities_count: number
+      /**
+       * Relations Count
+       * @description Количество извлечённых связей
+       */
+      relations_count: number
+      /**
+       * Content Length
+       * @description Длина контента
+       */
+      content_length?: number | null
+      /**
+       * Error
+       * @description Ошибка обработки в LightRAG, если есть
+       */
+      error?: string | null
+    }
+    /** DocumentUpdateResponse */
+    DocumentUpdateResponse: {
+      /**
+       * Checked Count
+       * @description Количество проверенных документов
+       */
+      checked_count: number
+      /**
+       * Updated Count
+       * @description Количество обновленных документов
+       */
+      updated_count: number
+      /**
+       * Results
+       * @description Результаты обновления
+       */
+      results: components["schemas"]["DocumentCheckResult"][]
+    }
+    /**
+     * EducationLevel
+     * @description Уровень образования направления подготовки.
+     * @enum {string}
+     */
+    EducationLevel: "bachelor" | "specialist" | "master" | "spo"
+    /**
+     * FacultyCreate
+     * @description Данные для создания факультета.
+     */
+    FacultyCreate: {
+      /**
+       * Name
+       * @description Название факультета
+       */
+      name: string
+      /**
+       * Aliases
+       * @description Аббревиатуры и альтернативные названия
+       */
+      aliases?: string[]
+      /**
+       * Is Active
+       * @description Активен ли факультет
+       * @default true
+       */
+      is_active: boolean
+    }
+    /**
+     * FacultyItem
+     * @description Факультет с его направлениями подготовки.
+     */
+    FacultyItem: {
+      /** Id */
+      id: string
+      /** Name */
+      name: string
+      /** Aliases */
+      aliases?: string[]
+      /** Is Active */
+      is_active: boolean
+      /** Programs */
+      programs?: components["schemas"]["ProgramItem"][]
+    }
+    /**
+     * FacultyUpdate
+     * @description Данные для обновления факультета.
+     */
+    FacultyUpdate: {
+      /**
+       * Name
+       * @description Название факультета
+       */
+      name?: string | null
+      /**
+       * Aliases
+       * @description Аббревиатуры и альтернативные названия
+       */
+      aliases?: string[] | null
+      /**
+       * Is Active
+       * @description Активен ли факультет
+       */
+      is_active?: boolean | null
+    }
+    /**
+     * FaqHitBucket
+     * @description Элемент статистики срабатываний FAQ-слоя.
+     */
+    FaqHitBucket: {
+      /**
+       * Period
+       * Format: date-time
+       */
+      period: string
+      /** Questions */
+      questions: number
+      /** Hits */
+      hits: number
+      /** Hit Rate */
+      hit_rate?: number | null
+    }
+    /**
+     * FaqHitStatsResponse
+     * @description Как часто вопросы закрываются готовыми ответами FAQ без модели.
+     */
+    FaqHitStatsResponse: {
+      /** Total Questions */
+      total_questions: number
+      /** Total Hits */
+      total_hits: number
+      /** Hit Rate */
+      hit_rate?: number | null
+      /** Group By */
+      group_by: string
+      /** Start */
+      start?: string | null
+      /** End */
+      end?: string | null
+      /** Buckets */
+      buckets: components["schemas"]["FaqHitBucket"][]
+    }
+    /** FaqItem */
+    FaqItem: {
+      /**
+       * Id
+       * @description UUID записи (заполняется при ответе)
+       */
+      id?: string | null
+      /**
+       * Question
+       * @description Основной вопрос
+       */
+      question: string
+      /**
+       * Aliases
+       * @description Альтернативные формулировки (синонимы) вопроса
+       */
+      aliases?: string[]
+      /**
+       * Answer
+       * @description Текст ответа
+       */
+      answer: string
+      /**
+       * Verification Status
+       * @description Черновик или подтверждено человеком
+       * @default draft
+       * @enum {string}
+       */
+      verification_status: "draft" | "confirmed"
+      /**
+       * Source Document
+       * @description Документ-источник
+       */
+      source_document?: string | null
+      /**
+       * Source Location
+       * @description Место в документе
+       */
+      source_location?: string | null
+      /**
+       * Confirmed By
+       * @description Имя подтвердившего
+       */
+      confirmed_by?: string | null
+      /**
+       * Confirmed At
+       * @description Дата подтверждения в UTC; дата без часового пояса считается UTC
+       */
+      confirmed_at?: string | null
+    }
+    /** FaqListResponse */
+    FaqListResponse: {
+      /**
+       * Items
+       * @description Список вопросов-ответов
+       */
+      items: components["schemas"]["FaqItem"][]
+    }
+    /**
+     * FaqSettings
+     * @description Настройки FAQ-матчера.
+     */
+    FaqSettings: {
+      /**
+       * Similarity Threshold
+       * @description Порог косинусного сходства для срабатывания FAQ (0..1)
+       * @default 0.95
+       */
+      similarity_threshold: number
+    }
+    /**
+     * FaqSettingsUpdate
+     * @description Обновление настроек FAQ-матчера.
+     */
+    FaqSettingsUpdate: {
+      /** Similarity Threshold */
+      similarity_threshold: number
+    }
+    /** FeedbackReportListItem */
+    FeedbackReportListItem: {
+      /** Id */
+      id: number
+      /** User Id */
+      user_id: number
+      /** Session Id */
+      session_id: string
+      /** Channel */
+      channel: string
+      /** Comment */
+      comment: string
+      /** Question */
+      question?: string | null
+      /** Bot Response */
+      bot_response?: string | null
+      /** Status */
+      status: string
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string
+      /** Reviewed At */
+      reviewed_at?: string | null
+    }
+    /** FeedbackReportListResponse */
+    FeedbackReportListResponse: {
+      /** Reports */
+      reports: components["schemas"]["FeedbackReportListItem"][]
+      /** Total */
+      total: number
+      /** Limit */
+      limit: number
+      /** Offset */
+      offset: number
+    }
+    /** FeedbackReportResponse */
+    FeedbackReportResponse: {
+      /** Id */
+      id: number
+      /** User Id */
+      user_id: number
+      /** Session Id */
+      session_id: string
+      /** Channel */
+      channel: string
+      /** Comment */
+      comment: string
+      /** Question */
+      question?: string | null
+      /** Bot Response */
+      bot_response?: string | null
+      /** Logs Snapshot */
+      logs_snapshot?: {
+        [key: string]: unknown
+      }[] | null
+      /** Status */
+      status: string
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string
+      /** Reviewed At */
+      reviewed_at?: string | null
+    }
+    /** FeedbackReportStatusUpdate */
+    FeedbackReportStatusUpdate: {
+      /**
+       * Status
+       * @enum {string}
+       */
+      status: "open" | "reviewed" | "ignored"
+    }
+    /** GapReportResponse */
+    GapReportResponse: {
+      /** Period Days */
+      period_days: number
+      /**
+       * Generated At
+       * Format: date-time
+       */
+      generated_at: string
+      /** Topics */
+      topics: components["schemas"]["ReportTopic"][]
+      /** Popular */
+      popular: components["schemas"]["ReportQuestion"][]
+      /** Unanswered */
+      unanswered: components["schemas"]["ReportQuestion"][]
+      quality: components["schemas"]["ReportQuality"]
+      /** Disliked */
+      disliked: components["schemas"]["DislikedQuestion"][]
+    }
+    /** HTTPValidationError */
+    HTTPValidationError: {
+      /** Detail */
+      detail?: components["schemas"]["ValidationError"][]
+    }
+    /**
+     * ImportRequest
+     * @description Запрос на импорт отревьюенных строк проходных баллов.
+     */
+    ImportRequest: {
+      /** Rows */
+      rows?: components["schemas"]["ScoreRowSchema"][]
+    }
+    /**
+     * ImportResponse
+     * @description Статистика идемпотентного upsert.
+     */
+    ImportResponse: {
+      /** Created */
+      created: number
+      /** Updated */
+      updated: number
+      /** Skipped */
+      skipped: number
+    }
+    /** InstanceSettingResponse */
+    InstanceSettingResponse: {
+      /** Key */
+      key: string
+      /** Label */
+      label: string
+      /** Group */
+      group: string
+      /** Kind */
+      kind: string
+      /** Choices */
+      choices: string[]
+      /** Secret */
+      secret: boolean
+      /** Configured */
+      configured: boolean
+      /** Value */
+      value: string | null
+    }
+    /** InstanceSettingsResponse */
+    InstanceSettingsResponse: {
+      /** Revision */
+      revision: number
+      /** Encryption Ready */
+      encryption_ready: boolean
+      /** Settings */
+      settings: components["schemas"]["InstanceSettingResponse"][]
+    }
+    /** InviteCodeRequest */
+    InviteCodeRequest: {
+      /** @default admin */
+      role: components["schemas"]["AdminRole"]
+      /** Expires In Hours */
+      expires_in_hours?: number | null
+    }
+    /** InviteCodeResponse */
+    InviteCodeResponse: {
+      /** Code */
+      code: string
+      role: components["schemas"]["AdminRole"]
+      /** Expires At */
+      expires_at: string | null
+    }
+    /** LoginRequest */
+    LoginRequest: {
+      /** Username */
+      username: string
+      /** Password */
+      password: string
+    }
+    /**
+     * MessageLogListResponse
+     * @description Модель ответа для списка логов.
+     */
+    MessageLogListResponse: {
+      /** Logs */
+      logs: components["schemas"]["MessageLogResponse"][]
+      /** Total */
+      total: number
+      /** Limit */
+      limit: number
+      /** Offset */
+      offset: number
+    }
+    /**
+     * MessageLogResponse
+     * @description Модель ответа для лога сообщения.
+     */
+    MessageLogResponse: {
+      /** Id */
+      id: number
+      /** User Id */
+      user_id: number
+      /** Session Id */
+      session_id: string
+      /** Message Type */
+      message_type: string
+      /** Content */
+      content: string
+      /** Message Metadata */
+      message_metadata?: {
+        [key: string]: unknown
+      } | null
+      /** Topic Id */
+      topic_id?: number | null
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string
+    }
+    /** MessagePageResponse */
+    MessagePageResponse: {
+      /** Items */
+      items: components["schemas"]["MessageResponse"][]
+      /** Total */
+      total: number
+      /** Limit */
+      limit: number
+      /** Offset */
+      offset: number
+      /** Snapshot Id */
+      snapshot_id?: string | null
+    }
+    /** MessageResponse */
+    MessageResponse: {
+      /** Id */
+      id: string
+      /** User Id */
+      user_id: number
+      /** Username */
+      username?: string | null
+      /** Messenger */
+      messenger?: string | null
+      /** Session Id */
+      session_id: string
+      /** User Text */
+      user_text: string
+      /** Bot Response */
+      bot_response: string
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string
+    }
+    /** ParsedDocument */
+    ParsedDocument: {
+      /**
+       * Title
+       * @description Название документа
+       */
+      title: string
+      /**
+       * Url
+       * @description URL для скачивания/ссылки на документ
+       */
+      url: string
+    }
+    /** ParsedPageResult */
+    ParsedPageResult: {
+      /**
+       * Title
+       * @description Название страницы
+       */
+      title: string
+      /**
+       * Url
+       * @description URL страницы
+       */
+      url: string
+      /**
+       * Text
+       * @description Сырой или предобработанный текст страницы
+       */
+      text: string
+      /**
+       * Documents
+       * @description Список найденных PDF-документов
+       */
+      documents: components["schemas"]["ParsedDocument"][]
+    }
+    /** PopularQuestion */
+    PopularQuestion: {
+      /** Question */
+      question: string
+      /** Count */
+      count: number
+      /** Variants */
+      variants?: string[]
+    }
+    /** PopularQuestionsResponse */
+    PopularQuestionsResponse: {
+      /** Questions */
+      questions: components["schemas"]["PopularQuestion"][]
+    }
+    /** PopularQuestionsSnapshotResponse */
+    PopularQuestionsSnapshotResponse: {
+      /** Questions */
+      questions: components["schemas"]["PopularQuestion"][]
+      /**
+       * Status
+       * @default ready
+       * @enum {string}
+       */
+      status: "pending" | "ready" | "error"
+      /** Updated At */
+      updated_at?: string | null
+    }
+    /** PreprocessDocumentRequest */
+    PreprocessDocumentRequest: {
+      /**
+       * Text
+       * @description Текст документа для предобработки
+       */
+      text: string
+    }
+    /** PreprocessDocumentResponse */
+    PreprocessDocumentResponse: {
+      /**
+       * Text
+       * @description Текст после расширения аббревиатур и очистки
+       */
+      text: string
+      /**
+       * Chars
+       * @description Количество символов в обработанном тексте
+       */
+      chars: number
+    }
+    /**
+     * PreviewRequest
+     * @description Запрос на предпросмотр парсинга страницы итогов приёма.
+     */
+    PreviewRequest: {
+      /**
+       * Url
+       * @description URL страницы (по умолчанию — страница НГУ)
+       */
+      url?: string | null
+    }
+    /**
+     * PreviewResponse
+     * @description Результат предпросмотра: распарсенные строки и сводка.
+     */
+    PreviewResponse: {
+      /** Rows */
+      rows?: components["schemas"]["ScoreRowSchema"][]
+      summary: components["schemas"]["PreviewSummary"]
+    }
+    /**
+     * PreviewSummary
+     * @description Сводка предпросмотра распарсенных строк.
+     */
+    PreviewSummary: {
+      /**
+       * Total
+       * @description Всего распарсено строк
+       */
+      total: number
+      /**
+       * Matched
+       * @description Строк, сопоставленных со справочником
+       */
+      matched: number
+      /**
+       * Unmatched
+       * @description Строк без сопоставления
+       */
+      unmatched: number
+      /**
+       * Unmatched Samples
+       * @description Примеры несопоставленных (факультет, направление)
+       */
+      unmatched_samples?: components["schemas"]["UnmatchedSample"][]
+    }
+    /**
+     * ProgramCreate
+     * @description Данные для создания направления подготовки.
+     */
+    ProgramCreate: {
+      /**
+       * Name
+       * @description Название направления
+       */
+      name: string
+      /**
+       * Level
+       * @description Уровень: bachelor / specialist / master / spo (СПО)
+       * @enum {string}
+       */
+      level: "bachelor" | "master" | "specialist" | "spo"
+      /**
+       * Code
+       * @description Код направления (ФГОС)
+       */
+      code?: string | null
+      /**
+       * Is Active
+       * @description Активно ли направление
+       * @default true
+       */
+      is_active: boolean
+    }
+    /**
+     * ProgramItem
+     * @description Направление подготовки (образовательная программа).
+     */
+    ProgramItem: {
+      /** Id */
+      id: string
+      /** Faculty Id */
+      faculty_id: string
+      /** Name */
+      name: string
+      /** Code */
+      code?: string | null
+      /**
+       * Level
+       * @enum {string}
+       */
+      level: "bachelor" | "master" | "specialist" | "spo"
+      /** Is Active */
+      is_active: boolean
+    }
+    /**
+     * ProgramUpdate
+     * @description Данные для обновления направления подготовки.
+     */
+    ProgramUpdate: {
+      /**
+       * Name
+       * @description Название направления
+       */
+      name?: string | null
+      /**
+       * Level
+       * @description Уровень: bachelor / specialist / master / spo (СПО)
+       * @enum {unknown}
+       */
+      level?: "bachelor" | "master" | "specialist" | "spo" | null
+      /**
+       * Code
+       * @description Код направления (ФГОС)
+       */
+      code?: string | null
+      /**
+       * Is Active
+       * @description Активно ли направление
+       */
+      is_active?: boolean | null
+    }
+    /** ProposalCreate */
+    ProposalCreate: {
+      /**
+       * Source
+       * @enum {string}
+       */
+      source: "model" | "parser"
+      /**
+       * Graph Id
+       * @default abitur_kb
+       */
+      graph_id: string
+      /** Title */
+      title: string
+      /** Text */
+      text: string
+      /** Source Url */
+      source_url?: string | null
+      /** Source Hash */
+      source_hash?: string | null
+    }
+    /** ProposalResponse */
+    ProposalResponse: {
+      /** Id */
+      id: string
+      /** Source */
+      source: string
+      /** Graph Id */
+      graph_id: string
+      /** Title */
+      title: string
+      /** Text */
+      text: string
+      /** Source Url */
+      source_url: string | null
+      /** Source Hash */
+      source_hash: string | null
+      /** Status */
+      status: string
+      /** Reviewer Id */
+      reviewer_id: string | null
+      /** Document Id */
+      document_id: string | null
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string
+      /** Reviewed At */
+      reviewed_at: string | null
+    }
+    /** RagDocument */
+    RagDocument: {
+      /**
+       * Id
+       * @description Идентификатор документа (обычно URL или имя файла)
+       */
+      id: string
+      /**
+       * Title
+       * @description Название документа
+       */
+      title?: string | null
+      /**
+       * Url
+       * @description Оригинальный URL или путь к файлу
+       */
+      url?: string | null
+      /**
+       * Status
+       * @description Статус обработки
+       */
+      status: string
+      /** Lightrag Status */
+      lightrag_status?: string | null
+      /** Import State */
+      import_state?: string | null
+      /**
+       * Proposal Only
+       * @default false
+       */
+      proposal_only: boolean
+      /**
+       * Content Hash
+       * @description SHA-256 сырого контента
+       */
+      content_hash?: string | null
+      /**
+       * Content Summary
+       * @description Краткое содержание
+       */
+      content_summary?: string | null
+      /**
+       * Content Length
+       * @description Длина контента
+       */
+      content_length?: number | null
+      /**
+       * Created At
+       * @description Дата создания
+       */
+      created_at?: string | null
+      /**
+       * Updated At
+       * @description Дата обновления
+       */
+      updated_at?: string | null
+      /**
+       * Last Indexed At
+       * @description Дата последней индексации
+       */
+      last_indexed_at?: string | null
+      /**
+       * Last Checked At
+       * @description Дата последней проверки
+       */
+      last_checked_at?: string | null
+      /**
+       * Last Checked Hash
+       * @description SHA-256 последней проверки
+       */
+      last_checked_hash?: string | null
+      /**
+       * Last Check Message
+       * @description Ошибка или пояснение последней проверки
+       */
+      last_check_message?: string | null
+    }
+    /** RagDocumentContentResponse */
+    RagDocumentContentResponse: {
+      /**
+       * Id
+       * @description Идентификатор документа
+       */
+      id: string
+      /**
+       * Content
+       * @description Полный текст документа
+       */
+      content: string
+    }
+    /** RagDocumentListResponse */
+    RagDocumentListResponse: {
+      /**
+       * Documents
+       * @description Страница материалов
+       */
+      documents: components["schemas"]["RagDocument"][]
+      /**
+       * Total
+       * @description Всего материалов с учётом фильтров
+       * @default 0
+       */
+      total: number
+      /**
+       * Total All
+       * @description Всего материалов без фильтров
+       * @default 0
+       */
+      total_all: number
+      /**
+       * Offset
+       * @default 0
+       */
+      offset: number
+      /** Limit */
+      limit?: number | null
+      /**
+       * Has Pending
+       * @description Есть активные импорты на любой странице
+       * @default false
+       */
+      has_pending: boolean
+    }
+    /** RagDocumentUpdateRequest */
+    RagDocumentUpdateRequest: {
+      /**
+       * Title
+       * @description Новое название документа
+       */
+      title?: string | null
+      /**
+       * Source Url
+       * @description Новая ссылка на источник
+       */
+      source_url?: string | null
+    }
+    /** RagUploadResponse */
+    RagUploadResponse: {
+      /**
+       * Accepted Formats
+       * @description Поддерживаемые расширения файлов
+       */
+      accepted_formats: string[]
+      /**
+       * Queued Count
+       * @description Количество файлов в очереди редактора
+       */
+      queued_count: number
+      /**
+       * Skipped Count
+       * @description Количество пропущенных файлов
+       */
+      skipped_count: number
+      /**
+       * Results
+       * @description Результаты обработки по каждому загруженному файлу
+       */
+      results: components["schemas"]["UploadedDocumentResult"][]
+    }
+    /**
+     * RateLimitSettings
+     * @description Настройки дневных лимитов запросов.
+     */
+    RateLimitSettings: {
+      /**
+       * System Requests Per Day
+       * @description Количество запросов в день для всей системы
+       * @default 10000
+       */
+      system_requests_per_day: number
+      /**
+       * User Requests Per Day
+       * @description Количество запросов в день для одного пользователя
+       * @default 100
+       */
+      user_requests_per_day: number
+    }
+    /**
+     * RateLimitSettingsUpdate
+     * @description Обновление дневных лимитов запросов.
+     */
+    RateLimitSettingsUpdate: {
+      /** System Requests Per Day */
+      system_requests_per_day: number
+      /** User Requests Per Day */
+      user_requests_per_day: number
+    }
+    /** RegisterRequest */
+    RegisterRequest: {
+      /** Username */
+      username: string
+      /** Password */
+      password: string
+      /** Invite Code */
+      invite_code?: string | null
+    }
+    /** ReportQuality */
+    ReportQuality: {
+      /** Questions */
+      questions: number
+      /** Answers */
+      answers: number
+      /** No Answer */
+      no_answer: number
+      /** No Answer Share */
+      no_answer_share?: number | null
+      /** Errors */
+      errors: number
+      /** Error Share */
+      error_share?: number | null
+    }
+    /** ReportQuestion */
+    ReportQuestion: {
+      /** Question */
+      question: string
+      /** Count */
+      count: number
+      /** Variants */
+      variants?: string[]
+    }
+    /** ReportTopic */
+    ReportTopic: {
+      /** Topic */
+      topic: string
+      /** Count */
+      count: number
+    }
+    /**
+     * RequestCountBucket
+     * @description Элемент статистики по количеству запросов.
+     */
+    RequestCountBucket: {
+      /**
+       * Period
+       * Format: date-time
+       */
+      period: string
+      /** Count */
+      count: number
+    }
+    /**
+     * RequestCountStatsResponse
+     * @description Статистика количества запросов за период времени.
+     */
+    RequestCountStatsResponse: {
+      /** Total */
+      total: number
+      /** Group By */
+      group_by: string
+      /** Start */
+      start?: string | null
+      /** End */
+      end?: string | null
+      /** Buckets */
+      buckets: components["schemas"]["RequestCountBucket"][]
+    }
+    /**
+     * ScoreItem
+     * @description Плоская запись проходного балла для выборки.
+     */
+    ScoreItem: {
+      /** Faculty Name */
+      faculty_name: string
+      /** Program Name */
+      program_name: string
+      /** @description Уровень образования программы */
+      level: components["schemas"]["EducationLevel"]
+      /** Code */
+      code?: string | null
+      /** Year */
+      year: number
+      /** Form */
+      form: string
+      /** Passing Score */
+      passing_score?: number | null
+      /** Average Score */
+      average_score?: number | null
+    }
+    /**
+     * ScoreRowSchema
+     * @description Строка проходного балла (сырая, до/после разрешения в program_id).
+     */
+    ScoreRowSchema: {
+      /**
+       * Faculty Name
+       * @description Название факультета/института
+       */
+      faculty_name: string
+      /**
+       * Program Name
+       * @description Название направления подготовки
+       */
+      program_name: string
+      /**
+       * Code
+       * @description Код направления (ФГОС)
+       */
+      code?: string | null
+      /**
+       * Year
+       * @description Год приёма
+       */
+      year: number
+      /**
+       * Form
+       * @description Форма обучения: budget / paid
+       */
+      form: string
+      /**
+       * Passing Score
+       * @description Проходной балл
+       */
+      passing_score?: number | null
+      /**
+       * Average Score
+       * @description Средний балл
+       */
+      average_score?: number | null
+      /**
+       * Level
+       * @description Уровень: bachelor / specialist / master / spo (СПО)
+       * @default bachelor
+       */
+      level: string
+    }
+    /** SettingsChange */
+    SettingsChange: {
+      /** Revision */
+      revision: number
+      /** Changes */
+      changes: {
+        [key: string]: string | null
+      }
+    }
+    /** TokenResponse */
+    TokenResponse: {
+      /** Access Token */
+      access_token: string
+      /**
+       * Token Type
+       * @default bearer
+       */
+      token_type: string
+    }
+    /**
+     * TokenUsageBucket
+     * @description Элемент статистики по количеству потраченных токенов.
+     */
+    TokenUsageBucket: {
+      /**
+       * Period
+       * Format: date-time
+       */
+      period: string
+      /** Tokens */
+      tokens: number
+    }
+    /**
+     * TokenUsageStatsResponse
+     * @description Статистика потребления токенов LLM за период времени.
+     */
+    TokenUsageStatsResponse: {
+      /** Total */
+      total: number
+      /** Group By */
+      group_by: string
+      /** Start */
+      start?: string | null
+      /** End */
+      end?: string | null
+      /** Buckets */
+      buckets: components["schemas"]["TokenUsageBucket"][]
+    }
+    /**
+     * TopicCreate
+     * @description Модель для создания новой темы.
+     */
+    TopicCreate: {
+      /**
+       * Label
+       * @description Название темы
+       */
+      label: string
+      /**
+       * Description
+       * @description Описание темы
+       */
+      description?: string | null
+      /**
+       * Is Active
+       * @description Активна ли тема
+       * @default true
+       */
+      is_active: boolean
+    }
+    /**
+     * TopicListResponse
+     * @description Модель ответа для списка тем.
+     */
+    TopicListResponse: {
+      /** Topics */
+      topics: components["schemas"]["TopicResponse"][]
+      /** Total */
+      total: number
+    }
+    /**
+     * TopicResponse
+     * @description Модель ответа для темы.
+     */
+    TopicResponse: {
+      /**
+       * Label
+       * @description Название темы
+       */
+      label: string
+      /**
+       * Description
+       * @description Описание темы
+       */
+      description?: string | null
+      /** Id */
+      id: number
+      /** Is Active */
+      is_active: boolean
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string
+    }
+    /**
+     * TopicUpdate
+     * @description Модель для обновления темы.
+     */
+    TopicUpdate: {
+      /**
+       * Label
+       * @description Название темы
+       */
+      label?: string | null
+      /**
+       * Description
+       * @description Описание темы
+       */
+      description?: string | null
+      /**
+       * Is Active
+       * @description Активна ли тема
+       */
+      is_active?: boolean | null
+    }
+    /**
+     * UnmatchedSample
+     * @description Пример строки, не сопоставленной со справочником факультетов.
+     */
+    UnmatchedSample: {
+      /** Faculty Name */
+      faculty_name: string
+      /** Program Name */
+      program_name: string
+    }
+    /** UploadedDocumentResult */
+    UploadedDocumentResult: {
+      /**
+       * Filename
+       * @description Имя загруженного файла
+       */
+      filename: string
+      /**
+       * Status
+       * @description Статус обработки: queued или skipped
+       */
+      status: string
+      /**
+       * Message
+       * @description Подробности результата обработки
+       */
+      message: string
+      /**
+       * Chars
+       * @description Количество символов, отправленных в RAG
+       * @default 0
+       */
+      chars: number
+    }
+    /** UserCountStatsResponse */
+    UserCountStatsResponse: {
+      /** Day */
+      day: number
+      /** Week */
+      week: number
+      /** Month */
+      month: number
+      /** Year */
+      year: number
+      /** All Time */
+      all_time: number
+    }
+    /** ValidationError */
+    ValidationError: {
+      /** Location */
+      loc: (string | number)[]
+      /** Message */
+      msg: string
+      /** Error Type */
+      type: string
+      /** Input */
+      input?: unknown
+      /** Context */
+      ctx?: Record<string, never>
+    }
+  }
+  responses: never
+  parameters: never
+  requestBodies: never
+  headers: never
+  pathItems: never
 }
-export type $defs = Record<string, never>;
+export type $defs = Record<string, never>
 export interface operations {
-    health_health_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-        };
-    };
-    login_api_v1_auth_login_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["LoginRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TokenResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    register_api_v1_auth_register_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["RegisterRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AdminResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_me_api_v1_auth_me_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AdminResponse"];
-                };
-            };
-        };
-    };
-    create_invite_api_v1_auth_invite_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["InviteCodeRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["InviteCodeResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    list_admins_api_v1_auth_admins_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AdminResponse"][];
-                };
-            };
-        };
-    };
-    deactivate_admin_api_v1_auth_admins__admin_id__deactivate_patch: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                admin_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AdminResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    change_admin_role_api_v1_auth_admins__admin_id__role_patch: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                admin_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ChangeRoleRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AdminResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_branding_api_v1_branding_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["BrandingResponse"];
-                };
-            };
-        };
-    };
-    get_media_api_v1_branding_media__filename__get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                filename: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "image/png": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_instance_settings_api_v1_settings_instance_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["InstanceSettingsResponse"];
-                };
-            };
-        };
-    };
-    update_instance_settings_api_v1_settings_instance_put: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["SettingsChange"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["InstanceSettingsResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    test_connection_api_v1_settings_instance_check_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ConnectionCheck"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ConnectionCheckResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    save_branding_api_v1_settings_instance_branding_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "multipart/form-data": components["schemas"]["Body_save_branding_api_v1_settings_instance_branding_post"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["InstanceSettingsResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_all_api_v1_abbrev_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AbbrevListResponse"];
-                };
-            };
-        };
-    };
-    create_api_v1_abbrev_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["AbbrevItem"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AbbrevItem"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    upload_abbrev_csv_api_v1_abbrev_upload_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "multipart/form-data": components["schemas"]["Body_upload_abbrev_csv_api_v1_abbrev_upload_post"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AbbrevListResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    update_api_v1_abbrev__item_id__put: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                item_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["AbbrevItem"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AbbrevItem"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    delete_api_v1_abbrev__item_id__delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                item_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_all_faqs_api_v1_faq_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FaqListResponse"];
-                };
-            };
-        };
-    };
-    create_faq_api_v1_faq_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["FaqItem"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FaqItem"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    upload_faq_csv_api_v1_faq_upload_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "multipart/form-data": components["schemas"]["Body_upload_faq_csv_api_v1_faq_upload_post"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FaqListResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    update_faq_api_v1_faq__item_id__put: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                item_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["FaqItem"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FaqItem"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    delete_faq_api_v1_faq__item_id__delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                item_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_faculties_api_v1_faculties_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FacultyItem"][];
-                };
-            };
-        };
-    };
-    create_faculty_api_v1_faculties_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["FacultyCreate"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FacultyItem"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    update_faculty_api_v1_faculties__faculty_id__put: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                faculty_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["FacultyUpdate"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FacultyItem"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    delete_faculty_api_v1_faculties__faculty_id__delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                faculty_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    create_program_api_v1_faculties__faculty_id__programs_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                faculty_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ProgramCreate"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ProgramItem"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    update_program_api_v1_faculties_programs__program_id__put: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                program_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ProgramUpdate"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ProgramItem"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    delete_program_api_v1_faculties_programs__program_id__delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                program_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    preview_scores_api_v1_admission_scores_preview_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["PreviewRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PreviewResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    import_scores_api_v1_admission_scores_import_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ImportRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ImportResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_scores_api_v1_admission_scores_get: {
-        parameters: {
-            query?: {
-                /** @description Фильтр по факультету */
-                faculty?: string | null;
-                /** @description Фильтр по направлению */
-                program?: string | null;
-                /** @description Фильтр по году */
-                year?: number | null;
-                /** @description Форма: budget / paid */
-                form?: string | null;
-                /** @description Только активные факультеты и программы */
-                only_active?: boolean;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ScoreItem"][];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_years_api_v1_admission_scores_years_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": number[];
-                };
-            };
-        };
-    };
-    list_proposals_api_v1_content_proposals_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ProposalResponse"][];
-                };
-            };
-        };
-    };
-    create_proposal_api_v1_content_proposals_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ProposalCreate"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ProposalResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    reject_proposal_api_v1_content_proposals__proposal_id__reject_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                proposal_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ProposalResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    approve_proposal_api_v1_content_proposals__proposal_id__approve_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                proposal_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            202: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ProposalResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_request_stats_api_v1_logs_request_stats_get: {
-        parameters: {
-            query?: {
-                /** @description Начало периода (ISO 8601) */
-                start?: string | null;
-                /** @description Конец периода (ISO 8601) */
-                end?: string | null;
-                /** @description Группировка: hour, day, week, month */
-                group_by?: string;
-                /** @description Тип сообщения для статистики */
-                message_type?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RequestCountStatsResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_faq_hit_stats_api_v1_logs_faq_stats_get: {
-        parameters: {
-            query?: {
-                /** @description Начало периода (ISO 8601) */
-                start?: string | null;
-                /** @description Конец периода (ISO 8601) */
-                end?: string | null;
-                /** @description Группировка: hour, day, week, month */
-                group_by?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FaqHitStatsResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_answer_stats_api_v1_logs_answer_stats_get: {
-        parameters: {
-            query?: {
-                /** @description Начало периода (ISO 8601) */
-                start?: string | null;
-                /** @description Конец периода (ISO 8601) */
-                end?: string | null;
-                /** @description Группировка: hour, day, week, month */
-                group_by?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AnswerStatsResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_token_stats_api_v1_logs_token_stats_get: {
-        parameters: {
-            query?: {
-                /** @description Начало периода (ISO 8601) */
-                start?: string | null;
-                /** @description Конец периода (ISO 8601) */
-                end?: string | null;
-                /** @description Группировка: hour, day, week, month */
-                group_by?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TokenUsageStatsResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_message_logs_api_v1_logs__get: {
-        parameters: {
-            query?: {
-                user_id?: number | null;
-                session_id?: string | null;
-                limit?: number;
-                offset?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["MessageLogListResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_session_logs_api_v1_logs_session__session_id__get: {
-        parameters: {
-            query?: {
-                limit?: number;
-                offset?: number;
-            };
-            header?: never;
-            path: {
-                session_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["MessageLogListResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_user_logs_api_v1_logs_user__user_id__get: {
-        parameters: {
-            query?: {
-                limit?: number;
-                offset?: number;
-            };
-            header?: never;
-            path: {
-                user_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["MessageLogListResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_popular_questions_api_v1_logs_popular_get: {
-        parameters: {
-            query?: {
-                limit?: number;
-                raw_limit?: number;
-                similarity_threshold?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PopularQuestionsSnapshotResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_unanswered_questions_api_v1_logs_unanswered_get: {
-        parameters: {
-            query?: {
-                limit?: number;
-                raw_limit?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PopularQuestionsResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_topics_api_v1_topics__get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TopicListResponse"];
-                };
-            };
-        };
-    };
-    create_topic_api_v1_topics__post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["TopicCreate"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TopicResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_topic_api_v1_topics__topic_id__get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                topic_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TopicResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    update_topic_api_v1_topics__topic_id__put: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                topic_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["TopicUpdate"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TopicResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    delete_topic_api_v1_topics__topic_id__delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                topic_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    list_feedback_reports_api_v1_feedback_get: {
-        parameters: {
-            query?: {
-                status?: ("open" | "reviewed" | "ignored") | null;
-                user_id?: number | null;
-                session_id?: string | null;
-                limit?: number;
-                offset?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FeedbackReportListResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_feedback_report_api_v1_feedback__report_id__get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                report_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FeedbackReportResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    update_feedback_report_status_api_v1_feedback__report_id__patch: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                report_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["FeedbackReportStatusUpdate"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FeedbackReportResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_gap_report_api_v1_reports_gaps_get: {
-        parameters: {
-            query?: {
-                /** @description Период отчёта в днях */
-                days?: number;
-                /** @description Размер каждого топа */
-                limit?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["GapReportResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    upload_documents_to_rag_api_v1_rag_upload_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "multipart/form-data": {
-                    files: string[];
-                };
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RagUploadResponse"];
-                };
-            };
-        };
-    };
-    parse_page_for_rag_api_v1_rag_parse_post: {
-        parameters: {
-            query: {
-                /** @description URL страницы */
-                url: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ParsedPageResult"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    confirm_rag_upload_api_v1_rag_confirm_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ConfirmUploadRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            202: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: string;
-                    };
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_rag_import_api_v1_rag_imports__job_id__get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                job_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: string;
-                    };
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    preprocess_document_for_rag_api_v1_rag_preprocess_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["PreprocessDocumentRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PreprocessDocumentResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    list_rag_documents_api_v1_rag_docs_get: {
-        parameters: {
-            query?: {
-                limit?: number | null;
-                offset?: number;
-                q?: string;
-                state?: "all" | "ready" | "attention" | "unknown";
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RagDocumentListResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_rag_document_content_api_v1_rag_docs__doc_id__content_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                doc_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RagDocumentContentResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    delete_rag_document_api_v1_rag_docs__doc_id__delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                doc_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    update_rag_document_api_v1_rag_docs__doc_id__patch: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                doc_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["RagDocumentUpdateRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RagDocument"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    check_rag_documents_api_v1_rag_docs_check_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "application/json": components["schemas"]["DocumentCheckRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DocumentCheckResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    update_changed_rag_documents_api_v1_rag_docs_update_changed_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "application/json": components["schemas"]["DocumentCheckRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DocumentUpdateResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    upload_csv_documents_api_v1_rag_upload_csv_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "multipart/form-data": components["schemas"]["Body_upload_csv_documents_api_v1_rag_upload_csv_post"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["CsvImportResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    preview_csv_documents_api_v1_rag_upload_csv_preview_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "multipart/form-data": components["schemas"]["Body_preview_csv_documents_api_v1_rag_upload_csv_preview_post"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["CsvImportPreviewResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    clear_rag_cache_api_v1_rag_cache_clear_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-        };
-    };
-    debug_rag_query_api_v1_rag_debug_query_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["DebugQueryRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DebugQueryResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_rag_document_diagnostics_api_v1_rag_docs__doc_id__diagnostics_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                doc_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DocumentDiagnosticsResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    export_knowledge_base_api_v1_rag_export_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-        };
-    };
-    run_evaluation_api_v1_evals_run_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-        };
-    };
-    route_get_evaluation_status_api_v1_evals_status_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-        };
-    };
-    get_topic_stats_api_v1_stats_topics_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    }[];
-                };
-            };
-        };
-    };
-    get_system_logs_api_v1_system_logs__get: {
-        parameters: {
-            query?: {
-                /** @description Имя лог файла */
-                filename?: string;
-                /** @description Количество последних строк */
-                lines?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string[];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    list_log_files_api_v1_system_logs_files_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string[];
-                };
-            };
-        };
-    };
-    download_system_logs_api_v1_system_logs_download_get: {
-        parameters: {
-            query?: {
-                /** @description Имя лог файла */
-                filename?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_rate_limit_settings_api_v1_settings_rate_limit_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RateLimitSettings"];
-                };
-            };
-        };
-    };
-    update_rate_limit_settings_api_v1_settings_rate_limit_put: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["RateLimitSettingsUpdate"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RateLimitSettings"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_crag_settings_api_v1_settings_crag_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["CragSettings"];
-                };
-            };
-        };
-    };
-    update_crag_settings_api_v1_settings_crag_put: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CragSettingsUpdate"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["CragSettings"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_faq_settings_api_v1_settings_faq_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FaqSettings"];
-                };
-            };
-        };
-    };
-    update_faq_settings_api_v1_settings_faq_put: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["FaqSettingsUpdate"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FaqSettings"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_users_count_stats_api_v1_users_count_stats_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UserCountStatsResponse"];
-                };
-            };
-        };
-    };
-    get_messages_api_v1_messages_get: {
-        parameters: {
-            query?: {
-                /** @description Фильтр по user_id */
-                user_id?: number | null;
-                /** @description Количество записей */
-                limit?: number;
-                /** @description Смещение */
-                offset?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["MessageResponse"][];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_message_page_api_v1_messages_page_get: {
-        parameters: {
-            query?: {
-                user_id?: number | null;
-                limit?: number;
-                offset?: number;
-                search?: string | null;
-                channel?: string | null;
-                /** @description First UTC day, inclusive */
-                from_date?: string | null;
-                /** @description Last UTC day, inclusive */
-                to_date?: string | null;
-                /** @description UUIDv7 upper bound returned by the first export page */
-                snapshot_id?: string | null;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["MessagePageResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_university_api_v1_university_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: string;
-                    };
-                };
-            };
-        };
-    };
-    get_university_profile_api_v1_university_profile_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: string;
-                    };
-                };
-            };
-        };
-    };
+  health_health_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": {
+            [key: string]: unknown
+          }
+        }
+      }
+    }
+  }
+  login_api_v1_auth_login_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["LoginRequest"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["TokenResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  register_api_v1_auth_register_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RegisterRequest"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["AdminResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_me_api_v1_auth_me_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["AdminResponse"]
+        }
+      }
+    }
+  }
+  create_invite_api_v1_auth_invite_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["InviteCodeRequest"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["InviteCodeResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  list_admins_api_v1_auth_admins_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["AdminResponse"][]
+        }
+      }
+    }
+  }
+  deactivate_admin_api_v1_auth_admins__admin_id__deactivate_patch: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        admin_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["AdminResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  change_admin_role_api_v1_auth_admins__admin_id__role_patch: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        admin_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ChangeRoleRequest"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["AdminResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_branding_api_v1_branding_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["BrandingResponse"]
+        }
+      }
+    }
+  }
+  get_media_api_v1_branding_media__filename__get: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        filename: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "image/png": unknown
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_instance_settings_api_v1_settings_instance_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["InstanceSettingsResponse"]
+        }
+      }
+    }
+  }
+  update_instance_settings_api_v1_settings_instance_put: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SettingsChange"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["InstanceSettingsResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  test_connection_api_v1_settings_instance_check_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ConnectionCheck"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["ConnectionCheckResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  save_branding_api_v1_settings_instance_branding_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "multipart/form-data": components["schemas"]["Body_save_branding_api_v1_settings_instance_branding_post"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["InstanceSettingsResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_all_api_v1_abbrev_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["AbbrevListResponse"]
+        }
+      }
+    }
+  }
+  create_api_v1_abbrev_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AbbrevItem"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["AbbrevItem"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  upload_abbrev_csv_api_v1_abbrev_upload_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "multipart/form-data": components["schemas"]["Body_upload_abbrev_csv_api_v1_abbrev_upload_post"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["AbbrevListResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  update_api_v1_abbrev__item_id__put: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        item_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AbbrevItem"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["AbbrevItem"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  delete_api_v1_abbrev__item_id__delete: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        item_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_all_faqs_api_v1_faq_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["FaqListResponse"]
+        }
+      }
+    }
+  }
+  create_faq_api_v1_faq_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["FaqItem"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["FaqItem"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  upload_faq_csv_api_v1_faq_upload_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "multipart/form-data": components["schemas"]["Body_upload_faq_csv_api_v1_faq_upload_post"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["FaqListResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  update_faq_api_v1_faq__item_id__put: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        item_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["FaqItem"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["FaqItem"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  delete_faq_api_v1_faq__item_id__delete: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        item_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_faculties_api_v1_faculties_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["FacultyItem"][]
+        }
+      }
+    }
+  }
+  create_faculty_api_v1_faculties_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["FacultyCreate"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["FacultyItem"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  update_faculty_api_v1_faculties__faculty_id__put: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        faculty_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["FacultyUpdate"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["FacultyItem"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  delete_faculty_api_v1_faculties__faculty_id__delete: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        faculty_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  create_program_api_v1_faculties__faculty_id__programs_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        faculty_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ProgramCreate"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["ProgramItem"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  update_program_api_v1_faculties_programs__program_id__put: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        program_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ProgramUpdate"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["ProgramItem"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  delete_program_api_v1_faculties_programs__program_id__delete: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        program_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  preview_scores_api_v1_admission_scores_preview_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PreviewRequest"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["PreviewResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  import_scores_api_v1_admission_scores_import_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ImportRequest"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["ImportResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_scores_api_v1_admission_scores_get: {
+    parameters: {
+      query?: {
+        /** @description Фильтр по факультету */
+        faculty?: string | null
+        /** @description Фильтр по направлению */
+        program?: string | null
+        /** @description Фильтр по году */
+        year?: number | null
+        /** @description Форма: budget / paid */
+        form?: string | null
+        /** @description Только активные факультеты и программы */
+        only_active?: boolean
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["ScoreItem"][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_years_api_v1_admission_scores_years_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": number[]
+        }
+      }
+    }
+  }
+  list_proposals_api_v1_content_proposals_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["ProposalResponse"][]
+        }
+      }
+    }
+  }
+  create_proposal_api_v1_content_proposals_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ProposalCreate"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["ProposalResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  reject_proposal_api_v1_content_proposals__proposal_id__reject_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        proposal_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["ProposalResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  approve_proposal_api_v1_content_proposals__proposal_id__approve_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        proposal_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      202: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["ProposalResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_request_stats_api_v1_logs_request_stats_get: {
+    parameters: {
+      query?: {
+        /** @description Начало периода (ISO 8601) */
+        start?: string | null
+        /** @description Конец периода (ISO 8601) */
+        end?: string | null
+        /** @description Группировка: hour, day, week, month */
+        group_by?: string
+        /** @description Тип сообщения для статистики */
+        message_type?: string
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["RequestCountStatsResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_faq_hit_stats_api_v1_logs_faq_stats_get: {
+    parameters: {
+      query?: {
+        /** @description Начало периода (ISO 8601) */
+        start?: string | null
+        /** @description Конец периода (ISO 8601) */
+        end?: string | null
+        /** @description Группировка: hour, day, week, month */
+        group_by?: string
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["FaqHitStatsResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_answer_stats_api_v1_logs_answer_stats_get: {
+    parameters: {
+      query?: {
+        /** @description Начало периода (ISO 8601) */
+        start?: string | null
+        /** @description Конец периода (ISO 8601) */
+        end?: string | null
+        /** @description Группировка: hour, day, week, month */
+        group_by?: string
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["AnswerStatsResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_token_stats_api_v1_logs_token_stats_get: {
+    parameters: {
+      query?: {
+        /** @description Начало периода (ISO 8601) */
+        start?: string | null
+        /** @description Конец периода (ISO 8601) */
+        end?: string | null
+        /** @description Группировка: hour, day, week, month */
+        group_by?: string
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["TokenUsageStatsResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_message_logs_api_v1_logs__get: {
+    parameters: {
+      query?: {
+        user_id?: number | null
+        session_id?: string | null
+        limit?: number
+        offset?: number
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["MessageLogListResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_session_logs_api_v1_logs_session__session_id__get: {
+    parameters: {
+      query?: {
+        limit?: number
+        offset?: number
+      }
+      header?: never
+      path: {
+        session_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["MessageLogListResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_user_logs_api_v1_logs_user__user_id__get: {
+    parameters: {
+      query?: {
+        limit?: number
+        offset?: number
+      }
+      header?: never
+      path: {
+        user_id: number
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["MessageLogListResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_popular_questions_api_v1_logs_popular_get: {
+    parameters: {
+      query?: {
+        limit?: number
+        raw_limit?: number
+        similarity_threshold?: number
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["PopularQuestionsSnapshotResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_unanswered_questions_api_v1_logs_unanswered_get: {
+    parameters: {
+      query?: {
+        limit?: number
+        raw_limit?: number
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["PopularQuestionsResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_topics_api_v1_topics__get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["TopicListResponse"]
+        }
+      }
+    }
+  }
+  create_topic_api_v1_topics__post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["TopicCreate"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["TopicResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_topic_api_v1_topics__topic_id__get: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        topic_id: number
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["TopicResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  update_topic_api_v1_topics__topic_id__put: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        topic_id: number
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["TopicUpdate"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["TopicResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  delete_topic_api_v1_topics__topic_id__delete: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        topic_id: number
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  list_feedback_reports_api_v1_feedback_get: {
+    parameters: {
+      query?: {
+        status?: ("open" | "reviewed" | "ignored") | null
+        user_id?: number | null
+        session_id?: string | null
+        limit?: number
+        offset?: number
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["FeedbackReportListResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_feedback_report_api_v1_feedback__report_id__get: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        report_id: number
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["FeedbackReportResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  update_feedback_report_status_api_v1_feedback__report_id__patch: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        report_id: number
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["FeedbackReportStatusUpdate"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["FeedbackReportResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_gap_report_api_v1_reports_gaps_get: {
+    parameters: {
+      query?: {
+        /** @description Период отчёта в днях */
+        days?: number
+        /** @description Размер каждого топа */
+        limit?: number
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GapReportResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  upload_documents_to_rag_api_v1_rag_upload_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "multipart/form-data": {
+          files: string[]
+        }
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["RagUploadResponse"]
+        }
+      }
+    }
+  }
+  parse_page_for_rag_api_v1_rag_parse_post: {
+    parameters: {
+      query: {
+        /** @description URL страницы */
+        url: string
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["ParsedPageResult"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  confirm_rag_upload_api_v1_rag_confirm_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ConfirmUploadRequest"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      202: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": {
+            [key: string]: string
+          }
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_rag_import_api_v1_rag_imports__job_id__get: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        job_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": {
+            [key: string]: string
+          }
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  preprocess_document_for_rag_api_v1_rag_preprocess_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PreprocessDocumentRequest"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["PreprocessDocumentResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  list_rag_documents_api_v1_rag_docs_get: {
+    parameters: {
+      query?: {
+        limit?: number | null
+        offset?: number
+        q?: string
+        state?: "all" | "ready" | "attention" | "unknown"
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["RagDocumentListResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_rag_document_content_api_v1_rag_docs__doc_id__content_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        doc_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["RagDocumentContentResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  delete_rag_document_api_v1_rag_docs__doc_id__delete: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        doc_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": unknown
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  update_rag_document_api_v1_rag_docs__doc_id__patch: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        doc_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RagDocumentUpdateRequest"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["RagDocument"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  check_rag_documents_api_v1_rag_docs_check_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["DocumentCheckRequest"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["DocumentCheckResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  update_changed_rag_documents_api_v1_rag_docs_update_changed_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["DocumentCheckRequest"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["DocumentUpdateResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  upload_csv_documents_api_v1_rag_upload_csv_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "multipart/form-data": components["schemas"]["Body_upload_csv_documents_api_v1_rag_upload_csv_post"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["CsvImportResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  preview_csv_documents_api_v1_rag_upload_csv_preview_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "multipart/form-data": components["schemas"]["Body_preview_csv_documents_api_v1_rag_upload_csv_preview_post"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["CsvImportPreviewResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  clear_rag_cache_api_v1_rag_cache_clear_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": unknown
+        }
+      }
+    }
+  }
+  debug_rag_query_api_v1_rag_debug_query_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["DebugQueryRequest"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["DebugQueryResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_rag_document_diagnostics_api_v1_rag_docs__doc_id__diagnostics_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        doc_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["DocumentDiagnosticsResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  export_knowledge_base_api_v1_rag_export_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": unknown
+        }
+      }
+    }
+  }
+  run_evaluation_api_v1_evals_run_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": unknown
+        }
+      }
+    }
+  }
+  route_get_evaluation_status_api_v1_evals_status_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": unknown
+        }
+      }
+    }
+  }
+  get_topic_stats_api_v1_stats_topics_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": {
+            [key: string]: unknown
+          }[]
+        }
+      }
+    }
+  }
+  get_system_logs_api_v1_system_logs__get: {
+    parameters: {
+      query?: {
+        /** @description Имя лог файла */
+        filename?: string
+        /** @description Количество последних строк */
+        lines?: number
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": string[]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  list_log_files_api_v1_system_logs_files_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": string[]
+        }
+      }
+    }
+  }
+  download_system_logs_api_v1_system_logs_download_get: {
+    parameters: {
+      query?: {
+        /** @description Имя лог файла */
+        filename?: string
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": unknown
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_rate_limit_settings_api_v1_settings_rate_limit_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["RateLimitSettings"]
+        }
+      }
+    }
+  }
+  update_rate_limit_settings_api_v1_settings_rate_limit_put: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RateLimitSettingsUpdate"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["RateLimitSettings"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_crag_settings_api_v1_settings_crag_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["CragSettings"]
+        }
+      }
+    }
+  }
+  update_crag_settings_api_v1_settings_crag_put: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CragSettingsUpdate"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["CragSettings"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_faq_settings_api_v1_settings_faq_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["FaqSettings"]
+        }
+      }
+    }
+  }
+  update_faq_settings_api_v1_settings_faq_put: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["FaqSettingsUpdate"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["FaqSettings"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_users_count_stats_api_v1_users_count_stats_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["UserCountStatsResponse"]
+        }
+      }
+    }
+  }
+  get_messages_api_v1_messages_get: {
+    parameters: {
+      query?: {
+        /** @description Фильтр по user_id */
+        user_id?: number | null
+        /** @description Количество записей */
+        limit?: number
+        /** @description Смещение */
+        offset?: number
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["MessageResponse"][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_message_page_api_v1_messages_page_get: {
+    parameters: {
+      query?: {
+        user_id?: number | null
+        limit?: number
+        offset?: number
+        search?: string | null
+        channel?: string | null
+        /** @description First UTC day, inclusive */
+        from_date?: string | null
+        /** @description Last UTC day, inclusive */
+        to_date?: string | null
+        /** @description UUIDv7 upper bound returned by the first export page */
+        snapshot_id?: string | null
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["MessagePageResponse"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_university_api_v1_university_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": {
+            [key: string]: string
+          }
+        }
+      }
+    }
+  }
+  get_university_profile_api_v1_university_profile_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": {
+            [key: string]: string
+          }
+        }
+      }
+    }
+  }
 }
