@@ -2,13 +2,21 @@ import process from "node:process"
 
 import { defineConfig, devices } from "@playwright/test"
 
+// These files change the fake API's shared profile/branding and Nitro cache.
+// Run them only after every read-only project finishes, with one worker.
+const sharedStateFiles = [
+  "admin-shell.spec.ts",
+  "branding-first-paint.spec.ts",
+  "public-rating.spec.ts",
+  "university-identity.spec.ts",
+]
+
 export default defineConfig({
   testDir: "./tests/e2e",
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,
-  // Public-profile regressions change the isolated fake backend between requests.
-  workers: 1,
+  workers: process.env.CI ? 2 : 1,
   reporter: [["list"], ["html", { open: "never" }]],
   use: {
     baseURL: "http://127.0.0.1:9464",
@@ -17,9 +25,16 @@ export default defineConfig({
     video: "retain-on-failure",
   },
   projects: [
-    { name: "chromium", testIgnore: "sidebar-scroll.spec.ts", use: { ...devices["Desktop Chrome"] } },
+    { name: "chromium", testIgnore: ["sidebar-scroll.spec.ts", ...sharedStateFiles], use: { ...devices["Desktop Chrome"] } },
     { name: "chromium-sidebar", testMatch: "sidebar-scroll.spec.ts", use: { ...devices["Desktop Chrome"], launchOptions: { ignoreDefaultArgs: ["--hide-scrollbars"], args: ["--disable-features=OverlayScrollbar"] } } },
     { name: "webkit", testMatch: "sidebar-scroll.spec.ts", use: { ...devices["Desktop Safari"] } },
+    {
+      name: "chromium-stateful",
+      testMatch: sharedStateFiles,
+      dependencies: ["chromium", "chromium-sidebar", "webkit"],
+      workers: 1,
+      use: { ...devices["Desktop Chrome"] },
+    },
   ],
   webServer: [
     {
