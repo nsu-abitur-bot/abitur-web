@@ -2308,7 +2308,7 @@
           "Message Logs"
         ],
         "summary": "Получить самые популярные вопросы",
-        "description": "Получает самые часто задаваемые вопросы пользователей.\n\n- **limit**: максимальное количество возвращаемых кластеров вопросов\n- **raw_limit**: сколько исходных формулировок взять для кластеризации\n- **similarity_threshold**: порог семантической близости формулировок",
+        "description": "Получает самые часто задаваемые вопросы пользователей.\n\nЧитает подготовленный фоновым обработчиком снимок. `pending` означает,\nчто снимок ещё не подготовлен; GET не вызывает модели и кластеризацию.\nНовые комбинации параметров подхватывает следующий фоновый обход.\n\n- **limit**: максимальное количество возвращаемых кластеров вопросов\n- **raw_limit**: сколько исходных формулировок взять для кластеризации\n- **similarity_threshold**: порог семантической близости формулировок",
         "operationId": "get_popular_questions_api_v1_logs_popular_get",
         "security": [
           {
@@ -2854,6 +2854,73 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/FeedbackReportResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reports/gaps": {
+      "get": {
+        "tags": [
+          "Reports"
+        ],
+        "summary": "Отчёт о пробелах: темы, популярное, неотвеченное, качество",
+        "description": "Собирается из логов и оценок без вызовов моделей (#262).\n\nРазделы: распределение тем, топ вопросов, очередь неотвеченных (#\n442), сводка качества ответов (#444) и вопросы с негативной оценкой.",
+        "operationId": "get_gap_report_api_v1_reports_gaps_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 365,
+              "minimum": 1,
+              "description": "Период отчёта в днях",
+              "default": 30,
+              "title": "Days"
+            },
+            "description": "Период отчёта в днях"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 50,
+              "minimum": 1,
+              "description": "Размер каждого топа",
+              "default": 10,
+              "title": "Limit"
+            },
+            "description": "Размер каждого топа"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GapReportResponse"
                 }
               }
             }
@@ -5487,6 +5554,29 @@
         ],
         "title": "DebugSource"
       },
+      "DislikedQuestion": {
+        "properties": {
+          "question": {
+            "type": "string",
+            "title": "Question"
+          },
+          "negative": {
+            "type": "integer",
+            "title": "Negative"
+          },
+          "rated": {
+            "type": "integer",
+            "title": "Rated"
+          }
+        },
+        "type": "object",
+        "required": [
+          "question",
+          "negative",
+          "rated"
+        ],
+        "title": "DislikedQuestion"
+      },
       "DocumentCheckRequest": {
         "properties": {
           "document_ids": {
@@ -6315,6 +6405,61 @@
           "status"
         ],
         "title": "FeedbackReportStatusUpdate"
+      },
+      "GapReportResponse": {
+        "properties": {
+          "period_days": {
+            "type": "integer",
+            "title": "Period Days"
+          },
+          "generated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Generated At"
+          },
+          "topics": {
+            "items": {
+              "$ref": "#/components/schemas/ReportTopic"
+            },
+            "type": "array",
+            "title": "Topics"
+          },
+          "popular": {
+            "items": {
+              "$ref": "#/components/schemas/ReportQuestion"
+            },
+            "type": "array",
+            "title": "Popular"
+          },
+          "unanswered": {
+            "items": {
+              "$ref": "#/components/schemas/ReportQuestion"
+            },
+            "type": "array",
+            "title": "Unanswered"
+          },
+          "quality": {
+            "$ref": "#/components/schemas/ReportQuality"
+          },
+          "disliked": {
+            "items": {
+              "$ref": "#/components/schemas/DislikedQuestion"
+            },
+            "type": "array",
+            "title": "Disliked"
+          }
+        },
+        "type": "object",
+        "required": [
+          "period_days",
+          "generated_at",
+          "topics",
+          "popular",
+          "unanswered",
+          "quality",
+          "disliked"
+        ],
+        "title": "GapReportResponse"
       },
       "HTTPValidationError": {
         "properties": {
@@ -7683,6 +7828,99 @@
           "password"
         ],
         "title": "RegisterRequest"
+      },
+      "ReportQuality": {
+        "properties": {
+          "questions": {
+            "type": "integer",
+            "title": "Questions"
+          },
+          "answers": {
+            "type": "integer",
+            "title": "Answers"
+          },
+          "no_answer": {
+            "type": "integer",
+            "title": "No Answer"
+          },
+          "no_answer_share": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "No Answer Share"
+          },
+          "errors": {
+            "type": "integer",
+            "title": "Errors"
+          },
+          "error_share": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Share"
+          }
+        },
+        "type": "object",
+        "required": [
+          "questions",
+          "answers",
+          "no_answer",
+          "errors"
+        ],
+        "title": "ReportQuality"
+      },
+      "ReportQuestion": {
+        "properties": {
+          "question": {
+            "type": "string",
+            "title": "Question"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          },
+          "variants": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Variants"
+          }
+        },
+        "type": "object",
+        "required": [
+          "question",
+          "count"
+        ],
+        "title": "ReportQuestion"
+      },
+      "ReportTopic": {
+        "properties": {
+          "topic": {
+            "type": "string",
+            "title": "Topic"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "topic",
+          "count"
+        ],
+        "title": "ReportTopic"
       },
       "RequestCountBucket": {
         "properties": {

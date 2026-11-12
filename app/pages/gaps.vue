@@ -24,7 +24,12 @@ ui-page(title="Пробелы наполнения")
 
   template(v-else-if="data")
     div(class="flex items-center gap-2 mb-4")
-      ui-box(v-for="p in periods" :key="p.value" :class="[{ 'ring-2': days === p.value }, 'p-2']")
+      ui-box(
+        v-for="p in periods"
+        :key="p.value"
+        class="p-2"
+        :class="{ 'ring-2': days === p.value }"
+      )
         button(class="px-2" @click="days = p.value") {{ p.label }}
 
     div(class="grid grid-cols-1 lg:grid-cols-2 gap-4")
