@@ -42,7 +42,10 @@ const groups = computed<{ title?: string, items: NavItem[] }[]>(() => [
       ]
     : [] },
   { items: isAdmin.value ? [["Проверка ответа", "/rag/inspector", "i-lucide-search"], ["Автооценка", "/testing", "i-lucide-flask-conical"]] : [] },
-  { items: [["Статистика", "/stats", "i-lucide-chart-no-axes-combined"]] },
+  { items: [
+    ["Статистика", "/stats", "i-lucide-chart-no-axes-combined"],
+    ["Пробелы", "/gaps", "i-lucide-list-todo"],
+  ] },
   { title: "Настройки", items: isAdmin.value
     ? [
         ...(isSuperadmin.value ? [["Подключения", "/settings?section=connections", "i-lucide-plug"] as NavItem] : []),
