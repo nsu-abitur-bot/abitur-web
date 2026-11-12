@@ -15,6 +15,9 @@ const authToken = useAuthToken()
 const draft = ref<Record<string, string>>({})
 const removed = reactive(new Set<string>())
 const selectedSection = ref<InstanceSection>("Модели")
+const modelDirty = ref(0)
+const migrationActive = ref(false)
+const modelFeature = computed(() => snapshot.value?.settings.some(setting => setting.key === "TEXT_PROVIDER"))
 const busy = ref(false)
 const conflict = ref(false)
 const review = ref<string[]>([])
@@ -31,7 +34,8 @@ const changes = computed(() => collectChanges(snapshot.value?.settings ?? [], dr
 function groupChanges(group: string) {
   return snapshot.value?.settings.filter(s => instanceGroup(s) === group && Object.hasOwn(changes.value, s.key)).length ?? 0
 }
-const changedCount = computed(() => Object.keys(changes.value).length + Number(Boolean(logoFile.value || removeLogo.value)))
+const settingsChangedCount = computed(() => Object.keys(changes.value).length + Number(Boolean(logoFile.value || removeLogo.value)))
+const changedCount = computed(() => settingsChangedCount.value + modelDirty.value)
 
 const leaveOpen = ref(false)
 let resolveLeave: ((leave: boolean) => void) | undefined
@@ -209,7 +213,8 @@ await load()
       <div class="instance-content">
         <header class="instance-heading"><h2>{{ selectedSection }}</h2><span class="admin-muted text-xs" role="status">{{ changedCount ? `Не сохранено: ${changedCount}` : 'Изменений нет' }}</span></header>
         <ui-empty-state v-if="!snapshot.settings.some(setting => instanceSection(setting) === selectedSection)" title="Настроек в этом разделе пока нет" />
-        <fieldset :disabled="busy" class="instance-fields">
+        <settings-model-connections v-if="modelFeature" v-show="selectedSection === 'Модели'" :snapshot="snapshot" @dirty="modelDirty = $event" @pending="migrationActive = $event" @saved="rebase" />
+        <fieldset v-if="!modelFeature || selectedSection !== 'Модели'" :disabled="busy || migrationActive" class="instance-fields">
           <settings-university-branding v-if="selectedSection === 'Оформление' && snapshot.settings.some(isBrandingSetting)" v-model:draft="draft" v-model:file="logoFile" v-model:remove="removeLogo" />
           <template v-for="group in groups" :key="group">
             <component :is="isCollapsible(group) ? 'details' : 'section'" class="instance-group">
@@ -239,10 +244,10 @@ await load()
             </component>
           </template>
         </fieldset>
-        <div class="admin-toolbar instance-savebar">
-          <u-button :disabled="busy || !changedCount || conflict" :loading="busy" @click="save">Сохранить изменения{{ changedCount ? ` (${changedCount})` : '' }}</u-button>
+        <div v-if="!modelFeature || selectedSection !== 'Модели'" class="admin-toolbar instance-savebar">
+          <u-button :disabled="busy || migrationActive || !settingsChangedCount || conflict" :loading="busy" @click="save">Сохранить изменения{{ settingsChangedCount ? ` (${settingsChangedCount})` : '' }}</u-button>
           <u-modal title="Отменить изменения?" description="Несохранённый черновик будет заменён текущими значениями сервера.">
-            <u-button variant="ghost" color="neutral" :disabled="busy || !changedCount">Отменить правки</u-button>
+            <u-button variant="ghost" color="neutral" :disabled="busy || !settingsChangedCount">Отменить правки</u-button>
             <template #footer="{ close }"><u-button color="neutral" variant="ghost" @click="close">Продолжить редактирование</u-button><u-button @click="load(); close()">Отменить правки</u-button></template>
           </u-modal>
         </div>
