@@ -3,7 +3,7 @@ import type { InstanceSetting } from "~/services/instance-settings"
 export const instanceSections = ["Оформление", "Модели", "Боты", "Дополнительно"] as const
 export type InstanceSection = typeof instanceSections[number]
 
-const brandingKeys = new Set(["UNIVERSITY_SHORT_NAME", "UNIVERSITY_FULL_NAME", "UNIVERSITY_LOGO_URL", "UNIVERSITY_ACCENT_COLOR"])
+const brandingKeys = new Set(["UNIVERSITY_SHORT_NAME", "UNIVERSITY_FULL_NAME", "UNIVERSITY_LOGO_URL", "UNIVERSITY_ACCENT_COLOR", "BOT_WELCOME_MESSAGE"])
 export function isBrandingSetting(setting: InstanceSetting) {
   return brandingKeys.has(setting.key)
 }
