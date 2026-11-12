@@ -1,5 +1,7 @@
 <template lang="pug">
 ui-page(title="Статистика")
+  template(#actions)
+    NuxtLink(to="/gaps" class="text-sm underline") Отчёт о пробелах →
   div(class="grid grid-cols-1 lg:grid-cols-2 gap-4")
     request-block
     token-block
