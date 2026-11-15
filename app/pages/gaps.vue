@@ -22,12 +22,12 @@ const report = computed(() => {
   if (!value) {
     return null
   }
-  const hasAnything =
-    value.quality.questions > 0
-    || value.topics.length > 0
-    || value.popular.length > 0
-    || value.unanswered.length > 0
-    || value.disliked.length > 0
+  const hasAnything
+    = value.quality.questions > 0
+      || value.topics.length > 0
+      || value.popular.length > 0
+      || value.unanswered.length > 0
+      || value.disliked.length > 0
   return hasAnything ? value : null
 })
 </script>
