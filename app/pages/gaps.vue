@@ -16,18 +16,19 @@ const { data, refresh, status, error } = await useApi("/api/v1/reports/gaps", {
 const share = (value: number | null | undefined) =>
   typeof value === "number" ? `${Math.round(value * 100)}%` : "—"
 
-const hasData = computed(() => {
-  const report = data.value
-  if (!report) {
-    return false
+// null только когда данных нет вовсе: v-if по report сужает тип в шаблоне.
+const report = computed(() => {
+  const value = data.value
+  if (!value) {
+    return null
   }
-  return (
-    report.quality.questions > 0
-    || report.topics.length > 0
-    || report.popular.length > 0
-    || report.unanswered.length > 0
-    || report.disliked.length > 0
-  )
+  const hasAnything =
+    value.quality.questions > 0
+    || value.topics.length > 0
+    || value.popular.length > 0
+    || value.unanswered.length > 0
+    || value.disliked.length > 0
+  return hasAnything ? value : null
 })
 </script>
 
