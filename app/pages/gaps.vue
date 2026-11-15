@@ -8,23 +8,48 @@ const periods = [
 const days = ref(30)
 const query = computed(() => ({ days: days.value, limit: 10 }))
 
-const { data, status, error } = await useApi("/api/v1/reports/gaps", {
+const { data, refresh, status, error } = await useApi("/api/v1/reports/gaps", {
   query,
   lazy: true,
 })
 
 const share = (value: number | null | undefined) =>
   typeof value === "number" ? `${Math.round(value * 100)}%` : "—"
+
+const hasData = computed(() => {
+  const report = data.value
+  if (!report) {
+    return false
+  }
+  return (
+    report.quality.questions > 0
+    || report.topics.length > 0
+    || report.popular.length > 0
+    || report.unanswered.length > 0
+    || report.disliked.length > 0
+  )
+})
 </script>
 
 <template lang="pug">
 ui-page(title="Пробелы наполнения")
-  div(v-if="error" class="text-red-600") Не удалось загрузить отчёт.
-  div(v-else-if="status === 'pending'") Загрузка…
-
-  template(v-else-if="data")
+  ui-empty-state(v-if="status === 'pending'" kind="loading" title="Загрузка отчёта…")
+  ui-empty-state(
+    v-else-if="error"
+    kind="error"
+    title="Не удалось загрузить отчёт о пробелах"
+    description="Проверьте доступность API и повторите попытку."
+  )
+    button(class="admin-btn" @click="refresh()") Повторить
+  ui-empty-state(
+    v-else-if="!hasData"
+    kind="empty"
+    title="Нет данных за период"
+    description="За выбранный период вопросов от абитуриентов не было."
+  )
+  template(v-else)
     div(class="flex items-center gap-2 mb-4")
-      ui-box(
+      div(
         v-for="p in periods"
         :key="p.value"
         class="p-2"
