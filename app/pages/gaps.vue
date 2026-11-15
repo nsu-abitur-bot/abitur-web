@@ -42,7 +42,7 @@ ui-page(title="Пробелы наполнения")
   )
     button(class="admin-btn" @click="refresh()") Повторить
   ui-empty-state(
-    v-else-if="!hasData"
+    v-else-if="!report"
     kind="empty"
     title="Нет данных за период"
     description="За выбранный период вопросов от абитуриентов не было."
@@ -60,24 +60,24 @@ ui-page(title="Пробелы наполнения")
     div(class="grid grid-cols-1 lg:grid-cols-2 gap-4")
       ui-box(title="Качество ответов за период")
         ul(class="space-y-1 text-sm")
-          li Вопросов: {{ data.quality.questions }}, ответов модели: {{ data.quality.answers }}
-          li Честных «не нашёл»: {{ data.quality.no_answer }} ({{ share(data.quality.no_answer_share) }})
-          li Ошибок: {{ data.quality.errors }} ({{ share(data.quality.error_share) }})
+          li Вопросов: {{ report.quality.questions }}, ответов модели: {{ report.quality.answers }}
+          li Честных «не нашёл»: {{ report.quality.no_answer }} ({{ share(report.quality.no_answer_share) }})
+          li Ошибок: {{ report.quality.errors }} ({{ share(report.quality.error_share) }})
 
       ui-box(title="Темы вопросов")
         ul(class="space-y-1 text-sm")
-          li(v-for="t in data.topics" :key="t.topic") {{ t.topic }} — {{ t.count }}
+          li(v-for="t in report.topics" :key="t.topic") {{ t.topic }} — {{ t.count }}
 
       ui-box(title="Популярные вопросы")
         ol(class="space-y-1 text-sm list-decimal list-inside")
-          li(v-for="q in data.popular" :key="q.question") {{ q.question }} — {{ q.count }}
+          li(v-for="q in report.popular" :key="q.question") {{ q.question }} — {{ q.count }}
 
       ui-box(title="Без ответа — очередь наполнения")
         ol(class="space-y-1 text-sm list-decimal list-inside")
-          li(v-for="q in data.unanswered" :key="q.question") {{ q.question }} — {{ q.count }}
+          li(v-for="q in report.unanswered" :key="q.question") {{ q.question }} — {{ q.count }}
 
       ui-box(title="Ответы оценены негативно")
         ul(class="space-y-1 text-sm")
-          li(v-for="q in data.disliked" :key="q.question")
+          li(v-for="q in report.disliked" :key="q.question")
             | {{ q.question }} — 👎 {{ q.negative }} из {{ q.rated }} оценок
 </template>
