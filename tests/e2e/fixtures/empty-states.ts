@@ -35,6 +35,7 @@ export async function emptyFixture(context: BrowserContext, theme = "light") {
     "/api/v1/users/count-stats": {},
     "/api/v1/logs/popular": { questions: [] },
     "/api/v1/stats/topics": [],
+    "/api/v1/reports/gaps": { period_days: 30, generated_at: "2026-01-01T00:00:00Z", topics: [], popular: [], unanswered: [], quality: { questions: 0, answers: 0, no_answer: 0, no_answer_share: null, errors: 0, error_share: null }, disliked: [] },
   }
   await context.addCookies([{ name: "abitur-token", value: "e2e-session", domain: "127.0.0.1", path: "/" }])
   await context.addInitScript(theme => localStorage.setItem("nuxt-color-mode", theme), theme)
