@@ -27,7 +27,7 @@ const collections = [
   { name: "team", url: "/settings?section=team", endpoints: ["/api/v1/auth/admins"], empty: "Участников пока нет" },
   { name: "connections", url: "/settings?section=connections", endpoints: ["/api/v1/settings/instance"], empty: "Настроек пока нет" },
   { name: "rules", url: "/settings?section=rules", endpoints: ["/api/v1/settings/rate-limit", "/api/v1/settings/crag", "/api/v1/settings/faq"], empty: null },
-  { name: "stats", url: "/stats", endpoints: ["/api/v1/logs/request-stats", "/api/v1/logs/token-stats", "/api/v1/stats/topics", "/api/v1/users/count-stats", "/api/v1/logs/popular"], empty: "Нет данных по вопросам" },
+  { name: "stats", url: "/stats", endpoints: ["/api/v1/logs/request-stats", "/api/v1/logs/token-stats", "/api/v1/stats/topics", "/api/v1/users/count-stats", "/api/v1/logs/popular", "/api/v1/stats/parsing"], empty: "Нет данных по вопросам" },
   { name: "evaluation", url: "/testing", endpoints: ["/api/v1/evals/status"], empty: "Результатов оценки пока нет" },
   { name: "gaps", url: "/gaps", endpoints: ["/api/v1/reports/gaps"], empty: "Нет данных за период" },
 ]

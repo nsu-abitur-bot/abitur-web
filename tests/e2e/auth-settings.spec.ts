@@ -65,6 +65,7 @@ async function mockSettings(context: BrowserContext, role = "superadmin") {
       "/api/v1/users/count-stats": { day: 5, week: 20, month: 100, year: 200, all_time: 300 },
       "/api/v1/logs/popular": { questions: [] },
       "/api/v1/stats/topics": [{ topic_id: 1, label: "Поступление", count: 8 }, { topic_id: 2, label: "Документы", count: 6 }],
+      "/api/v1/stats/parsing": { last_parsed_at: "2026-10-30T08:30:00Z", total_lists: 12 },
       "/api/v1/feedback": { reports: [], total: 0 },
       "/api/v1/rag/docs": { documents: [] },
     }
