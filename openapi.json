@@ -841,7 +841,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FaqListResponse"
+                  "$ref": "#/components/schemas/FaqUploadResponse"
                 }
               }
             }
@@ -3808,6 +3808,33 @@
         ]
       }
     },
+    "/api/v1/stats/parsing": {
+      "get": {
+        "tags": [
+          "stats"
+        ],
+        "summary": "Get Parsing Stats",
+        "description": "Получить статистику парсинга рейтинговых списков.",
+        "operationId": "get_parsing_stats_api_v1_stats_parsing_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ParsingStatsResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
     "/api/v1/stats/topics": {
       "get": {
         "tags": [
@@ -6186,6 +6213,35 @@
         "title": "FaqSettingsUpdate",
         "description": "Обновление настроек FAQ-матчера."
       },
+      "FaqUploadResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/FaqItem"
+            },
+            "type": "array",
+            "title": "Items",
+            "description": "Список вопросов-ответов"
+          },
+          "created": {
+            "type": "integer",
+            "title": "Created",
+            "description": "Сколько записей создано"
+          },
+          "updated": {
+            "type": "integer",
+            "title": "Updated",
+            "description": "Сколько записей обновлено при повторной загрузке"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "created",
+          "updated"
+        ],
+        "title": "FaqUploadResponse"
+      },
       "FeedbackReportListItem": {
         "properties": {
           "id": {
@@ -6919,6 +6975,28 @@
           "documents"
         ],
         "title": "ParsedPageResult"
+      },
+      "ParsingStatsResponse": {
+        "properties": {
+          "last_parsed_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Parsed At"
+          },
+          "total_lists": {
+            "type": "integer",
+            "title": "Total Lists",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "title": "ParsingStatsResponse"
       },
       "PopularQuestion": {
         "properties": {

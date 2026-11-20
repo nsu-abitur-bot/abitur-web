@@ -1225,6 +1225,26 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/stats/parsing": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Get Parsing Stats
+     * @description Получить статистику парсинга рейтинговых списков.
+     */
+    get: operations["get_parsing_stats_api_v1_stats_parsing_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/stats/topics": {
     parameters: {
       query?: never
@@ -2279,6 +2299,24 @@ export interface components {
       /** Similarity Threshold */
       similarity_threshold: number
     }
+    /** FaqUploadResponse */
+    FaqUploadResponse: {
+      /**
+       * Items
+       * @description Список вопросов-ответов
+       */
+      items: components["schemas"]["FaqItem"][]
+      /**
+       * Created
+       * @description Сколько записей создано
+       */
+      created: number
+      /**
+       * Updated
+       * @description Сколько записей обновлено при повторной загрузке
+       */
+      updated: number
+    }
     /** FeedbackReportListItem */
     FeedbackReportListItem: {
       /** Id */
@@ -2559,6 +2597,16 @@ export interface components {
        * @description Список найденных PDF-документов
        */
       documents: components["schemas"]["ParsedDocument"][]
+    }
+    /** ParsingStatsResponse */
+    ParsingStatsResponse: {
+      /** Last Parsed At */
+      last_parsed_at?: string | null
+      /**
+       * Total Lists
+       * @default 0
+       */
+      total_lists: number
     }
     /** PopularQuestion */
     PopularQuestion: {
@@ -3920,7 +3968,7 @@ export interface operations {
           [name: string]: unknown
         }
         content: {
-          "application/json": components["schemas"]["FaqListResponse"]
+          "application/json": components["schemas"]["FaqUploadResponse"]
         }
       }
       /** @description Validation Error */
@@ -5613,6 +5661,26 @@ export interface operations {
         }
         content: {
           "application/json": unknown
+        }
+      }
+    }
+  }
+  get_parsing_stats_api_v1_stats_parsing_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["ParsingStatsResponse"]
         }
       }
     }

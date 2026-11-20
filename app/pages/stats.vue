@@ -7,5 +7,6 @@ ui-page(title="Статистика")
     token-block
     topics-block
     new-users-block
+    parsing-stats-block
   question-block
 </template>
