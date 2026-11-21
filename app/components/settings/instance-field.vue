@@ -4,7 +4,7 @@ import type { InstanceSetting } from "~/services/instance-settings"
 const props = defineProps<{ setting: InstanceSetting, removed: boolean, disabled?: boolean }>()
 const emit = defineEmits<{ remove: [] }>()
 const value = defineModel<string>({ required: true })
-const providerLabels: Record<string, string> = { openai: "OpenAI", gemini: "Gemini", deepseek: "DeepSeek", gigachat: "GigaChat" }
+const providerLabels: Record<string, string> = { openai: "OpenAI", gemini: "Gemini", deepseek: "DeepSeek", gigachat: "GigaChat", cloudru: "Cloud.ru" }
 const options = computed(() => props.setting.choices.length
   ? props.setting.choices.map(choice => ({ label: providerLabels[choice] ?? choice, value: choice }))
   : [{ label: "Включено", value: "true" }, { label: "Выключено", value: "false" }])

@@ -173,6 +173,11 @@ async function check(target: string) {
   }
 }
 
+function checkTarget(group: string, purpose: string) {
+  const provider = group === "Cloud.ru" ? "cloudru" : group.toLowerCase()
+  return `${provider}:${purpose}`
+}
+
 function toggleRemoval(key: string) {
   if (removed.has(key)) {
     removed.delete(key)
@@ -231,7 +236,7 @@ await load()
                   <p v-if="connectionPurposes(snapshot.settings, group).length" class="text-xs admin-muted">Проверка отправит запрос к модели и может расходовать токены.</p>
                   <div class="flex flex-wrap gap-2">
                     <u-button v-if="group === 'Telegram' || group === 'MAX'" :disabled="busy" color="neutral" variant="outline" @click="check(group === 'Telegram' ? 'telegram' : 'max')">Проверить бота</u-button>
-                    <u-button v-for="purpose in connectionPurposes(snapshot.settings, group)" :key="purpose.value" :disabled="busy" color="neutral" variant="outline" @click="check(`${group.toLowerCase()}:${purpose.value}`)">Проверить: {{ purpose.label }}</u-button>
+                    <u-button v-for="purpose in connectionPurposes(snapshot.settings, group)" :key="purpose.value" :disabled="busy" color="neutral" variant="outline" @click="check(checkTarget(group, purpose.value))">Проверить: {{ purpose.label }}</u-button>
                   </div>
                 </div>
                 <p v-if="group === 'Назначение моделей'" class="text-xs admin-muted">Смена пространства эмбеддингов при наполненной базе заблокирована до переиндексации.</p>

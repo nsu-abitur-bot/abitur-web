@@ -70,3 +70,8 @@ it("offers one shared embedding check for GigaChat", () => {
   const setting = { key: "GIGACHAT_EMBEDDING_MODEL", group: "GigaChat", label: "Модель эмбеддингов", kind: "text", choices: [], secret: false, configured: true, value: "EmbeddingsGigaR" }
   expect(connectionPurposes([setting], "GigaChat")).toEqual([{ suffix: "EMBEDDING_MODEL", value: "embedding", label: "эмбеддинги" }])
 })
+
+it("offers embedding check for Cloud.ru", () => {
+  const setting = { key: "CLOUDRU_EMBEDDING_MODEL", group: "Cloud.ru", label: "Модель эмбеддингов", kind: "text", choices: [], secret: false, configured: true, value: "ai-sage/Giga-Embeddings-instruct-3B" }
+  expect(connectionPurposes([setting], "Cloud.ru")).toEqual([{ suffix: "EMBEDDING_MODEL", value: "embedding", label: "эмбеддинги" }])
+})
