@@ -45,3 +45,13 @@ it("keeps GigaChat credentials and embeddings under Models", () => {
   const setting = { key: "GIGACHAT_API_KEY", group: "GigaChat", label: "Ключ авторизации", kind: "text", choices: [], secret: true, configured: false, value: null }
   expect(instanceSection(setting)).toBe("Модели")
 })
+
+it("keeps Cloud.ru credentials and embeddings under Models", () => {
+  const apiKey = { key: "CLOUDRU_API_KEY", group: "Cloud.ru", label: "API-ключ", kind: "text", choices: [], secret: true, configured: false, value: null }
+  const embedding = { key: "CLOUDRU_EMBEDDING_MODEL", group: "Cloud.ru", label: "Модель эмбеддингов", kind: "text", choices: [], secret: false, configured: true, value: "ai-sage/Giga-Embeddings-instruct-3B" }
+  expect(instanceSection(apiKey)).toBe("Модели")
+  expect(instanceSection(embedding)).toBe("Модели")
+  expect(isAdvancedSetting(apiKey)).toBe(false)
+  expect(isAdvancedSetting(embedding)).toBe(false)
+  expect(instanceGroup(apiKey)).toBe("Cloud.ru")
+})
