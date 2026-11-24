@@ -6,6 +6,7 @@ const logo = "/fixture-university-logo.svg"
 
 async function universityFixture(context: BrowserContext, options: { name?: string, logo?: string } = {}) {
   let identity = { profile: "custom", short_name: options.name ?? "Демо-вуз", full_name: fullName, assistant_name: "Помощник", website: "", email: "", phone: "", address: "", logo_url: options.logo ?? "" }
+  let welcome = ""
   let revision = 1
   let conflict = false
   let unavailable = false
@@ -49,12 +50,14 @@ async function universityFixture(context: BrowserContext, options: { name?: stri
           return reply({ detail: "Version conflict" }, 409)
         }
         revision++
+        welcome = changes.BOT_WELCOME_MESSAGE ?? welcome
         identity = { ...identity, short_name: changes.UNIVERSITY_SHORT_NAME ?? identity.short_name, logo_url: changes.UNIVERSITY_LOGO_URL ?? identity.logo_url }
         await context.request.post("http://127.0.0.1:9465/__test/branding", { data: { brand: { ...identity, revision, accent_color: "#4b4bd2", favicon_url: "" }, status: unavailable ? 503 : 200 } })
       }
       return reply({ revision, encryption_ready: true, settings: [
         { key: "UNIVERSITY_SHORT_NAME", label: "Короткое название", group: "Университет", choices: [], kind: "text", secret: false, configured: true, value: identity.short_name },
         { key: "UNIVERSITY_LOGO_URL", label: "Логотип", group: "Университет", choices: [], kind: "url", secret: false, configured: true, value: identity.logo_url },
+        { key: "BOT_WELCOME_MESSAGE", label: "Приветственное сообщение бота", group: "Вуз", choices: [], kind: "textarea", secret: false, configured: Boolean(welcome), value: welcome },
       ] })
     }
     if (url.pathname === "/api/v1/feedback") {
@@ -105,6 +108,27 @@ test("university save refreshes the shared brand and header without reload; draf
   await expect(page).toHaveURL("/feedback")
   await expect(brand).toContainText("Новый вуз")
   expect(fixture.gets()).toBe(5)
+})
+
+test("welcome message saves line breaks and can be cleared", async ({ page, context }) => {
+  const fixture = await universityFixture(context)
+  await page.goto("/settings?section=connections")
+  const field = page.getByRole("textbox", { name: "Приветственное сообщение бота" })
+  const save = page.getByRole("button", { name: /Сохранить изменения/ })
+  const welcome = "Добро пожаловать!\n\n<b>Приёмная комиссия</b>"
+  await expect(field).toHaveAttribute("maxlength", "3999")
+  await field.fill(welcome)
+  await save.click()
+  await expect(page.getByText("Настройки сохранены.")).toBeVisible()
+  expect(fixture.puts[0]).toEqual({ BOT_WELCOME_MESSAGE: welcome })
+  await page.reload()
+  await expect(field).toHaveValue(welcome)
+  await field.fill("")
+  await save.click()
+  await expect(page.getByText("Настройки сохранены.")).toBeVisible()
+  expect(fixture.puts[1]).toEqual({ BOT_WELCOME_MESSAGE: "" })
+  await page.reload()
+  await expect(field).toHaveValue("")
 })
 
 test("a failed public refresh preserves the working client brand; retry applies the new saved snapshot", async ({ page, context }) => {
