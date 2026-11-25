@@ -324,6 +324,6 @@ test("admission scores reuse the error action and recover to empty", async ({ pa
   local.failures.clear()
   await error.getByRole("button", { name: "Повторить" }).click()
   await expect(page.locator(".admin-empty[data-state=empty] .admin-empty-title")).toHaveText("Баллы пока не добавлены.")
-  await expect(page.getByRole("button", { name: "Сохранить балл" })).toBeVisible()
+  await expect(page.getByRole("button", { name: "Сохранить запись" })).toBeVisible()
   expect(local.unexpected).toEqual([])
 })
