@@ -1455,10 +1455,48 @@
                   "type": "null"
                 }
               ],
-              "description": "Форма: budget / paid",
+              "description": "Совместимый фильтр по основанию приёма",
+              "deprecated": true,
               "title": "Form"
             },
-            "description": "Форма: budget / paid"
+            "description": "Совместимый фильтр по основанию приёма",
+            "deprecated": true
+          },
+          {
+            "name": "admission_basis",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/AdmissionBasis"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Основание приёма: budget / paid",
+              "title": "Admission Basis"
+            },
+            "description": "Основание приёма: budget / paid"
+          },
+          {
+            "name": "study_form",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/StudyForm"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Форма обучения",
+              "title": "Study Form"
+            },
+            "description": "Форма обучения"
           },
           {
             "name": "only_active",
@@ -1529,6 +1567,63 @@
             "OAuth2PasswordBearer": []
           }
         ]
+      }
+    },
+    "/api/v1/admission-scores/{score_id}": {
+      "patch": {
+        "tags": [
+          "admission-scores"
+        ],
+        "summary": "Уточнить классификацию, количество мест или источник",
+        "operationId": "update_score_api_v1_admission_scores__score_id__patch",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "score_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Score Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScoreUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScoreItem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/api/v1/content-proposals": {
@@ -4658,6 +4753,15 @@
         ],
         "title": "AdminRole"
       },
+      "AdmissionBasis": {
+        "type": "string",
+        "enum": [
+          "budget",
+          "paid"
+        ],
+        "title": "AdmissionBasis",
+        "description": "Основание приёма."
+      },
       "AnswerStatsBucket": {
         "properties": {
           "period": {
@@ -6534,7 +6638,7 @@
         "properties": {
           "rows": {
             "items": {
-              "$ref": "#/components/schemas/ScoreRowSchema"
+              "$ref": "#/components/schemas/ScoreRowSchema-Input"
             },
             "type": "array",
             "title": "Rows"
@@ -7134,7 +7238,7 @@
         "properties": {
           "rows": {
             "items": {
-              "$ref": "#/components/schemas/ScoreRowSchema"
+              "$ref": "#/components/schemas/ScoreRowSchema-Output"
             },
             "type": "array",
             "title": "Rows"
@@ -8073,6 +8177,26 @@
       },
       "ScoreItem": {
         "properties": {
+          "admission_basis": {
+            "type": "string",
+            "title": "Admission Basis",
+            "description": "Основание приёма: budget / paid"
+          },
+          "study_form": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StudyForm"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Форма обучения. null — неизвестна"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
           "faculty_name": {
             "type": "string",
             "title": "Faculty Name"
@@ -8100,10 +8224,6 @@
             "type": "integer",
             "title": "Year"
           },
-          "form": {
-            "type": "string",
-            "title": "Form"
-          },
           "passing_score": {
             "anyOf": [
               {
@@ -8125,10 +8245,44 @@
               }
             ],
             "title": "Average Score"
+          },
+          "seat_count": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 2147483647,
+                "minimum": 0,
+                "description": "Объявленное количество мест. null — неизвестно"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seat Count"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "form": {
+            "type": "string",
+            "title": "Form",
+            "description": "Совместимое поле v1 для основания приёма.",
+            "deprecated": true,
+            "readOnly": true
           }
         },
         "type": "object",
         "required": [
+          "admission_basis",
+          "id",
           "faculty_name",
           "program_name",
           "level",
@@ -8138,8 +8292,37 @@
         "title": "ScoreItem",
         "description": "Плоская запись проходного балла для выборки."
       },
-      "ScoreRowSchema": {
+      "ScoreRowSchema-Input": {
         "properties": {
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url",
+            "description": "URL источника"
+          },
+          "admission_basis": {
+            "type": "string",
+            "title": "Admission Basis",
+            "description": "Основание приёма: budget / paid"
+          },
+          "study_form": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StudyForm"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Форма обучения. null — неизвестна"
+          },
           "faculty_name": {
             "type": "string",
             "title": "Faculty Name",
@@ -8167,10 +8350,118 @@
             "title": "Year",
             "description": "Год приёма"
           },
-          "form": {
+          "passing_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Passing Score",
+            "description": "Проходной балл"
+          },
+          "average_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Average Score",
+            "description": "Средний балл"
+          },
+          "seat_count": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 2147483647,
+                "minimum": 0,
+                "description": "Объявленное количество мест. null — неизвестно"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seat Count"
+          },
+          "level": {
             "type": "string",
-            "title": "Form",
-            "description": "Форма обучения: budget / paid"
+            "title": "Level",
+            "description": "Уровень: bachelor / specialist / master / spo (СПО)",
+            "default": "bachelor"
+          }
+        },
+        "type": "object",
+        "required": [
+          "admission_basis",
+          "faculty_name",
+          "program_name",
+          "year"
+        ],
+        "title": "ScoreRowSchema",
+        "description": "Строка проходного балла (сырая, до/после разрешения в program_id)."
+      },
+      "ScoreRowSchema-Output": {
+        "properties": {
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url",
+            "description": "URL источника"
+          },
+          "admission_basis": {
+            "type": "string",
+            "title": "Admission Basis",
+            "description": "Основание приёма: budget / paid"
+          },
+          "study_form": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StudyForm"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Форма обучения. null — неизвестна"
+          },
+          "faculty_name": {
+            "type": "string",
+            "title": "Faculty Name",
+            "description": "Название факультета/института"
+          },
+          "program_name": {
+            "type": "string",
+            "title": "Program Name",
+            "description": "Название направления подготовки"
+          },
+          "code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code",
+            "description": "Код направления (ФГОС)"
+          },
+          "year": {
+            "type": "integer",
+            "title": "Year",
+            "description": "Год приёма"
           },
           "passing_score": {
             "anyOf": [
@@ -8196,15 +8487,37 @@
             "title": "Average Score",
             "description": "Средний балл"
           },
+          "seat_count": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 2147483647,
+                "minimum": 0,
+                "description": "Объявленное количество мест. null — неизвестно"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seat Count"
+          },
           "level": {
             "type": "string",
             "title": "Level",
             "description": "Уровень: bachelor / specialist / master / spo (СПО)",
             "default": "bachelor"
+          },
+          "form": {
+            "type": "string",
+            "title": "Form",
+            "description": "Совместимое поле v1 для основания приёма.",
+            "deprecated": true,
+            "readOnly": true
           }
         },
         "type": "object",
         "required": [
+          "admission_basis",
           "faculty_name",
           "program_name",
           "year",
@@ -8212,6 +8525,59 @@
         ],
         "title": "ScoreRowSchema",
         "description": "Строка проходного балла (сырая, до/после разрешения в program_id)."
+      },
+      "ScoreUpdate": {
+        "properties": {
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url",
+            "description": "URL источника"
+          },
+          "admission_basis": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AdmissionBasis"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "study_form": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StudyForm"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "seat_count": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 2147483647,
+                "minimum": 0,
+                "description": "Объявленное количество мест. null — неизвестно"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seat Count"
+          }
+        },
+        "type": "object",
+        "title": "ScoreUpdate"
       },
       "SettingsChange": {
         "properties": {
@@ -8477,6 +8843,15 @@
         "type": "object",
         "title": "TopicUpdate",
         "description": "Модель для обновления темы."
+      },
+      "StudyForm": {
+        "type": "string",
+        "enum": [
+          "full_time",
+          "correspondence"
+        ],
+        "title": "StudyForm",
+        "description": "Форма обучения."
       },
       "UnmatchedSample": {
         "properties": {

@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest"
 
-import { importAdmissionScore } from "./admission-scores"
+import { importAdmissionScore, updateAdmissionScore } from "./admission-scores"
 
 afterEach(() => {
   vi.unstubAllGlobals()
@@ -28,5 +28,21 @@ describe("importAdmissionScore", () => {
       body: { rows: [row] },
     })
     expect(result.created).toBe(1)
+  })
+})
+
+describe("updateAdmissionScore", () => {
+  it("keeps omitted fields separate from explicit clearing and accepts zero", async () => {
+    const request = vi.fn(async () => ({ id: "score/1", source_url: null, seat_count: 0 }))
+    vi.stubGlobal("apiFetch", request)
+
+    const changes = { source_url: null, seat_count: 0 }
+    const result = await updateAdmissionScore("score/1", changes)
+
+    expect(request).toHaveBeenCalledWith("/api/v1/admission-scores/score%2F1", {
+      method: "PATCH",
+      body: { source_url: null, seat_count: 0 },
+    })
+    expect(result).toMatchObject(changes)
   })
 })

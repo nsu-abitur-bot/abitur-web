@@ -505,6 +505,23 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/admission-scores/{score_id}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    /** Уточнить классификацию, количество мест или источник */
+    patch: operations["update_score_api_v1_admission_scores__score_id__patch"]
+    trace?: never
+  }
   "/api/v1/content-proposals": {
     parameters: {
       query?: never
@@ -1482,7 +1499,7 @@ export type webhooks = Record<string, never>
 export interface components {
   schemas: {
     /** AbbrevItem */
-    AbbrevItem: {
+    "AbbrevItem": {
       /**
        * Id
        * @description UUID записи (заполняется при ответе)
@@ -1500,7 +1517,7 @@ export interface components {
       full: string
     }
     /** AbbrevListResponse */
-    AbbrevListResponse: {
+    "AbbrevListResponse": {
       /**
        * Items
        * @description Список аббревиатур
@@ -1508,7 +1525,7 @@ export interface components {
       items: components["schemas"]["AbbrevItem"][]
     }
     /** AdminResponse */
-    AdminResponse: {
+    "AdminResponse": {
       /** Id */
       id: string
       /** Username */
@@ -1528,12 +1545,18 @@ export interface components {
      * AdminRole
      * @enum {string}
      */
-    AdminRole: "superadmin" | "admin" | "viewer"
+    "AdminRole": "superadmin" | "admin" | "viewer"
+    /**
+     * AdmissionBasis
+     * @description Основание приёма.
+     * @enum {string}
+     */
+    "AdmissionBasis": "budget" | "paid"
     /**
      * AnswerStatsBucket
      * @description Наблюдаемость одного периода: latency, неответы, ошибки (#242).
      */
-    AnswerStatsBucket: {
+    "AnswerStatsBucket": {
       /**
        * Period
        * Format: date-time
@@ -1560,7 +1583,7 @@ export interface components {
      * AnswerStatsResponse
      * @description Метрики ответов по периодам для дашборда наблюдаемости.
      */
-    AnswerStatsResponse: {
+    "AnswerStatsResponse": {
       /** Total Questions */
       total_questions: number
       /** Total Answers */
@@ -1583,7 +1606,7 @@ export interface components {
       buckets: components["schemas"]["AnswerStatsBucket"][]
     }
     /** Body_preview_csv_documents_api_v1_rag_upload_csv_preview_post */
-    Body_preview_csv_documents_api_v1_rag_upload_csv_preview_post: {
+    "Body_preview_csv_documents_api_v1_rag_upload_csv_preview_post": {
       /**
        * File
        * @description CSV файл с полями (Название, Link, Комментарий)
@@ -1591,7 +1614,7 @@ export interface components {
       file: string
     }
     /** Body_save_branding_api_v1_settings_instance_branding_post */
-    Body_save_branding_api_v1_settings_instance_branding_post: {
+    "Body_save_branding_api_v1_settings_instance_branding_post": {
       /** Revision */
       revision: number
       /**
@@ -1608,12 +1631,12 @@ export interface components {
       logo?: string | null
     }
     /** Body_upload_abbrev_csv_api_v1_abbrev_upload_post */
-    Body_upload_abbrev_csv_api_v1_abbrev_upload_post: {
+    "Body_upload_abbrev_csv_api_v1_abbrev_upload_post": {
       /** File */
       file: string
     }
     /** Body_upload_csv_documents_api_v1_rag_upload_csv_post */
-    Body_upload_csv_documents_api_v1_rag_upload_csv_post: {
+    "Body_upload_csv_documents_api_v1_rag_upload_csv_post": {
       /**
        * File
        * @description CSV файл с полями (Название, Link, Комментарий)
@@ -1621,12 +1644,12 @@ export interface components {
       file: string
     }
     /** Body_upload_faq_csv_api_v1_faq_upload_post */
-    Body_upload_faq_csv_api_v1_faq_upload_post: {
+    "Body_upload_faq_csv_api_v1_faq_upload_post": {
       /** File */
       file: string
     }
     /** BrandingResponse */
-    BrandingResponse: {
+    "BrandingResponse": {
       /** Revision */
       revision: number
       /** Short Name */
@@ -1641,12 +1664,12 @@ export interface components {
       accent_color: string
     }
     /** ChangeRoleRequest */
-    ChangeRoleRequest: {
+    "ChangeRoleRequest": {
       /** @description Новая роль администратора */
       role: components["schemas"]["AdminRole"]
     }
     /** ConfirmUploadRequest */
-    ConfirmUploadRequest: {
+    "ConfirmUploadRequest": {
       /**
        * Title
        * @description Название страницы
@@ -1669,7 +1692,7 @@ export interface components {
       documents: components["schemas"]["ParsedDocument"][]
     }
     /** ConnectionCheck */
-    ConnectionCheck: {
+    "ConnectionCheck": {
       /** Revision */
       revision: number
       /** Changes */
@@ -1680,7 +1703,7 @@ export interface components {
       target: string
     }
     /** ConnectionCheckResponse */
-    ConnectionCheckResponse: {
+    "ConnectionCheckResponse": {
       /** Message */
       message: string
     }
@@ -1688,7 +1711,7 @@ export interface components {
      * CragSettings
      * @description Настройки корректирующего RAG (CRAG).
      */
-    CragSettings: {
+    "CragSettings": {
       /**
        * Enabled
        * @description Включён ли CRAG-слой (корректирующий RAG)
@@ -1730,7 +1753,7 @@ export interface components {
      * CragSettingsUpdate
      * @description Обновление настроек CRAG.
      */
-    CragSettingsUpdate: {
+    "CragSettingsUpdate": {
       /** Enabled */
       enabled: boolean
       /** Relevance Threshold */
@@ -1745,7 +1768,7 @@ export interface components {
       max_graded_chunks: number
     }
     /** CsvImportPreviewResponse */
-    CsvImportPreviewResponse: {
+    "CsvImportPreviewResponse": {
       /**
        * Total Found
        * @description Всего найдено ссылок в CSV
@@ -1758,7 +1781,7 @@ export interface components {
       results: components["schemas"]["CsvImportPreviewResult"][]
     }
     /** CsvImportPreviewResult */
-    CsvImportPreviewResult: {
+    "CsvImportPreviewResult": {
       /**
        * Title
        * @description Название документа
@@ -1776,7 +1799,7 @@ export interface components {
       comment?: string | null
     }
     /** CsvImportResponse */
-    CsvImportResponse: {
+    "CsvImportResponse": {
       /**
        * Queued Count
        * @description Количество документов, ожидающих проверки редактором
@@ -1794,7 +1817,7 @@ export interface components {
       results: components["schemas"]["CsvImportResult"][]
     }
     /** CsvImportResult */
-    CsvImportResult: {
+    "CsvImportResult": {
       /**
        * Title
        * @description Название документа
@@ -1817,7 +1840,7 @@ export interface components {
       message?: string | null
     }
     /** DebugChunk */
-    DebugChunk: {
+    "DebugChunk": {
       /**
        * Index
        * @description Порядковый номер чанка в выдаче
@@ -1845,7 +1868,7 @@ export interface components {
       rerank_score?: number | null
     }
     /** DebugEntity */
-    DebugEntity: {
+    "DebugEntity": {
       /**
        * Name
        * @description Имя сущности
@@ -1863,7 +1886,7 @@ export interface components {
       description?: string | null
     }
     /** DebugQueryRequest */
-    DebugQueryRequest: {
+    "DebugQueryRequest": {
       /**
        * Question
        * @description Вопрос для проверки поиска по базе знаний
@@ -1877,7 +1900,7 @@ export interface components {
       mode: string
     }
     /** DebugQueryResponse */
-    DebugQueryResponse: {
+    "DebugQueryResponse": {
       /**
        * Question
        * @description Заданный вопрос
@@ -1917,7 +1940,7 @@ export interface components {
       sources: components["schemas"]["DebugSource"][]
     }
     /** DebugQuerySettings */
-    DebugQuerySettings: {
+    "DebugQuerySettings": {
       /**
        * Mode
        * @description Использованный режим поиска
@@ -1945,7 +1968,7 @@ export interface components {
       min_rerank_score?: number | null
     }
     /** DebugRelation */
-    DebugRelation: {
+    "DebugRelation": {
       /**
        * Source
        * @description Сущность-источник связи
@@ -1963,7 +1986,7 @@ export interface components {
       description?: string | null
     }
     /** DebugSource */
-    DebugSource: {
+    "DebugSource": {
       /**
        * Url
        * @description URL источника
@@ -1981,7 +2004,7 @@ export interface components {
       snippet: string
     }
     /** DislikedQuestion */
-    DislikedQuestion: {
+    "DislikedQuestion": {
       /** Question */
       question: string
       /** Negative */
@@ -1990,7 +2013,7 @@ export interface components {
       rated: number
     }
     /** DocumentCheckRequest */
-    DocumentCheckRequest: {
+    "DocumentCheckRequest": {
       /**
        * Document Ids
        * @description ID документов для проверки; если не переданы, проверяются все
@@ -1998,7 +2021,7 @@ export interface components {
       document_ids?: string[] | null
     }
     /** DocumentCheckResponse */
-    DocumentCheckResponse: {
+    "DocumentCheckResponse": {
       /**
        * Checked Count
        * @description Количество проверенных документов
@@ -2016,7 +2039,7 @@ export interface components {
       results: components["schemas"]["DocumentCheckResult"][]
     }
     /** DocumentCheckResult */
-    DocumentCheckResult: {
+    "DocumentCheckResult": {
       /**
        * Id
        * @description ID документа
@@ -2054,7 +2077,7 @@ export interface components {
       message?: string | null
     }
     /** DocumentDiagnosticsResponse */
-    DocumentDiagnosticsResponse: {
+    "DocumentDiagnosticsResponse": {
       /**
        * Id
        * @description Идентификатор документа в Postgres
@@ -2102,7 +2125,7 @@ export interface components {
       error?: string | null
     }
     /** DocumentUpdateResponse */
-    DocumentUpdateResponse: {
+    "DocumentUpdateResponse": {
       /**
        * Checked Count
        * @description Количество проверенных документов
@@ -2124,12 +2147,12 @@ export interface components {
      * @description Уровень образования направления подготовки.
      * @enum {string}
      */
-    EducationLevel: "bachelor" | "specialist" | "master" | "spo"
+    "EducationLevel": "bachelor" | "specialist" | "master" | "spo"
     /**
      * FacultyCreate
      * @description Данные для создания факультета.
      */
-    FacultyCreate: {
+    "FacultyCreate": {
       /**
        * Name
        * @description Название факультета
@@ -2151,7 +2174,7 @@ export interface components {
      * FacultyItem
      * @description Факультет с его направлениями подготовки.
      */
-    FacultyItem: {
+    "FacultyItem": {
       /** Id */
       id: string
       /** Name */
@@ -2167,7 +2190,7 @@ export interface components {
      * FacultyUpdate
      * @description Данные для обновления факультета.
      */
-    FacultyUpdate: {
+    "FacultyUpdate": {
       /**
        * Name
        * @description Название факультета
@@ -2188,7 +2211,7 @@ export interface components {
      * FaqHitBucket
      * @description Элемент статистики срабатываний FAQ-слоя.
      */
-    FaqHitBucket: {
+    "FaqHitBucket": {
       /**
        * Period
        * Format: date-time
@@ -2205,7 +2228,7 @@ export interface components {
      * FaqHitStatsResponse
      * @description Как часто вопросы закрываются готовыми ответами FAQ без модели.
      */
-    FaqHitStatsResponse: {
+    "FaqHitStatsResponse": {
       /** Total Questions */
       total_questions: number
       /** Total Hits */
@@ -2222,7 +2245,7 @@ export interface components {
       buckets: components["schemas"]["FaqHitBucket"][]
     }
     /** FaqItem */
-    FaqItem: {
+    "FaqItem": {
       /**
        * Id
        * @description UUID записи (заполняется при ответе)
@@ -2272,7 +2295,7 @@ export interface components {
       confirmed_at?: string | null
     }
     /** FaqListResponse */
-    FaqListResponse: {
+    "FaqListResponse": {
       /**
        * Items
        * @description Список вопросов-ответов
@@ -2283,7 +2306,7 @@ export interface components {
      * FaqSettings
      * @description Настройки FAQ-матчера.
      */
-    FaqSettings: {
+    "FaqSettings": {
       /**
        * Similarity Threshold
        * @description Порог косинусного сходства для срабатывания FAQ (0..1)
@@ -2295,12 +2318,12 @@ export interface components {
      * FaqSettingsUpdate
      * @description Обновление настроек FAQ-матчера.
      */
-    FaqSettingsUpdate: {
+    "FaqSettingsUpdate": {
       /** Similarity Threshold */
       similarity_threshold: number
     }
     /** FaqUploadResponse */
-    FaqUploadResponse: {
+    "FaqUploadResponse": {
       /**
        * Items
        * @description Список вопросов-ответов
@@ -2318,7 +2341,7 @@ export interface components {
       updated: number
     }
     /** FeedbackReportListItem */
-    FeedbackReportListItem: {
+    "FeedbackReportListItem": {
       /** Id */
       id: number
       /** User Id */
@@ -2344,7 +2367,7 @@ export interface components {
       reviewed_at?: string | null
     }
     /** FeedbackReportListResponse */
-    FeedbackReportListResponse: {
+    "FeedbackReportListResponse": {
       /** Reports */
       reports: components["schemas"]["FeedbackReportListItem"][]
       /** Total */
@@ -2355,7 +2378,7 @@ export interface components {
       offset: number
     }
     /** FeedbackReportResponse */
-    FeedbackReportResponse: {
+    "FeedbackReportResponse": {
       /** Id */
       id: number
       /** User Id */
@@ -2385,7 +2408,7 @@ export interface components {
       reviewed_at?: string | null
     }
     /** FeedbackReportStatusUpdate */
-    FeedbackReportStatusUpdate: {
+    "FeedbackReportStatusUpdate": {
       /**
        * Status
        * @enum {string}
@@ -2393,7 +2416,7 @@ export interface components {
       status: "open" | "reviewed" | "ignored"
     }
     /** GapReportResponse */
-    GapReportResponse: {
+    "GapReportResponse": {
       /** Period Days */
       period_days: number
       /**
@@ -2412,7 +2435,7 @@ export interface components {
       disliked: components["schemas"]["DislikedQuestion"][]
     }
     /** HTTPValidationError */
-    HTTPValidationError: {
+    "HTTPValidationError": {
       /** Detail */
       detail?: components["schemas"]["ValidationError"][]
     }
@@ -2420,15 +2443,15 @@ export interface components {
      * ImportRequest
      * @description Запрос на импорт отревьюенных строк проходных баллов.
      */
-    ImportRequest: {
+    "ImportRequest": {
       /** Rows */
-      rows?: components["schemas"]["ScoreRowSchema"][]
+      rows?: components["schemas"]["ScoreRowSchema-Input"][]
     }
     /**
      * ImportResponse
      * @description Статистика идемпотентного upsert.
      */
-    ImportResponse: {
+    "ImportResponse": {
       /** Created */
       created: number
       /** Updated */
@@ -2437,7 +2460,7 @@ export interface components {
       skipped: number
     }
     /** InstanceSettingResponse */
-    InstanceSettingResponse: {
+    "InstanceSettingResponse": {
       /** Key */
       key: string
       /** Label */
@@ -2456,7 +2479,7 @@ export interface components {
       value: string | null
     }
     /** InstanceSettingsResponse */
-    InstanceSettingsResponse: {
+    "InstanceSettingsResponse": {
       /** Revision */
       revision: number
       /** Encryption Ready */
@@ -2465,14 +2488,14 @@ export interface components {
       settings: components["schemas"]["InstanceSettingResponse"][]
     }
     /** InviteCodeRequest */
-    InviteCodeRequest: {
+    "InviteCodeRequest": {
       /** @default admin */
       role: components["schemas"]["AdminRole"]
       /** Expires In Hours */
       expires_in_hours?: number | null
     }
     /** InviteCodeResponse */
-    InviteCodeResponse: {
+    "InviteCodeResponse": {
       /** Code */
       code: string
       role: components["schemas"]["AdminRole"]
@@ -2480,7 +2503,7 @@ export interface components {
       expires_at: string | null
     }
     /** LoginRequest */
-    LoginRequest: {
+    "LoginRequest": {
       /** Username */
       username: string
       /** Password */
@@ -2490,7 +2513,7 @@ export interface components {
      * MessageLogListResponse
      * @description Модель ответа для списка логов.
      */
-    MessageLogListResponse: {
+    "MessageLogListResponse": {
       /** Logs */
       logs: components["schemas"]["MessageLogResponse"][]
       /** Total */
@@ -2504,7 +2527,7 @@ export interface components {
      * MessageLogResponse
      * @description Модель ответа для лога сообщения.
      */
-    MessageLogResponse: {
+    "MessageLogResponse": {
       /** Id */
       id: number
       /** User Id */
@@ -2528,7 +2551,7 @@ export interface components {
       created_at: string
     }
     /** MessagePageResponse */
-    MessagePageResponse: {
+    "MessagePageResponse": {
       /** Items */
       items: components["schemas"]["MessageResponse"][]
       /** Total */
@@ -2541,7 +2564,7 @@ export interface components {
       snapshot_id?: string | null
     }
     /** MessageResponse */
-    MessageResponse: {
+    "MessageResponse": {
       /** Id */
       id: string
       /** User Id */
@@ -2563,7 +2586,7 @@ export interface components {
       created_at: string
     }
     /** ParsedDocument */
-    ParsedDocument: {
+    "ParsedDocument": {
       /**
        * Title
        * @description Название документа
@@ -2576,7 +2599,7 @@ export interface components {
       url: string
     }
     /** ParsedPageResult */
-    ParsedPageResult: {
+    "ParsedPageResult": {
       /**
        * Title
        * @description Название страницы
@@ -2599,7 +2622,7 @@ export interface components {
       documents: components["schemas"]["ParsedDocument"][]
     }
     /** ParsingStatsResponse */
-    ParsingStatsResponse: {
+    "ParsingStatsResponse": {
       /** Last Parsed At */
       last_parsed_at?: string | null
       /**
@@ -2609,7 +2632,7 @@ export interface components {
       total_lists: number
     }
     /** PopularQuestion */
-    PopularQuestion: {
+    "PopularQuestion": {
       /** Question */
       question: string
       /** Count */
@@ -2618,12 +2641,12 @@ export interface components {
       variants?: string[]
     }
     /** PopularQuestionsResponse */
-    PopularQuestionsResponse: {
+    "PopularQuestionsResponse": {
       /** Questions */
       questions: components["schemas"]["PopularQuestion"][]
     }
     /** PopularQuestionsSnapshotResponse */
-    PopularQuestionsSnapshotResponse: {
+    "PopularQuestionsSnapshotResponse": {
       /** Questions */
       questions: components["schemas"]["PopularQuestion"][]
       /**
@@ -2636,7 +2659,7 @@ export interface components {
       updated_at?: string | null
     }
     /** PreprocessDocumentRequest */
-    PreprocessDocumentRequest: {
+    "PreprocessDocumentRequest": {
       /**
        * Text
        * @description Текст документа для предобработки
@@ -2644,7 +2667,7 @@ export interface components {
       text: string
     }
     /** PreprocessDocumentResponse */
-    PreprocessDocumentResponse: {
+    "PreprocessDocumentResponse": {
       /**
        * Text
        * @description Текст после расширения аббревиатур и очистки
@@ -2660,7 +2683,7 @@ export interface components {
      * PreviewRequest
      * @description Запрос на предпросмотр парсинга страницы итогов приёма.
      */
-    PreviewRequest: {
+    "PreviewRequest": {
       /**
        * Url
        * @description URL страницы (по умолчанию — страница НГУ)
@@ -2671,16 +2694,16 @@ export interface components {
      * PreviewResponse
      * @description Результат предпросмотра: распарсенные строки и сводка.
      */
-    PreviewResponse: {
+    "PreviewResponse": {
       /** Rows */
-      rows?: components["schemas"]["ScoreRowSchema"][]
+      rows?: components["schemas"]["ScoreRowSchema-Output"][]
       summary: components["schemas"]["PreviewSummary"]
     }
     /**
      * PreviewSummary
      * @description Сводка предпросмотра распарсенных строк.
      */
-    PreviewSummary: {
+    "PreviewSummary": {
       /**
        * Total
        * @description Всего распарсено строк
@@ -2706,7 +2729,7 @@ export interface components {
      * ProgramCreate
      * @description Данные для создания направления подготовки.
      */
-    ProgramCreate: {
+    "ProgramCreate": {
       /**
        * Name
        * @description Название направления
@@ -2734,7 +2757,7 @@ export interface components {
      * ProgramItem
      * @description Направление подготовки (образовательная программа).
      */
-    ProgramItem: {
+    "ProgramItem": {
       /** Id */
       id: string
       /** Faculty Id */
@@ -2755,7 +2778,7 @@ export interface components {
      * ProgramUpdate
      * @description Данные для обновления направления подготовки.
      */
-    ProgramUpdate: {
+    "ProgramUpdate": {
       /**
        * Name
        * @description Название направления
@@ -2779,7 +2802,7 @@ export interface components {
       is_active?: boolean | null
     }
     /** ProposalCreate */
-    ProposalCreate: {
+    "ProposalCreate": {
       /**
        * Source
        * @enum {string}
@@ -2800,7 +2823,7 @@ export interface components {
       source_hash?: string | null
     }
     /** ProposalResponse */
-    ProposalResponse: {
+    "ProposalResponse": {
       /** Id */
       id: string
       /** Source */
@@ -2830,7 +2853,7 @@ export interface components {
       reviewed_at: string | null
     }
     /** RagDocument */
-    RagDocument: {
+    "RagDocument": {
       /**
        * Id
        * @description Идентификатор документа (обычно URL или имя файла)
@@ -2907,7 +2930,7 @@ export interface components {
       last_check_message?: string | null
     }
     /** RagDocumentContentResponse */
-    RagDocumentContentResponse: {
+    "RagDocumentContentResponse": {
       /**
        * Id
        * @description Идентификатор документа
@@ -2920,7 +2943,7 @@ export interface components {
       content: string
     }
     /** RagDocumentListResponse */
-    RagDocumentListResponse: {
+    "RagDocumentListResponse": {
       /**
        * Documents
        * @description Страница материалов
@@ -2953,7 +2976,7 @@ export interface components {
       has_pending: boolean
     }
     /** RagDocumentUpdateRequest */
-    RagDocumentUpdateRequest: {
+    "RagDocumentUpdateRequest": {
       /**
        * Title
        * @description Новое название документа
@@ -2966,7 +2989,7 @@ export interface components {
       source_url?: string | null
     }
     /** RagUploadResponse */
-    RagUploadResponse: {
+    "RagUploadResponse": {
       /**
        * Accepted Formats
        * @description Поддерживаемые расширения файлов
@@ -2992,7 +3015,7 @@ export interface components {
      * RateLimitSettings
      * @description Настройки дневных лимитов запросов.
      */
-    RateLimitSettings: {
+    "RateLimitSettings": {
       /**
        * System Requests Per Day
        * @description Количество запросов в день для всей системы
@@ -3010,14 +3033,14 @@ export interface components {
      * RateLimitSettingsUpdate
      * @description Обновление дневных лимитов запросов.
      */
-    RateLimitSettingsUpdate: {
+    "RateLimitSettingsUpdate": {
       /** System Requests Per Day */
       system_requests_per_day: number
       /** User Requests Per Day */
       user_requests_per_day: number
     }
     /** RegisterRequest */
-    RegisterRequest: {
+    "RegisterRequest": {
       /** Username */
       username: string
       /** Password */
@@ -3026,7 +3049,7 @@ export interface components {
       invite_code?: string | null
     }
     /** ReportQuality */
-    ReportQuality: {
+    "ReportQuality": {
       /** Questions */
       questions: number
       /** Answers */
@@ -3041,7 +3064,7 @@ export interface components {
       error_share?: number | null
     }
     /** ReportQuestion */
-    ReportQuestion: {
+    "ReportQuestion": {
       /** Question */
       question: string
       /** Count */
@@ -3050,7 +3073,7 @@ export interface components {
       variants?: string[]
     }
     /** ReportTopic */
-    ReportTopic: {
+    "ReportTopic": {
       /** Topic */
       topic: string
       /** Count */
@@ -3060,7 +3083,7 @@ export interface components {
      * RequestCountBucket
      * @description Элемент статистики по количеству запросов.
      */
-    RequestCountBucket: {
+    "RequestCountBucket": {
       /**
        * Period
        * Format: date-time
@@ -3073,7 +3096,7 @@ export interface components {
      * RequestCountStatsResponse
      * @description Статистика количества запросов за период времени.
      */
-    RequestCountStatsResponse: {
+    "RequestCountStatsResponse": {
       /** Total */
       total: number
       /** Group By */
@@ -3089,7 +3112,16 @@ export interface components {
      * ScoreItem
      * @description Плоская запись проходного балла для выборки.
      */
-    ScoreItem: {
+    "ScoreItem": {
+      /**
+       * Admission Basis
+       * @description Основание приёма: budget / paid
+       */
+      admission_basis: string
+      /** @description Форма обучения. null — неизвестна */
+      study_form?: components["schemas"]["StudyForm"] | null
+      /** Id */
+      id: string
       /** Faculty Name */
       faculty_name: string
       /** Program Name */
@@ -3100,18 +3132,38 @@ export interface components {
       code?: string | null
       /** Year */
       year: number
-      /** Form */
-      form: string
       /** Passing Score */
       passing_score?: number | null
       /** Average Score */
       average_score?: number | null
+      /** Seat Count */
+      seat_count?: number | null
+      /** Source Url */
+      source_url?: string | null
+      /**
+       * Form
+       * @deprecated
+       * @description Совместимое поле v1 для основания приёма.
+       */
+      readonly form: string
     }
     /**
      * ScoreRowSchema
      * @description Строка проходного балла (сырая, до/после разрешения в program_id).
      */
-    ScoreRowSchema: {
+    "ScoreRowSchema-Input": {
+      /**
+       * Source Url
+       * @description URL источника
+       */
+      source_url?: string | null
+      /**
+       * Admission Basis
+       * @description Основание приёма: budget / paid
+       */
+      admission_basis: string
+      /** @description Форма обучения. null — неизвестна */
+      study_form?: components["schemas"]["StudyForm"] | null
       /**
        * Faculty Name
        * @description Название факультета/института
@@ -3133,10 +3185,61 @@ export interface components {
        */
       year: number
       /**
-       * Form
-       * @description Форма обучения: budget / paid
+       * Passing Score
+       * @description Проходной балл
        */
-      form: string
+      passing_score?: number | null
+      /**
+       * Average Score
+       * @description Средний балл
+       */
+      average_score?: number | null
+      /** Seat Count */
+      seat_count?: number | null
+      /**
+       * Level
+       * @description Уровень: bachelor / specialist / master / spo (СПО)
+       * @default bachelor
+       */
+      level: string
+    }
+    /**
+     * ScoreRowSchema
+     * @description Строка проходного балла (сырая, до/после разрешения в program_id).
+     */
+    "ScoreRowSchema-Output": {
+      /**
+       * Source Url
+       * @description URL источника
+       */
+      source_url?: string | null
+      /**
+       * Admission Basis
+       * @description Основание приёма: budget / paid
+       */
+      admission_basis: string
+      /** @description Форма обучения. null — неизвестна */
+      study_form?: components["schemas"]["StudyForm"] | null
+      /**
+       * Faculty Name
+       * @description Название факультета/института
+       */
+      faculty_name: string
+      /**
+       * Program Name
+       * @description Название направления подготовки
+       */
+      program_name: string
+      /**
+       * Code
+       * @description Код направления (ФГОС)
+       */
+      code?: string | null
+      /**
+       * Year
+       * @description Год приёма
+       */
+      year: number
       /**
        * Passing Score
        * @description Проходной балл
@@ -3147,15 +3250,35 @@ export interface components {
        * @description Средний балл
        */
       average_score?: number | null
+      /** Seat Count */
+      seat_count?: number | null
       /**
        * Level
        * @description Уровень: bachelor / specialist / master / spo (СПО)
        * @default bachelor
        */
       level: string
+      /**
+       * Form
+       * @deprecated
+       * @description Совместимое поле v1 для основания приёма.
+       */
+      readonly form: string
+    }
+    /** ScoreUpdate */
+    "ScoreUpdate": {
+      /**
+       * Source Url
+       * @description URL источника
+       */
+      source_url?: string | null
+      admission_basis?: components["schemas"]["AdmissionBasis"] | null
+      study_form?: components["schemas"]["StudyForm"] | null
+      /** Seat Count */
+      seat_count?: number | null
     }
     /** SettingsChange */
-    SettingsChange: {
+    "SettingsChange": {
       /** Revision */
       revision: number
       /** Changes */
@@ -3164,7 +3287,7 @@ export interface components {
       }
     }
     /** TokenResponse */
-    TokenResponse: {
+    "TokenResponse": {
       /** Access Token */
       access_token: string
       /**
@@ -3177,7 +3300,7 @@ export interface components {
      * TokenUsageBucket
      * @description Элемент статистики по количеству потраченных токенов.
      */
-    TokenUsageBucket: {
+    "TokenUsageBucket": {
       /**
        * Period
        * Format: date-time
@@ -3190,7 +3313,7 @@ export interface components {
      * TokenUsageStatsResponse
      * @description Статистика потребления токенов LLM за период времени.
      */
-    TokenUsageStatsResponse: {
+    "TokenUsageStatsResponse": {
       /** Total */
       total: number
       /** Group By */
@@ -3206,7 +3329,7 @@ export interface components {
      * TopicCreate
      * @description Модель для создания новой темы.
      */
-    TopicCreate: {
+    "TopicCreate": {
       /**
        * Label
        * @description Название темы
@@ -3228,7 +3351,7 @@ export interface components {
      * TopicListResponse
      * @description Модель ответа для списка тем.
      */
-    TopicListResponse: {
+    "TopicListResponse": {
       /** Topics */
       topics: components["schemas"]["TopicResponse"][]
       /** Total */
@@ -3238,7 +3361,7 @@ export interface components {
      * TopicResponse
      * @description Модель ответа для темы.
      */
-    TopicResponse: {
+    "TopicResponse": {
       /**
        * Label
        * @description Название темы
@@ -3263,7 +3386,7 @@ export interface components {
      * TopicUpdate
      * @description Модель для обновления темы.
      */
-    TopicUpdate: {
+    "TopicUpdate": {
       /**
        * Label
        * @description Название темы
@@ -3281,17 +3404,23 @@ export interface components {
       is_active?: boolean | null
     }
     /**
+     * StudyForm
+     * @description Форма обучения.
+     * @enum {string}
+     */
+    "StudyForm": "full_time" | "correspondence"
+    /**
      * UnmatchedSample
      * @description Пример строки, не сопоставленной со справочником факультетов.
      */
-    UnmatchedSample: {
+    "UnmatchedSample": {
       /** Faculty Name */
       faculty_name: string
       /** Program Name */
       program_name: string
     }
     /** UploadedDocumentResult */
-    UploadedDocumentResult: {
+    "UploadedDocumentResult": {
       /**
        * Filename
        * @description Имя загруженного файла
@@ -3315,7 +3444,7 @@ export interface components {
       chars: number
     }
     /** UserCountStatsResponse */
-    UserCountStatsResponse: {
+    "UserCountStatsResponse": {
       /** Day */
       day: number
       /** Week */
@@ -3328,7 +3457,7 @@ export interface components {
       all_time: number
     }
     /** ValidationError */
-    ValidationError: {
+    "ValidationError": {
       /** Location */
       loc: (string | number)[]
       /** Message */
@@ -4337,8 +4466,15 @@ export interface operations {
         program?: string | null
         /** @description Фильтр по году */
         year?: number | null
-        /** @description Форма: budget / paid */
+        /**
+         * @deprecated
+         * @description Совместимый фильтр по основанию приёма
+         */
         form?: string | null
+        /** @description Основание приёма: budget / paid */
+        admission_basis?: components["schemas"]["AdmissionBasis"] | null
+        /** @description Форма обучения */
+        study_form?: components["schemas"]["StudyForm"] | null
         /** @description Только активные факультеты и программы */
         only_active?: boolean
       }
@@ -4384,6 +4520,41 @@ export interface operations {
         }
         content: {
           "application/json": number[]
+        }
+      }
+    }
+  }
+  update_score_api_v1_admission_scores__score_id__patch: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        score_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ScoreUpdate"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["ScoreItem"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
         }
       }
     }
